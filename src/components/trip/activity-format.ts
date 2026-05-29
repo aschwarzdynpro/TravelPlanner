@@ -1,5 +1,18 @@
 // Shared types + presentation helpers for the activity feed, used by both the
 // per-trip ActivitySection and the global cross-trip feed.
+import {
+  Pencil,
+  MapIcon,
+  Hotel,
+  Plane,
+  User,
+  Trash2,
+  Mail,
+  KeyRound,
+  DoorOpen,
+  Bell,
+  type LucideIcon,
+} from "@/components/icons";
 
 export type ActivityEntry = {
   id: string;
@@ -19,7 +32,7 @@ const ROLE_LABELS: Record<string, string> = {
 };
 
 export function describeActivity(entry: ActivityEntry): {
-  icon: string;
+  Icon: LucideIcon;
   text: string;
 } {
   const name = entry.detail?.name ?? "";
@@ -28,38 +41,38 @@ export function describeActivity(entry: ActivityEntry): {
     : "";
   switch (entry.action) {
     case "trip.updated":
-      return { icon: "✏️", text: "hat die Reisedaten aktualisiert" };
+      return { Icon: Pencil, text: "hat die Reisedaten aktualisiert" };
     case "area.created":
-      return { icon: "🗺️", text: `hat die Gegend „${name}“ hinzugefügt` };
+      return { Icon: MapIcon, text: `hat die Gegend „${name}“ hinzugefügt` };
     case "area.updated":
-      return { icon: "🗺️", text: `hat die Gegend „${name}“ bearbeitet` };
+      return { Icon: MapIcon, text: `hat die Gegend „${name}“ bearbeitet` };
     case "area.deleted":
-      return { icon: "🗑️", text: `hat die Gegend „${name}“ gelöscht` };
+      return { Icon: Trash2, text: `hat die Gegend „${name}“ gelöscht` };
     case "accommodation.created":
-      return { icon: "🏨", text: `hat die Unterkunft „${name}“ hinzugefügt` };
+      return { Icon: Hotel, text: `hat die Unterkunft „${name}“ hinzugefügt` };
     case "accommodation.updated":
-      return { icon: "🏨", text: `hat die Unterkunft „${name}“ bearbeitet` };
+      return { Icon: Hotel, text: `hat die Unterkunft „${name}“ bearbeitet` };
     case "accommodation.deleted":
-      return { icon: "🗑️", text: `hat die Unterkunft „${name}“ gelöscht` };
+      return { Icon: Trash2, text: `hat die Unterkunft „${name}“ gelöscht` };
     case "flight.created":
-      return { icon: "✈️", text: `hat den Flug „${name}“ hinzugefügt` };
+      return { Icon: Plane, text: `hat den Flug „${name}“ hinzugefügt` };
     case "flight.updated":
-      return { icon: "✈️", text: `hat den Flug „${name}“ bearbeitet` };
+      return { Icon: Plane, text: `hat den Flug „${name}“ bearbeitet` };
     case "flight.deleted":
-      return { icon: "🗑️", text: `hat den Flug „${name}“ gelöscht` };
+      return { Icon: Trash2, text: `hat den Flug „${name}“ gelöscht` };
     case "traveler.created":
-      return { icon: "🧑", text: `hat „${name}“ als Mitreisende:n hinzugefügt` };
+      return { Icon: User, text: `hat „${name}“ als Mitreisende:n hinzugefügt` };
     case "traveler.updated":
-      return { icon: "🧑", text: `hat Mitreisende:n „${name}“ bearbeitet` };
+      return { Icon: User, text: `hat Mitreisende:n „${name}“ bearbeitet` };
     case "traveler.deleted":
-      return { icon: "🗑️", text: `hat Mitreisende:n „${name}“ entfernt` };
+      return { Icon: Trash2, text: `hat Mitreisende:n „${name}“ entfernt` };
     case "member.invited":
-      return { icon: "📨", text: `hat ${name} eingeladen` };
+      return { Icon: Mail, text: `hat ${name} eingeladen` };
     case "member.role_changed":
-      return { icon: "🔑", text: `hat eine Rolle auf ${role} geändert` };
+      return { Icon: KeyRound, text: `hat eine Rolle auf ${role} geändert` };
     case "member.removed":
-      return { icon: "🚪", text: `hat ${name || "ein Mitglied"} entfernt` };
+      return { Icon: DoorOpen, text: `hat ${name || "ein Mitglied"} entfernt` };
     default:
-      return { icon: "•", text: entry.action };
+      return { Icon: Bell, text: entry.action };
   }
 }

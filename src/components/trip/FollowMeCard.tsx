@@ -3,6 +3,7 @@
 import { useEffect, useState, useTransition } from "react";
 import type { Trip } from "./types";
 import { setTripVisibility } from "@/app/(app)/trips/actions";
+import { Share2, Check, Copy } from "@/components/icons";
 
 export default function FollowMeCard({
   trip,
@@ -37,7 +38,10 @@ export default function FollowMeCard({
     <div className="card p-5">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h3 className="font-semibold">📡 Follow Me</h3>
+          <h3 className="flex items-center gap-2 font-semibold">
+            <Share2 className="h-4 w-4" strokeWidth={2} />
+            Follow Me
+          </h3>
           <p className="text-sm text-[var(--muted)]">
             Teile einen schreibgeschützten Link, mit dem andere die Reiseplanung
             live verfolgen können – ganz ohne Konto.
@@ -63,7 +67,17 @@ export default function FollowMeCard({
         <div className="mt-4 flex flex-col gap-2 sm:flex-row">
           <input readOnly value={link} className="input font-mono text-xs" />
           <button onClick={copy} className="btn-ghost shrink-0">
-            {copied ? "✓ Kopiert" : "Link kopieren"}
+            {copied ? (
+              <>
+                <Check className="h-4 w-4" strokeWidth={2} />
+                Kopiert
+              </>
+            ) : (
+              <>
+                <Copy className="h-4 w-4" strokeWidth={2} />
+                Link kopieren
+              </>
+            )}
           </button>
         </div>
       ) : (

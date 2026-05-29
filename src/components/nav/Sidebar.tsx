@@ -2,18 +2,27 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import {
+  LayoutDashboard,
+  Luggage,
+  Bell,
+  CircleHelp,
+  Settings,
+  Plane,
+  type LucideIcon,
+} from "@/components/icons";
 
 type NavItem = { href: string; label: string };
 type NavEntry =
-  | { type: "link"; href: string; label: string; icon: string }
-  | { type: "group"; label: string; icon: string; base: string; children: NavItem[] };
+  | { type: "link"; href: string; label: string; icon: LucideIcon }
+  | { type: "group"; label: string; icon: LucideIcon; base: string; children: NavItem[] };
 
 const NAV: NavEntry[] = [
-  { type: "link", href: "/dashboard", label: "Dashboard", icon: "📊" },
+  { type: "link", href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   {
     type: "group",
     label: "Reisen",
-    icon: "🧳",
+    icon: Luggage,
     base: "/trips",
     children: [
       { href: "/trips", label: "Meine Reisen" },
@@ -21,12 +30,12 @@ const NAV: NavEntry[] = [
       { href: "/trips/following", label: "Follow-Up Reisen" },
     ],
   },
-  { type: "link", href: "/activity", label: "Feed", icon: "🔔" },
-  { type: "link", href: "/help", label: "Hilfe", icon: "❓" },
+  { type: "link", href: "/activity", label: "Feed", icon: Bell },
+  { type: "link", href: "/help", label: "Hilfe", icon: CircleHelp },
   {
     type: "group",
     label: "Account",
-    icon: "⚙️",
+    icon: Settings,
     base: "/account",
     children: [
       { href: "/account/security", label: "Sicherheit" },
@@ -57,9 +66,9 @@ export default function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
       <Link
         href="/dashboard"
         onClick={onNavigate}
-        className="flex items-center gap-2 px-4 py-4 font-bold"
+        className="flex items-center gap-2 px-4 py-4 font-bold tracking-tight"
       >
-        <span className="text-xl">✈️</span>
+        <Plane className="h-5 w-5" strokeWidth={2} />
         <span>TravelPlanner</span>
       </Link>
 
@@ -67,6 +76,7 @@ export default function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
         {NAV.map((entry) => {
           if (entry.type === "link") {
             const active = pathname === entry.href;
+            const Icon = entry.icon;
             return (
               <Link
                 key={entry.href}
@@ -74,19 +84,20 @@ export default function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
                 onClick={onNavigate}
                 className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition ${
                   active
-                    ? "bg-[var(--primary)] text-white"
+                    ? "bg-[var(--primary)] text-[var(--primary-foreground)]"
                     : "hover:bg-black/5 dark:hover:bg-white/5"
                 }`}
               >
-                <span className="w-5 text-center">{entry.icon}</span>
+                <Icon className="h-4 w-4 shrink-0" strokeWidth={2} />
                 {entry.label}
               </Link>
             );
           }
+          const Icon = entry.icon;
           return (
             <div key={entry.label} className="pt-2">
               <div className="flex items-center gap-2.5 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
-                <span className="w-5 text-center">{entry.icon}</span>
+                <Icon className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />
                 {entry.label}
               </div>
               <div className="mt-0.5 space-y-0.5">
@@ -97,9 +108,9 @@ export default function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
                       key={c.href}
                       href={c.href}
                       onClick={onNavigate}
-                      className={`block rounded-lg py-2 pl-10 pr-3 text-sm transition ${
+                      className={`block rounded-lg py-2 pl-9 pr-3 text-sm transition ${
                         active
-                          ? "bg-[var(--primary)] text-white"
+                          ? "bg-[var(--primary)] text-[var(--primary-foreground)]"
                           : "text-[var(--foreground)] hover:bg-black/5 dark:hover:bg-white/5"
                       }`}
                     >

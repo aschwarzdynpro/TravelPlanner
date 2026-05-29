@@ -1,3 +1,5 @@
+import { Share2 } from "@/components/icons";
+
 export const dynamic = "force-dynamic";
 
 export default function FollowingTripsPage() {
@@ -11,7 +13,7 @@ export default function FollowingTripsPage() {
       </div>
 
       <div className="card flex flex-col items-center gap-3 px-6 py-16 text-center">
-        <div className="text-5xl">📡</div>
+        <Share2 className="h-10 w-10 text-[var(--muted)]" strokeWidth={1.5} />
         <h2 className="text-lg font-semibold">Folgen kommt bald</h2>
         <p className="max-w-md text-sm text-[var(--muted)]">
           Aktuell kannst du Reisen über einen geteilten „Follow-Me“-Link

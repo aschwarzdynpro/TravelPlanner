@@ -6,15 +6,17 @@ import type { Trip } from "./types";
 import { COVER_COLORS, TRIP_KINDS, CURRENCIES } from "@/lib/constants";
 import { updateTrip } from "@/app/(app)/trips/[id]/actions";
 import { deleteTrip } from "@/app/(app)/trips/actions";
+import { Pencil } from "@/components/icons";
 
 export default function EditTripButton({ trip }: { trip: Trip }) {
   const [open, setOpen] = useState(false);
-  const [color, setColor] = useState(trip.cover_color ?? "#2563eb");
+  const [color, setColor] = useState(trip.cover_color ?? "#18181b");
 
   return (
     <>
       <button className="btn-ghost" onClick={() => setOpen(true)}>
-        ✎ Bearbeiten
+        <Pencil className="h-4 w-4" strokeWidth={2} />
+        Bearbeiten
       </button>
 
       <Modal open={open} onClose={() => setOpen(false)} title="Reise bearbeiten">

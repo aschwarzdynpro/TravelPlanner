@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { GeocodeResult } from "@/app/api/geocode/route";
+import { Search } from "@/components/icons";
 
 // Latitude/longitude inputs with a "find coordinates" helper that queries the
 // Nominatim proxy. Used inside the area & accommodation server-action forms;
@@ -98,9 +99,10 @@ export default function CoordinateFields({
             type="button"
             onClick={search}
             disabled={loading}
-            className="text-xs text-[var(--primary)] hover:underline disabled:opacity-50"
+            className="inline-flex items-center gap-1 text-xs font-medium hover:underline disabled:opacity-50"
           >
-            {loading ? "Suche…" : "📍 Koordinaten suchen"}
+            <Search className="h-3.5 w-3.5" strokeWidth={2} />
+            {loading ? "Suche…" : "Koordinaten suchen"}
           </button>
         </div>
       </div>

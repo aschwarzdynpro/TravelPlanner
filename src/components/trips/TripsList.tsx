@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import NewTripButton from "@/components/NewTripButton";
 import { TRIP_KINDS } from "@/lib/constants";
 import { formatCurrency, formatDateRange } from "@/lib/format";
+import { MapPin, CalendarDays, Users, Crown, Luggage } from "@/components/icons";
 
 type Scope = "owned" | "shared";
 
@@ -77,7 +78,7 @@ export default async function TripsList({
 
       {trips.length === 0 ? (
         <div className="card flex flex-col items-center gap-3 px-6 py-16 text-center">
-          <div className="text-5xl">🗺️</div>
+          <Luggage className="h-10 w-10 text-[var(--muted)]" strokeWidth={1.5} />
           <h2 className="text-lg font-semibold">{emptyTitle}</h2>
           <p className="max-w-sm text-sm text-[var(--muted)]">{emptyText}</p>
           {showNewButton && <NewTripButton />}
@@ -90,10 +91,10 @@ export default async function TripsList({
               href={`/trips/${trip.id}`}
               className="card group overflow-hidden transition hover:shadow-md"
             >
-              <div className="h-2" style={{ backgroundColor: trip.cover_color ?? "#2563eb" }} />
+              <div className="h-2" style={{ backgroundColor: trip.cover_color ?? "#18181b" }} />
               <div className="p-4">
                 <div className="mb-2 flex items-start justify-between gap-2">
-                  <h3 className="font-semibold leading-tight group-hover:text-[var(--primary)]">
+                  <h3 className="font-semibold leading-tight group-hover:text-[var(--muted)]">
                     {trip.name}
                   </h3>
                   <span className="chip shrink-0 bg-black/5 dark:bg-white/10">
@@ -101,22 +102,28 @@ export default async function TripsList({
                   </span>
                 </div>
                 {trip.destination && (
-                  <p className="text-sm text-[var(--muted)]">📍 {trip.destination}</p>
+                  <p className="flex items-center gap-1.5 text-sm text-[var(--muted)]">
+                    <MapPin className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />
+                    {trip.destination}
+                  </p>
                 )}
-                <p className="mt-1 text-sm text-[var(--muted)]">
-                  🗓️ {formatDateRange(trip.start_date, trip.end_date)}
+                <p className="mt-1 flex items-center gap-1.5 text-sm text-[var(--muted)]">
+                  <CalendarDays className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />
+                  {formatDateRange(trip.start_date, trip.end_date)}
                 </p>
                 <div className="mt-4 flex items-center justify-between border-t pt-3 text-sm">
-                  <span className="text-[var(--muted)]">
-                    👥 {membersByTrip.get(trip.id) ?? 1}
+                  <span className="flex items-center gap-1.5 text-[var(--muted)]">
+                    <Users className="h-3.5 w-3.5" strokeWidth={2} />
+                    {membersByTrip.get(trip.id) ?? 1}
                   </span>
                   <span className="font-semibold">
                     {formatCurrency(costByTrip.get(trip.id) ?? 0)}
                   </span>
                 </div>
                 {role === "owner" && (
-                  <span className="mt-2 inline-block text-xs text-[var(--muted)]">
-                    ⭐ Du bist Eigentümer
+                  <span className="mt-2 inline-flex items-center gap-1 text-xs text-[var(--muted)]">
+                    <Crown className="h-3 w-3" strokeWidth={2} />
+                    Du bist Eigentümer
                   </span>
                 )}
               </div>

@@ -4,6 +4,7 @@ import { updateProfile } from "../actions";
 import ReTravelButton from "@/components/trip/ReTravelButton";
 import { MEMBER_ROLES, TRIP_KINDS } from "@/lib/constants";
 import { formatDateRange, initials } from "@/lib/format";
+import { Users, Share2, ArrowRight } from "@/components/icons";
 
 export const dynamic = "force-dynamic";
 
@@ -45,7 +46,7 @@ export default async function AccountGeneralPage() {
       {/* Profile */}
       <div className="card p-5">
         <div className="mb-4 flex items-center gap-3">
-          <div className="grid h-12 w-12 place-items-center rounded-full bg-[var(--primary)] text-lg font-semibold text-white">
+          <div className="grid h-12 w-12 place-items-center rounded-full bg-[var(--primary)] text-lg font-semibold text-[var(--primary-foreground)]">
             {initials(displayName)}
           </div>
           <div>
@@ -66,7 +67,7 @@ export default async function AccountGeneralPage() {
         </form>
         <p className="mt-2 text-xs text-[var(--muted)]">
           Dein Passwort änderst du unter{" "}
-          <Link href="/account/security" className="text-[var(--primary)] hover:underline">
+          <Link href="/account/security" className="font-medium underline hover:no-underline">
             Account → Sicherheit
           </Link>
           .
@@ -92,7 +93,10 @@ export default async function AccountGeneralPage() {
       {/* Collaboration list with quick features */}
       <div className="card overflow-hidden">
         <div className="border-b px-5 py-3">
-          <h2 className="font-semibold">🤝 Collaboration & Features</h2>
+          <h2 className="flex items-center gap-2 font-semibold">
+            <Users className="h-4 w-4" strokeWidth={2} />
+            Collaboration & Features
+          </h2>
           <p className="text-xs text-[var(--muted)]">
             Schnellzugriff auf Re-Travel und den Follow-Me-Status jeder Reise.
           </p>
@@ -100,8 +104,12 @@ export default async function AccountGeneralPage() {
         {rows.length === 0 ? (
           <p className="px-5 py-8 text-center text-sm text-[var(--muted)]">
             Du bist noch an keiner Reise beteiligt.{" "}
-            <Link href="/trips" className="text-[var(--primary)] hover:underline">
-              Erste Reise anlegen →
+            <Link
+              href="/trips"
+              className="inline-flex items-center gap-1 font-medium underline hover:no-underline"
+            >
+              Erste Reise anlegen
+              <ArrowRight className="h-3.5 w-3.5" strokeWidth={2} />
             </Link>
           </p>
         ) : (
@@ -115,12 +123,12 @@ export default async function AccountGeneralPage() {
                 >
                   <span
                     className="h-9 w-1.5 shrink-0 rounded-full"
-                    style={{ backgroundColor: t.cover_color ?? "#2563eb" }}
+                    style={{ backgroundColor: t.cover_color ?? "#18181b" }}
                   />
                   <div className="min-w-0 flex-1">
                     <Link
                       href={`/trips/${t.id}`}
-                      className="font-medium hover:text-[var(--primary)]"
+                      className="font-medium hover:text-[var(--muted)]"
                     >
                       {t.name}
                     </Link>
@@ -133,8 +141,9 @@ export default async function AccountGeneralPage() {
                     {MEMBER_ROLES[m.role] ?? m.role}
                   </span>
                   {t.is_public && (
-                    <span className="chip bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
-                      📡 Follow-Me
+                    <span className="chip bg-black/5 text-[var(--muted)] dark:bg-white/10">
+                      <Share2 className="h-3 w-3" strokeWidth={2} />
+                      Follow-Me
                     </span>
                   )}
                   {m.status === "invited" && (
@@ -144,7 +153,7 @@ export default async function AccountGeneralPage() {
                   )}
                   <ReTravelButton
                     trip={t}
-                    className="text-xs text-[var(--primary)] hover:underline"
+                    className="text-xs font-medium hover:underline"
                   />
                 </li>
               );

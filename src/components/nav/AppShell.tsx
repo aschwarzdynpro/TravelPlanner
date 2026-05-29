@@ -5,6 +5,7 @@ import Link from "next/link";
 import { initials } from "@/lib/format";
 import Sidebar from "./Sidebar";
 import { BreadcrumbProvider, Breadcrumb } from "./breadcrumb";
+import { X, Menu, Power } from "@/components/icons";
 
 export default function AppShell({
   displayName,
@@ -57,10 +58,10 @@ export default function AppShell({
             <button
               type="button"
               onClick={() => setOpen(false)}
-              className="btn-ghost absolute right-2 top-3 px-2 py-1 text-lg"
+              className="btn-ghost absolute right-2 top-3 px-2 py-1.5"
               aria-label="Menü schließen"
             >
-              ✕
+              <X className="h-4 w-4" strokeWidth={2} />
             </button>
             <Sidebar onNavigate={() => setOpen(false)} />
           </aside>
@@ -75,7 +76,7 @@ export default function AppShell({
                 className="btn-ghost px-2 py-1.5 lg:hidden"
                 aria-label="Menü öffnen"
               >
-                ☰
+                <Menu className="h-4 w-4" strokeWidth={2} />
               </button>
 
               {/* User / profile */}
@@ -84,7 +85,7 @@ export default function AppShell({
                 className="flex items-center gap-2 rounded-lg py-1 pr-2 hover:bg-black/5 dark:hover:bg-white/5"
                 title={email}
               >
-                <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[var(--primary)] text-xs font-semibold text-white">
+                <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[var(--primary)] text-xs font-semibold text-[var(--primary-foreground)]">
                   {initials(displayName)}
                 </span>
                 <span className="hidden text-sm font-medium sm:block">
@@ -102,10 +103,11 @@ export default function AppShell({
               <form action="/auth/signout" method="post">
                 <button
                   type="submit"
-                  className="btn-ghost px-2 py-1.5 text-sm"
+                  className="btn-ghost px-2 py-1.5"
                   title="Abmelden"
+                  aria-label="Abmelden"
                 >
-                  ⏻
+                  <Power className="h-4 w-4" strokeWidth={2} />
                 </button>
               </form>
             </div>
