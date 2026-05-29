@@ -40,8 +40,9 @@ const NAV: NavEntry[] = [
     icon: Settings,
     base: "/account",
     children: [
-      { href: "/account/security", label: "Sicherheit" },
       { href: "/account/general", label: "Allgemein" },
+      { href: "/account/plan", label: "Abo" },
+      { href: "/account/security", label: "Sicherheit" },
     ],
   },
 ];

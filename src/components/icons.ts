@@ -65,5 +65,7 @@ export {
   PlaneTakeoff,
   PlaneLanding,
   Crown,
+  Sparkles,
+  Lock,
   type LucideIcon,
 } from "lucide-react";

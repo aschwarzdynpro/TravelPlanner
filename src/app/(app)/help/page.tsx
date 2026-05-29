@@ -236,6 +236,12 @@ export default function HelpPage() {
           Anzeigenamen und das Erscheinungsbild (hell/dunkel). Unter{" "}
           <strong>Account → Sicherheit</strong> setzt du ein neues Passwort.
         </p>
+        <p>
+          Unter <strong>Account → Abo</strong> siehst du deinen Tarif. Alle
+          bisherigen Funktionen bleiben kostenlos; <strong>Pro</strong> schaltet
+          künftig zusätzliche, KI-gestützte Funktionen frei (in Vorbereitung,
+          noch keine Bezahlung nötig).
+        </p>
       </Section>
 
       <div className="card bg-black/[0.02] p-5 text-sm dark:bg-white/[0.02]">
