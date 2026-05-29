@@ -5,6 +5,7 @@ import { formatCurrency, formatDateTime } from "@/lib/format";
 import FlightFormButton from "./FlightFormButton";
 import DeleteButton from "@/components/DeleteButton";
 import { deleteFlight } from "@/app/(app)/trips/[id]/actions";
+import { flightTrackUrl } from "@/lib/links";
 
 export default function FlightsSection({
   trip,
@@ -23,7 +24,9 @@ export default function FlightsSection({
         </div>
       ) : (
         <div className="space-y-3">
-          {flights.map((f) => (
+          {flights.map((f) => {
+            const trackUrl = flightTrackUrl(f.airline, f.flight_number);
+            return (
             <div key={f.id} className="card p-4">
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <div>
@@ -74,6 +77,16 @@ export default function FlightsSection({
                     Buchung: {f.booking_reference}
                   </span>
                 )}
+                {trackUrl && (
+                  <a
+                    href={trackUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[var(--primary)] hover:underline"
+                  >
+                    🛫 Flug verfolgen ↗
+                  </a>
+                )}
                 {f.booking_url && (
                   <a
                     href={f.booking_url}
@@ -102,7 +115,8 @@ export default function FlightsSection({
                 )}
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

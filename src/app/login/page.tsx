@@ -207,9 +207,34 @@ function LoginForm() {
   );
 }
 
+function LoginSkeleton() {
+  return (
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="w-full max-w-sm animate-pulse">
+        <div className="mb-8 text-center">
+          <div className="text-3xl font-bold tracking-tight">✈️ TravelPlanner</div>
+          <p className="mt-2 text-sm text-[var(--muted)]">
+            Reisen & Events gemeinsam planen
+          </p>
+        </div>
+        <div className="card space-y-4 p-6">
+          <div className="h-10 rounded-lg bg-black/5 dark:bg-white/10" />
+          <div className="h-4 w-24 mx-auto rounded bg-black/5 dark:bg-white/10" />
+          <div className="h-9 rounded-lg bg-black/5 dark:bg-white/10" />
+          <div className="space-y-2">
+            <div className="h-10 rounded-lg bg-black/5 dark:bg-white/10" />
+            <div className="h-10 rounded-lg bg-black/5 dark:bg-white/10" />
+          </div>
+          <div className="h-10 rounded-lg bg-black/5 dark:bg-white/10" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function LoginPage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<LoginSkeleton />}>
       <LoginForm />
     </Suspense>
   );

@@ -67,7 +67,7 @@ export default function TripWorkspace(data: WorkspaceData) {
         </div>
       </div>
 
-      <div className="mb-6 flex gap-1 overflow-x-auto border-b">
+      <div className="sticky top-0 z-10 mb-6 -mx-4 flex gap-1 overflow-x-auto border-b bg-[var(--background)]/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-[var(--background)]/80 sm:mx-0 sm:px-0">
         {TABS.map((t) => (
           <button
             key={t.id}
