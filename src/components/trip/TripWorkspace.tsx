@@ -13,15 +13,17 @@ import TravelersSection from "./TravelersSection";
 import MembersSection from "./MembersSection";
 import MapSection from "./MapSection";
 import ActivitySection, { type ActivityEntry } from "./ActivitySection";
+import PrepSection from "./PrepSection";
 import EditTripButton from "./EditTripButton";
 import {
-  ListChecks,
+  LayoutDashboard,
   Hotel,
   MapIcon,
   Plane,
   Users,
   UserPlus,
   Bell,
+  ClipboardList,
   ArrowLeft,
   MapPin,
   CalendarDays,
@@ -29,7 +31,8 @@ import {
 } from "@/components/icons";
 
 const TABS: { id: string; label: string; icon: LucideIcon }[] = [
-  { id: "overview", label: "Übersicht", icon: ListChecks },
+  { id: "overview", label: "Übersicht", icon: LayoutDashboard },
+  { id: "prep", label: "Vorbereitung", icon: ClipboardList },
   { id: "stays", label: "Unterkünfte", icon: Hotel },
   { id: "map", label: "Karte", icon: MapIcon },
   { id: "flights", label: "Flüge", icon: Plane },
@@ -40,6 +43,7 @@ const TABS: { id: string; label: string; icon: LucideIcon }[] = [
 
 type TabId =
   | "overview"
+  | "prep"
   | "stays"
   | "map"
   | "flights"
@@ -136,6 +140,7 @@ export default function TripWorkspace(data: WorkspaceData) {
       {tab === "overview" && (
         <OverviewSection {...data} onNavigate={(t) => setTab(t as TabId)} />
       )}
+      {tab === "prep" && <PrepSection {...data} />}
       {tab === "stays" && <AccommodationsSection {...data} />}
       {tab === "map" && <MapSection {...data} />}
       {tab === "flights" && <FlightsSection {...data} />}

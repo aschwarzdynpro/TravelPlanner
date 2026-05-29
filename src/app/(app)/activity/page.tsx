@@ -7,14 +7,26 @@ export const dynamic = "force-dynamic";
 
 export default async function ActivityPage() {
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  // RLS limits trip_activity to trips the user may view (own, member, public),
-  // so a plain query already returns exactly the right cross-trip scope.
-  const { data } = await supabase
-    .from("trip_activity")
-    .select("*, profiles(display_name, email), trips(name, cover_color)")
-    .order("created_at", { ascending: false })
-    .limit(100);
+  // Scope to trips I'm a member of. RLS would also expose public ("Follow-Me")
+  // trips' activity to anyone, so we explicitly restrict to my trip ids.
+  const { data: myMemberships } = await supabase
+    .from("trip_members")
+    .select("trip_id")
+    .eq("user_id", user!.id);
+  const tripIds = (myMemberships ?? []).map((m) => m.trip_id);
+
+  const { data } = tripIds.length
+    ? await supabase
+        .from("trip_activity")
+        .select("*, profiles(display_name, email), trips(name, cover_color)")
+        .in("trip_id", tripIds)
+        .order("created_at", { ascending: false })
+        .limit(100)
+    : { data: [] };
 
   const initial: GlobalActivityEntry[] = (data ?? []).map((a) => ({
     id: a.id,
@@ -38,7 +50,7 @@ export default async function ActivityPage() {
         </p>
       </div>
 
-      <GlobalActivityFeed initial={initial} />
+      <GlobalActivityFeed initial={initial} tripIds={tripIds} />
     </div>
   );
 }

@@ -11,6 +11,8 @@ import {
   KeyRound,
   DoorOpen,
   Bell,
+  StickyNote,
+  ListChecks,
   type LucideIcon,
 } from "@/components/icons";
 
@@ -72,6 +74,12 @@ export function describeActivity(entry: ActivityEntry): {
       return { Icon: KeyRound, text: `hat eine Rolle auf ${role} geändert` };
     case "member.removed":
       return { Icon: DoorOpen, text: `hat ${name || "ein Mitglied"} entfernt` };
+    case "note.saved":
+      return { Icon: StickyNote, text: "hat die Notizen aktualisiert" };
+    case "todo.created":
+      return { Icon: ListChecks, text: `hat die Aufgabe „${name}“ hinzugefügt` };
+    case "todo.updated":
+      return { Icon: ListChecks, text: `hat die Aufgabe „${name}“ bearbeitet` };
     default:
       return { Icon: Bell, text: entry.action };
   }

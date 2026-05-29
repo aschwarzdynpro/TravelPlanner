@@ -9,6 +9,7 @@ import {
   UserPlus,
   Share2,
   ShieldCheck,
+  ClipboardList,
   type LucideIcon,
 } from "@/components/icons";
 
@@ -86,6 +87,10 @@ export default function HelpPage() {
             (in Vorbereitung).
           </li>
           <li>
+            <strong>Meine Aufgaben</strong> – alle ToDos, die dir
+            reiseübergreifend zugewiesen sind, mit Filter für offene/alle.
+          </li>
+          <li>
             <strong>Account</strong> – dein Profil (Allgemein, inkl.
             Erscheinungsbild) und deine Sicherheitseinstellungen.
           </li>
@@ -147,6 +152,26 @@ export default function HelpPage() {
           Gesamtkosten, aufgeteilt nach Unterkünften und Flügen, sowie die Kosten
           pro Person (sobald Mitreisende hinterlegt sind).
         </p>
+      </Section>
+
+      <Section icon={ClipboardList} title="Vorbereitung: Notizen & Aufgaben">
+        <p>
+          Der Tab <strong>Vorbereitung</strong> bündelt eine{" "}
+          <strong>Checkliste</strong> und ein gemeinsames <strong>Notizfeld</strong>{" "}
+          pro Reise.
+        </p>
+        <ul className="ml-4 list-disc space-y-1">
+          <li>
+            Aufgaben haben Titel, Beschreibung, optional eine{" "}
+            <strong>Zuweisung</strong> an ein Mitglied und eine{" "}
+            <strong>Fälligkeit</strong>. Abgehakt wandern sie nach unten unter
+            „Erledigt“; überfällige werden hervorgehoben.
+          </li>
+          <li>
+            Im Menüpunkt <strong>Meine Aufgaben</strong> siehst du alle dir
+            zugewiesenen ToDos reiseübergreifend an einem Ort.
+          </li>
+        </ul>
       </Section>
 
       <Section icon={Bell} title="Aktivität">

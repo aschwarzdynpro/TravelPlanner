@@ -30,6 +30,20 @@ function done(tripId: string) {
   revalidatePath(`/trips/${tripId}`);
 }
 
+// Minimal allowlist sanitizer for rich-text notes (rendered via
+// dangerouslySetInnerHTML). Drops script/style/iframe blocks, inline event
+// handlers and javascript: URLs. The tiptap editor only emits safe formatting
+// tags; this guards against hand-crafted writes.
+function sanitizeHtml(html: string): string {
+  return html
+    .replace(/<\/?(script|style|iframe|object|embed|link|meta)[^>]*>/gi, "")
+    .replace(/\son\w+\s*=\s*"[^"]*"/gi, "")
+    .replace(/\son\w+\s*=\s*'[^']*'/gi, "")
+    .replace(/\son\w+\s*=\s*[^\s>]+/gi, "")
+    .replace(/(href|src)\s*=\s*"\s*javascript:[^"]*"/gi, '$1="#"')
+    .replace(/(href|src)\s*=\s*'\s*javascript:[^']*'/gi, "$1='#'");
+}
+
 type SupabaseClient = Awaited<ReturnType<typeof createClient>>;
 
 /**
@@ -332,5 +346,77 @@ export async function removeMember(formData: FormData) {
   await logActivity(supabase, user.id, tripId, "member.removed", {
     name: existing?.profiles?.display_name ?? existing?.invited_email ?? null,
   });
+  done(tripId);
+}
+
+/* ---------- Preparation: notes ---------- */
+export async function saveNote(formData: FormData) {
+  const { supabase, user } = await db();
+  const tripId = String(formData.get("trip_id"));
+  const id = str(formData, "id");
+  const content = sanitizeHtml(String(formData.get("content") ?? ""));
+  if (id) {
+    await supabase
+      .from("trip_notes")
+      .update({ content, updated_at: new Date().toISOString() })
+      .eq("id", id);
+  } else {
+    if (content.trim() === "") return;
+    await supabase
+      .from("trip_notes")
+      .insert({ trip_id: tripId, created_by: user.id, content });
+  }
+  await logActivity(supabase, user.id, tripId, "note.saved", {});
+  done(tripId);
+}
+
+export async function deleteNote(formData: FormData) {
+  const { supabase } = await db();
+  const tripId = String(formData.get("trip_id"));
+  await supabase.from("trip_notes").delete().eq("id", String(formData.get("id")));
+  done(tripId);
+}
+
+/* ---------- Preparation: to-dos ---------- */
+export async function saveTodo(formData: FormData) {
+  const { supabase, user } = await db();
+  const tripId = String(formData.get("trip_id"));
+  const id = str(formData, "id");
+  const payload = {
+    trip_id: tripId,
+    title: str(formData, "title") ?? "Aufgabe",
+    description: str(formData, "description"),
+    assigned_to: str(formData, "assigned_to"),
+    due_date: str(formData, "due_date"),
+  };
+  if (id) await supabase.from("trip_todos").update(payload).eq("id", id);
+  else await supabase.from("trip_todos").insert({ ...payload, created_by: user.id });
+  await logActivity(
+    supabase,
+    user.id,
+    tripId,
+    id ? "todo.updated" : "todo.created",
+    { name: payload.title },
+  );
+  done(tripId);
+}
+
+export async function toggleTodo(formData: FormData) {
+  const { supabase } = await db();
+  const tripId = String(formData.get("trip_id"));
+  const id = String(formData.get("id"));
+  const done_ = formData.get("done") === "true";
+  await supabase
+    .from("trip_todos")
+    .update({ done: done_, done_at: done_ ? new Date().toISOString() : null })
+    .eq("id", id);
+  done(tripId);
+  revalidatePath("/todos");
+}
+
+export async function deleteTodo(formData: FormData) {
+  const { supabase } = await db();
+  const tripId = String(formData.get("trip_id"));
+  await supabase.from("trip_todos").delete().eq("id", String(formData.get("id")));
   done(tripId);
 }

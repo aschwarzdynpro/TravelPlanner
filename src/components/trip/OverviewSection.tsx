@@ -41,8 +41,10 @@ export default function OverviewSection({
   travelers,
   areas,
   members,
+  todos,
   onNavigate,
 }: WorkspaceData & { onNavigate: (tab: string) => void }) {
+  const openTodos = todos.filter((t) => !t.done).length;
   const accTotal = accommodations.reduce((s, a) => s + (a.cost ?? 0), 0);
   const flightTotal = flights.reduce((s, f) => s + (f.cost ?? 0), 0);
   const total = accTotal + flightTotal;
@@ -100,6 +102,12 @@ export default function OverviewSection({
           value={String(travelers.length)}
           hint={`${activeMembers} Mitglieder`}
           onClick={() => onNavigate("travelers")}
+        />
+        <StatCard
+          label="Offene Aufgaben"
+          value={String(openTodos)}
+          hint={todos.length ? `von ${todos.length} gesamt` : "Checkliste anlegen"}
+          onClick={() => onNavigate("prep")}
         />
       </div>
 

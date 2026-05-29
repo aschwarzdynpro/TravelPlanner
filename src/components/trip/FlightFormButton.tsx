@@ -5,6 +5,9 @@ import Modal from "@/components/Modal";
 import type { Flight } from "./types";
 import { saveFlight } from "@/app/(app)/trips/[id]/actions";
 import { CURRENCIES } from "@/lib/constants";
+import SelectMenu from "@/components/ui/SelectMenu";
+
+const CURRENCY_OPTIONS = CURRENCIES.map((c) => ({ value: c, label: c }));
 
 // Format a timestamptz value for a datetime-local input (local time, no seconds).
 function toLocalInput(value: string | null): string {
@@ -120,17 +123,11 @@ export default function FlightFormButton({
             </div>
             <div>
               <label className="label">Währung</label>
-              <select
+              <SelectMenu
                 name="currency"
-                className="select"
                 defaultValue={f?.currency ?? "EUR"}
-              >
-                {CURRENCIES.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </select>
+                options={CURRENCY_OPTIONS}
+              />
             </div>
           </div>
 

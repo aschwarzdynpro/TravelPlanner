@@ -5,7 +5,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { relativeTime, initials } from "@/lib/format";
 import { describeActivity } from "@/components/trip/activity-format";
-import FilterMenu from "./FilterMenu";
+import FilterMenu from "@/components/ui/FilterMenu";
 
 function ColorDot({ color }: { color?: string | null }) {
   return (
@@ -38,8 +38,12 @@ export type GlobalActivityEntry = {
 
 export default function GlobalActivityFeed({
   initial,
+  tripIds,
 }: {
   initial: GlobalActivityEntry[];
+  // Trips the user belongs to. Used to ignore realtime inserts for trips the
+  // user is not a member of (e.g. public Follow-Me trips that RLS still streams).
+  tripIds: string[];
 }) {
   const [entries, setEntries] = useState<GlobalActivityEntry[]>(initial);
   const [tripFilter, setTripFilter] = useState("");
@@ -47,10 +51,9 @@ export default function GlobalActivityFeed({
 
   useEffect(() => {
     const supabase = createClient();
-    // Subscribe to all activity inserts; RLS scopes the stream to trips the
-    // user may view, so no trip filter is needed here. We enrich rows that
-    // belong to trips we already know about (from the initial load); unknown
-    // trips fall back to a neutral label.
+    const allowed = new Set(tripIds);
+    // We enrich rows that belong to trips we already know about (from the
+    // initial load); unknown trips fall back to a neutral label.
     const tripMeta = new Map(
       initial.map((e) => [e.trip_id, { name: e.tripName, color: e.tripColor }]),
     );
@@ -62,6 +65,8 @@ export default function GlobalActivityFeed({
         { event: "INSERT", schema: "public", table: "trip_activity" },
         (payload) => {
           const row = payload.new as GlobalActivityEntry;
+          // Only show activity for trips the user is a member of.
+          if (!allowed.has(row.trip_id)) return;
           const meta = tripMeta.get(row.trip_id);
           setEntries((prev) =>
             prev.some((e) => e.id === row.id)
@@ -82,7 +87,7 @@ export default function GlobalActivityFeed({
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [initial]);
+  }, [initial, tripIds]);
 
   // Distinct trips and people for the filter menus, derived from the entries
   // currently in the feed, with leading visuals (color dot / avatar).

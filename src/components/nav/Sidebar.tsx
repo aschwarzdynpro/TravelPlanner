@@ -9,6 +9,7 @@ import {
   CircleHelp,
   Settings,
   Plane,
+  ClipboardList,
   type LucideIcon,
 } from "@/components/icons";
 
@@ -30,6 +31,7 @@ const NAV: NavEntry[] = [
       { href: "/trips/following", label: "Follow-Up Reisen" },
     ],
   },
+  { type: "link", href: "/todos", label: "Meine Aufgaben", icon: ClipboardList },
   { type: "link", href: "/activity", label: "Feed", icon: Bell },
   { type: "link", href: "/help", label: "Hilfe", icon: CircleHelp },
   {
