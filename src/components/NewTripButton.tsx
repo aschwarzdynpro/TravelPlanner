@@ -4,6 +4,14 @@ import { useState } from "react";
 import Modal from "@/components/Modal";
 import { createTrip } from "@/app/(app)/trips/actions";
 import { COVER_COLORS, TRIP_KINDS, CURRENCIES } from "@/lib/constants";
+import SelectMenu from "@/components/ui/SelectMenu";
+import DatePicker from "@/components/ui/DatePicker";
+
+const KIND_OPTIONS = Object.entries(TRIP_KINDS).map(([value, label]) => ({
+  value,
+  label,
+}));
+const CURRENCY_OPTIONS = CURRENCIES.map((c) => ({ value: c, label: c }));
 
 export default function NewTripButton() {
   const [open, setOpen] = useState(false);
@@ -33,13 +41,7 @@ export default function NewTripButton() {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="label">Typ</label>
-              <select name="kind" className="select" defaultValue="trip">
-                {Object.entries(TRIP_KINDS).map(([v, l]) => (
-                  <option key={v} value={v}>
-                    {l}
-                  </option>
-                ))}
-              </select>
+              <SelectMenu name="kind" defaultValue="trip" options={KIND_OPTIONS} />
             </div>
             <div>
               <label className="label">Ziel / Ort</label>
@@ -50,11 +52,11 @@ export default function NewTripButton() {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="label">Von</label>
-              <input name="start_date" type="date" className="input" />
+              <DatePicker name="start_date" />
             </div>
             <div>
               <label className="label">Bis</label>
-              <input name="end_date" type="date" className="input" />
+              <DatePicker name="end_date" />
             </div>
           </div>
 
@@ -72,13 +74,11 @@ export default function NewTripButton() {
             </div>
             <div>
               <label className="label">Währung</label>
-              <select name="budget_currency" className="select" defaultValue="EUR">
-                {CURRENCIES.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </select>
+              <SelectMenu
+                name="budget_currency"
+                defaultValue="EUR"
+                options={CURRENCY_OPTIONS}
+              />
             </div>
           </div>
 

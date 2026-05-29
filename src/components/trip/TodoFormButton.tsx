@@ -5,6 +5,8 @@ import Modal from "@/components/Modal";
 import type { TripTodo, Member } from "./types";
 import { saveTodo } from "@/app/(app)/trips/[id]/actions";
 import { Loader2 } from "@/components/icons";
+import SelectMenu from "@/components/ui/SelectMenu";
+import DatePicker from "@/components/ui/DatePicker";
 
 export default function TodoFormButton({
   tripId,
@@ -75,27 +77,25 @@ export default function TodoFormButton({
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="label">Zugewiesen an</label>
-              <select
+              <SelectMenu
                 name="assigned_to"
-                className="select"
                 defaultValue={t?.assigned_to ?? ""}
-              >
-                <option value="">— niemand —</option>
-                {assignable.map((m) => (
-                  <option key={m.id} value={m.user_id!}>
-                    {m.profiles?.display_name || m.profiles?.email || "Mitglied"}
-                  </option>
-                ))}
-              </select>
+                placeholder="— niemand —"
+                options={[
+                  { value: "", label: "— niemand —" },
+                  ...assignable.map((m) => ({
+                    value: m.user_id!,
+                    label:
+                      m.profiles?.display_name ||
+                      m.profiles?.email ||
+                      "Mitglied",
+                  })),
+                ]}
+              />
             </div>
             <div>
               <label className="label">Fällig bis</label>
-              <input
-                name="due_date"
-                type="date"
-                className="input"
-                defaultValue={t?.due_date ?? ""}
-              />
+              <DatePicker name="due_date" defaultValue={t?.due_date ?? ""} />
             </div>
           </div>
 

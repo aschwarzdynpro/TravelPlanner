@@ -6,6 +6,14 @@ import type { Accommodation, Area } from "./types";
 import { saveAccommodation } from "@/app/(app)/trips/[id]/actions";
 import { BOARD_LEVELS, BOARD_LEVEL_ORDER, CURRENCIES } from "@/lib/constants";
 import CoordinateFields from "@/components/map/CoordinateFields";
+import SelectMenu from "@/components/ui/SelectMenu";
+import DatePicker from "@/components/ui/DatePicker";
+
+const BOARD_OPTIONS = BOARD_LEVEL_ORDER.map((v) => ({
+  value: v,
+  label: BOARD_LEVELS[v],
+}));
+const CURRENCY_OPTIONS = CURRENCIES.map((c) => ({ value: c, label: c }));
 
 export default function AccommodationFormButton({
   tripId,
@@ -57,32 +65,23 @@ export default function AccommodationFormButton({
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="label">Gegend</label>
-              <select
+              <SelectMenu
                 name="area_id"
-                className="select"
                 defaultValue={a?.area_id ?? defaultAreaId ?? ""}
-              >
-                <option value="">— ohne Gegend —</option>
-                {areas.map((ar) => (
-                  <option key={ar.id} value={ar.id}>
-                    {ar.name}
-                  </option>
-                ))}
-              </select>
+                placeholder="— ohne Gegend —"
+                options={[
+                  { value: "", label: "— ohne Gegend —" },
+                  ...areas.map((ar) => ({ value: ar.id, label: ar.name })),
+                ]}
+              />
             </div>
             <div>
               <label className="label">Verpflegung</label>
-              <select
+              <SelectMenu
                 name="board_level"
-                className="select"
                 defaultValue={a?.board_level ?? "none"}
-              >
-                {BOARD_LEVEL_ORDER.map((v) => (
-                  <option key={v} value={v}>
-                    {BOARD_LEVELS[v]}
-                  </option>
-                ))}
-              </select>
+                options={BOARD_OPTIONS}
+              />
             </div>
           </div>
 
@@ -110,10 +109,8 @@ export default function AccommodationFormButton({
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="label">Check-in Datum</label>
-              <input
+              <DatePicker
                 name="check_in_date"
-                type="date"
-                className="input"
                 defaultValue={a?.check_in_date ?? ""}
               />
             </div>
@@ -128,10 +125,8 @@ export default function AccommodationFormButton({
             </div>
             <div>
               <label className="label">Check-out Datum</label>
-              <input
+              <DatePicker
                 name="check_out_date"
-                type="date"
-                className="input"
                 defaultValue={a?.check_out_date ?? ""}
               />
             </div>
@@ -173,17 +168,11 @@ export default function AccommodationFormButton({
             </div>
             <div>
               <label className="label">Währung</label>
-              <select
+              <SelectMenu
                 name="currency"
-                className="select"
                 defaultValue={a?.currency ?? "EUR"}
-              >
-                {CURRENCIES.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </select>
+                options={CURRENCY_OPTIONS}
+              />
             </div>
           </div>
           <p className="-mt-2 text-xs text-[var(--muted)]">
@@ -198,10 +187,8 @@ export default function AccommodationFormButton({
             <div className="space-y-3">
               <div>
                 <label className="label">Kostenlos stornierbar bis</label>
-                <input
+                <DatePicker
                   name="cancellation_deadline"
-                  type="date"
-                  className="input"
                   defaultValue={a?.cancellation_deadline ?? ""}
                 />
               </div>

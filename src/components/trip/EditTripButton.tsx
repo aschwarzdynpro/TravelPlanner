@@ -7,6 +7,14 @@ import { COVER_COLORS, TRIP_KINDS, CURRENCIES } from "@/lib/constants";
 import { updateTrip } from "@/app/(app)/trips/[id]/actions";
 import { deleteTrip } from "@/app/(app)/trips/actions";
 import { Pencil } from "@/components/icons";
+import SelectMenu from "@/components/ui/SelectMenu";
+import DatePicker from "@/components/ui/DatePicker";
+
+const KIND_OPTIONS = Object.entries(TRIP_KINDS).map(([value, label]) => ({
+  value,
+  label,
+}));
+const CURRENCY_OPTIONS = CURRENCIES.map((c) => ({ value: c, label: c }));
 
 export default function EditTripButton({ trip }: { trip: Trip }) {
   const [open, setOpen] = useState(false);
@@ -32,13 +40,11 @@ export default function EditTripButton({ trip }: { trip: Trip }) {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="label">Typ</label>
-              <select name="kind" className="select" defaultValue={trip.kind}>
-                {Object.entries(TRIP_KINDS).map(([v, l]) => (
-                  <option key={v} value={v}>
-                    {l}
-                  </option>
-                ))}
-              </select>
+              <SelectMenu
+                name="kind"
+                defaultValue={trip.kind}
+                options={KIND_OPTIONS}
+              />
             </div>
             <div>
               <label className="label">Ziel / Ort</label>
@@ -53,21 +59,11 @@ export default function EditTripButton({ trip }: { trip: Trip }) {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="label">Von</label>
-              <input
-                name="start_date"
-                type="date"
-                className="input"
-                defaultValue={trip.start_date ?? ""}
-              />
+              <DatePicker name="start_date" defaultValue={trip.start_date ?? ""} />
             </div>
             <div>
               <label className="label">Bis</label>
-              <input
-                name="end_date"
-                type="date"
-                className="input"
-                defaultValue={trip.end_date ?? ""}
-              />
+              <DatePicker name="end_date" defaultValue={trip.end_date ?? ""} />
             </div>
           </div>
 
@@ -86,17 +82,11 @@ export default function EditTripButton({ trip }: { trip: Trip }) {
             </div>
             <div>
               <label className="label">Währung</label>
-              <select
+              <SelectMenu
                 name="budget_currency"
-                className="select"
                 defaultValue={trip.budget_currency ?? "EUR"}
-              >
-                {CURRENCIES.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </select>
+                options={CURRENCY_OPTIONS}
+              />
             </div>
           </div>
 

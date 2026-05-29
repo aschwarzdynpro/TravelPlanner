@@ -12,6 +12,11 @@ import {
   removeMember,
 } from "@/app/(app)/trips/[id]/actions";
 import { Repeat } from "@/components/icons";
+import SelectMenu from "@/components/ui/SelectMenu";
+
+const ROLE_OPTIONS = Object.entries(MEMBER_ROLES)
+  .filter(([v]) => v !== "owner")
+  .map(([value, label]) => ({ value, label }));
 
 export default function MembersSection({
   trip,
@@ -54,15 +59,12 @@ export default function MembersSection({
               className="input"
               placeholder="email@beispiel.de"
             />
-            <select name="role" className="select sm:w-44" defaultValue="editor">
-              {Object.entries(MEMBER_ROLES)
-                .filter(([v]) => v !== "owner")
-                .map(([v, l]) => (
-                  <option key={v} value={v}>
-                    {l}
-                  </option>
-                ))}
-            </select>
+            <SelectMenu
+              name="role"
+              defaultValue="editor"
+              options={ROLE_OPTIONS}
+              className="sm:w-44"
+            />
             <button type="submit" className="btn-primary shrink-0">
               Einladen
             </button>
@@ -117,24 +119,19 @@ export default function MembersSection({
 
                 {/* Role: owners can edit non-owner roles */}
                 {isOwner && m.role !== "owner" ? (
-                  <form action={updateMemberRole} className="flex items-center gap-2">
-                    <input type="hidden" name="trip_id" value={trip.id} />
-                    <input type="hidden" name="id" value={m.id} />
-                    <select
-                      name="role"
-                      defaultValue={m.role}
-                      className="select w-32 text-sm"
-                      onChange={(e) => e.currentTarget.form?.requestSubmit()}
-                    >
-                      {Object.entries(MEMBER_ROLES)
-                        .filter(([v]) => v !== "owner")
-                        .map(([v, l]) => (
-                          <option key={v} value={v}>
-                            {l}
-                          </option>
-                        ))}
-                    </select>
-                  </form>
+                  <SelectMenu
+                    name="role"
+                    defaultValue={m.role}
+                    options={ROLE_OPTIONS}
+                    className="w-32"
+                    onChange={(role) => {
+                      const fd = new FormData();
+                      fd.set("trip_id", trip.id);
+                      fd.set("id", m.id);
+                      fd.set("role", role);
+                      updateMemberRole(fd);
+                    }}
+                  />
                 ) : (
                   <span className="chip bg-black/5 dark:bg-white/10">
                     {MEMBER_ROLES[m.role] ?? m.role}

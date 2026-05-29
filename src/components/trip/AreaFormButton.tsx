@@ -5,6 +5,7 @@ import Modal from "@/components/Modal";
 import type { Area } from "./types";
 import { saveArea } from "@/app/(app)/trips/[id]/actions";
 import CoordinateFields from "@/components/map/CoordinateFields";
+import DatePicker from "@/components/ui/DatePicker";
 
 export default function AreaFormButton({
   tripId,
@@ -70,19 +71,15 @@ export default function AreaFormButton({
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="label">Ankunft</label>
-              <input
+              <DatePicker
                 name="arrival_date"
-                type="date"
-                className="input"
                 defaultValue={area?.arrival_date ?? ""}
               />
             </div>
             <div>
               <label className="label">Abreise</label>
-              <input
+              <DatePicker
                 name="departure_date"
-                type="date"
-                className="input"
                 defaultValue={area?.departure_date ?? ""}
               />
             </div>
