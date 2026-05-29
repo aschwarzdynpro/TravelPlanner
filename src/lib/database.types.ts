@@ -31,6 +31,8 @@ export type Database = {
           created_at: string
           currency: string
           id: string
+          latitude: number | null
+          longitude: number | null
           name: string
           notes: string | null
           price_per_night: number | null
@@ -53,6 +55,8 @@ export type Database = {
           created_at?: string
           currency?: string
           id?: string
+          latitude?: number | null
+          longitude?: number | null
           name: string
           notes?: string | null
           price_per_night?: number | null
@@ -75,6 +79,8 @@ export type Database = {
           created_at?: string
           currency?: string
           id?: string
+          latitude?: number | null
+          longitude?: number | null
           name?: string
           notes?: string | null
           price_per_night?: number | null

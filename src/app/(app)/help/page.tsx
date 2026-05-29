@@ -101,6 +101,25 @@ export default function HelpPage() {
         </ul>
       </Section>
 
+      <Section icon="📍" title="Karte & Koordinaten">
+        <p>
+          Im Tab <strong>Karte</strong> siehst du alle Gegenden und Unterkünfte mit
+          hinterlegten Koordinaten als Pins auf einer interaktiven Karte
+          (OpenStreetMap).
+        </p>
+        <ul className="ml-4 list-disc space-y-1">
+          <li>
+            Beim Bearbeiten einer Gegend oder Unterkunft kannst du Koordinaten
+            eintragen – oder per <strong>„📍 Koordinaten suchen“</strong>{" "}
+            automatisch aus Name/Adresse ermitteln lassen.
+          </li>
+          <li>
+            Einträge ohne Koordinaten erscheinen noch nicht auf der Karte; der Tab
+            zeigt dir, wie viele das sind.
+          </li>
+        </ul>
+      </Section>
+
       <Section icon="✈️" title="Flüge">
         <p>
           Trage Airline, Flugnummer, Flughäfen und Zeiten ein. Über{" "}
