@@ -3,8 +3,26 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { relativeTime } from "@/lib/format";
+import { relativeTime, initials } from "@/lib/format";
 import { describeActivity } from "@/components/trip/activity-format";
+import FilterMenu from "./FilterMenu";
+
+function ColorDot({ color }: { color?: string | null }) {
+  return (
+    <span
+      className="inline-block h-2.5 w-2.5 shrink-0 rounded-full"
+      style={{ backgroundColor: color ?? "#94a3b8" }}
+    />
+  );
+}
+
+function Avatar({ name }: { name: string }) {
+  return (
+    <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-[var(--primary)] text-[10px] font-semibold text-white">
+      {initials(name)}
+    </span>
+  );
+}
 
 export type GlobalActivityEntry = {
   id: string;
@@ -66,18 +84,25 @@ export default function GlobalActivityFeed({
     };
   }, [initial]);
 
-  // Distinct trips and people for the filter dropdowns, derived from the
-  // entries currently in the feed.
+  // Distinct trips and people for the filter menus, derived from the entries
+  // currently in the feed, with leading visuals (color dot / avatar).
   const tripOptions = useMemo(() => {
-    const map = new Map<string, string>();
+    const map = new Map<string, { label: string; color: string | null }>();
     for (const e of entries) {
       if (!map.has(e.trip_id)) {
-        map.set(e.trip_id, e.tripName || "Unbenannte Reise");
+        map.set(e.trip_id, {
+          label: e.tripName || "Unbenannte Reise",
+          color: e.tripColor ?? null,
+        });
       }
     }
     return [...map.entries()]
-      .map(([id, name]) => ({ id, name }))
-      .sort((a, b) => a.name.localeCompare(b.name, "de"));
+      .map(([value, { label, color }]) => ({
+        value,
+        label,
+        leading: <ColorDot color={color} />,
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label, "de"));
   }, [entries]);
 
   const personOptions = useMemo(() => {
@@ -88,8 +113,12 @@ export default function GlobalActivityFeed({
       }
     }
     return [...map.entries()]
-      .map(([id, name]) => ({ id, name }))
-      .sort((a, b) => a.name.localeCompare(b.name, "de"));
+      .map(([value, label]) => ({
+        value,
+        label,
+        leading: <Avatar name={label} />,
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label, "de"));
   }, [entries]);
 
   const filtered = useMemo(
@@ -116,32 +145,20 @@ export default function GlobalActivityFeed({
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-2">
-        <select
-          className="select w-auto min-w-[10rem] flex-1 sm:flex-none"
+        <FilterMenu
+          label="Reise"
+          allLabel="Alle Reisen"
+          options={tripOptions}
           value={tripFilter}
-          onChange={(e) => setTripFilter(e.target.value)}
-          aria-label="Nach Reise filtern"
-        >
-          <option value="">Alle Reisen</option>
-          {tripOptions.map((t) => (
-            <option key={t.id} value={t.id}>
-              {t.name}
-            </option>
-          ))}
-        </select>
-        <select
-          className="select w-auto min-w-[10rem] flex-1 sm:flex-none"
+          onChange={setTripFilter}
+        />
+        <FilterMenu
+          label="Person"
+          allLabel="Alle Personen"
+          options={personOptions}
           value={personFilter}
-          onChange={(e) => setPersonFilter(e.target.value)}
-          aria-label="Nach Person filtern"
-        >
-          <option value="">Alle Personen</option>
-          {personOptions.map((p) => (
-            <option key={p.id} value={p.id}>
-              {p.name}
-            </option>
-          ))}
-        </select>
+          onChange={setPersonFilter}
+        />
         {hasFilter && (
           <button
             type="button"
@@ -151,7 +168,7 @@ export default function GlobalActivityFeed({
             }}
             className="text-sm text-[var(--muted)] hover:underline"
           >
-            Filter zurücksetzen
+            Zurücksetzen
           </button>
         )}
         <span className="ml-auto text-xs text-[var(--muted)]">
