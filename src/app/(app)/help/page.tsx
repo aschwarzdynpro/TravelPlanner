@@ -1,20 +1,33 @@
 import Link from "next/link";
+import {
+  Rocket,
+  Compass,
+  MapPin,
+  Plane,
+  Wallet,
+  Bell,
+  UserPlus,
+  Share2,
+  ShieldCheck,
+  type LucideIcon,
+} from "@/components/icons";
 
 export const metadata = { title: "Hilfe – TravelPlanner" };
 
 function Section({
-  icon,
+  icon: Icon,
   title,
   children,
 }: {
-  icon: string;
+  icon: LucideIcon;
   title: string;
   children: React.ReactNode;
 }) {
   return (
     <div className="card p-5">
       <h2 className="mb-3 flex items-center gap-2 text-lg font-semibold">
-        <span>{icon}</span> {title}
+        <Icon className="h-5 w-5" strokeWidth={2} />
+        {title}
       </h2>
       <div className="space-y-2 text-sm leading-relaxed text-[var(--foreground)]">
         {children}
@@ -34,7 +47,7 @@ export default function HelpPage() {
         </p>
       </div>
 
-      <Section icon="🚀" title="Schnellstart">
+      <Section icon={Rocket} title="Schnellstart">
         <ol className="ml-4 list-decimal space-y-1">
           <li>
             Gehe zu <strong>Reisen → Meine Reisen</strong> und klicke auf{" "}
@@ -54,7 +67,7 @@ export default function HelpPage() {
         </ol>
       </Section>
 
-      <Section icon="🧭" title="Navigation">
+      <Section icon={Compass} title="Navigation">
         <ul className="ml-4 list-disc space-y-1">
           <li>
             <strong>Dashboard</strong> – Überblick über deine Reisen und schnelle
@@ -73,8 +86,8 @@ export default function HelpPage() {
             (in Vorbereitung).
           </li>
           <li>
-            <strong>Account</strong> – dein Profil (Allgemeine Informationen) und
-            deine Sicherheitseinstellungen.
+            <strong>Account</strong> – dein Profil (Allgemein, inkl.
+            Erscheinungsbild) und deine Sicherheitseinstellungen.
           </li>
         </ul>
         <p className="text-[var(--muted)]">
@@ -83,7 +96,7 @@ export default function HelpPage() {
         </p>
       </Section>
 
-      <Section icon="🗺️" title="Gegenden & Unterkünfte">
+      <Section icon={MapPin} title="Gegenden & Unterkünfte">
         <p>
           Innerhalb einer Reise gliederst du Unterkünfte nach{" "}
           <strong>Gegenden</strong> (z. B. Regionen oder Städte). Lege zuerst eine
@@ -101,7 +114,7 @@ export default function HelpPage() {
         </ul>
       </Section>
 
-      <Section icon="📍" title="Karte & Koordinaten">
+      <Section icon={MapPin} title="Karte & Koordinaten">
         <p>
           Im Tab <strong>Karte</strong> siehst du alle Gegenden und Unterkünfte mit
           hinterlegten Koordinaten als Pins auf einer interaktiven Karte
@@ -110,7 +123,7 @@ export default function HelpPage() {
         <ul className="ml-4 list-disc space-y-1">
           <li>
             Beim Bearbeiten einer Gegend oder Unterkunft kannst du Koordinaten
-            eintragen – oder per <strong>„📍 Koordinaten suchen“</strong>{" "}
+            eintragen – oder per <strong>„Koordinaten suchen“</strong>{" "}
             automatisch aus Name/Adresse ermitteln lassen.
           </li>
           <li>
@@ -120,7 +133,7 @@ export default function HelpPage() {
         </ul>
       </Section>
 
-      <Section icon="✈️" title="Flüge">
+      <Section icon={Plane} title="Flüge">
         <p>
           Trage Airline, Flugnummer, Flughäfen und Zeiten ein. Über{" "}
           <strong>„Flug verfolgen“</strong> springst du zum Live-Status des Flugs.
@@ -128,7 +141,7 @@ export default function HelpPage() {
         </p>
       </Section>
 
-      <Section icon="💶" title="Budget & Kosten">
+      <Section icon={Wallet} title="Budget & Kosten">
         <p>
           In der <strong>Übersicht</strong> jeder Reise siehst du die
           Gesamtkosten, aufgeteilt nach Unterkünften und Flügen, sowie die Kosten
@@ -136,7 +149,7 @@ export default function HelpPage() {
         </p>
       </Section>
 
-      <Section icon="🔔" title="Aktivität">
+      <Section icon={Bell} title="Aktivität">
         <p>
           Der Tab <strong>Aktivität</strong> innerhalb einer Reise zeigt, wer wann
           was geändert hat – neue oder bearbeitete Unterkünfte, Flüge, Gegenden,
@@ -153,7 +166,7 @@ export default function HelpPage() {
         </p>
       </Section>
 
-      <Section icon="🤝" title="Mitglieder & Rollen">
+      <Section icon={UserPlus} title="Mitglieder & Rollen">
         <ul className="ml-4 list-disc space-y-1">
           <li>
             <strong>Eigentümer</strong> – volle Kontrolle inklusive Löschen.
@@ -171,7 +184,7 @@ export default function HelpPage() {
         </p>
       </Section>
 
-      <Section icon="📡" title="Follow-Me & Re-Travel">
+      <Section icon={Share2} title="Follow-Me & Re-Travel">
         <ul className="ml-4 list-disc space-y-1">
           <li>
             <strong>Follow-Me:</strong> Aktiviere in einer Reise den öffentlichen,
@@ -185,17 +198,17 @@ export default function HelpPage() {
         </ul>
       </Section>
 
-      <Section icon="🔐" title="Account & Sicherheit">
+      <Section icon={ShieldCheck} title="Account & Sicherheit">
         <p>
-          Unter <strong>Account → Allgemeine Informationen</strong> änderst du
-          deinen Anzeigenamen. Unter <strong>Account → Sicherheit</strong> setzt du
-          ein neues Passwort.
+          Unter <strong>Account → Allgemein</strong> änderst du deinen
+          Anzeigenamen und das Erscheinungsbild (hell/dunkel). Unter{" "}
+          <strong>Account → Sicherheit</strong> setzt du ein neues Passwort.
         </p>
       </Section>
 
       <div className="card bg-black/[0.02] p-5 text-sm dark:bg-white/[0.02]">
         Noch Fragen? Starte einfach mit{" "}
-        <Link href="/trips" className="text-[var(--primary)] hover:underline">
+        <Link href="/trips" className="font-medium underline hover:no-underline">
           deiner ersten Reise
         </Link>{" "}
         – die meisten Funktionen erklären sich beim Ausprobieren.

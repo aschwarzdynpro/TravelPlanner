@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { X } from "@/components/icons";
 
 export default function Modal({
   open,
@@ -42,10 +43,10 @@ export default function Modal({
           <h2 className="font-semibold">{title}</h2>
           <button
             onClick={onClose}
-            className="rounded-lg px-2 py-1 text-[var(--muted)] hover:bg-black/5 dark:hover:bg-white/5"
+            className="rounded-lg p-1.5 text-[var(--muted)] hover:bg-black/5 dark:hover:bg-white/5"
             aria-label="Schließen"
           >
-            ✕
+            <X className="h-4 w-4" strokeWidth={2} />
           </button>
         </div>
         <div className="p-5">{children}</div>

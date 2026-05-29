@@ -6,6 +6,13 @@ import FlightFormButton from "./FlightFormButton";
 import DeleteButton from "@/components/DeleteButton";
 import { deleteFlight } from "@/app/(app)/trips/[id]/actions";
 import { flightTrackUrl } from "@/lib/links";
+import {
+  Plane,
+  PlaneTakeoff,
+  ExternalLink,
+  ArrowRight,
+  StickyNote,
+} from "@/components/icons";
 
 export default function FlightsSection({
   trip,
@@ -19,8 +26,9 @@ export default function FlightsSection({
       )}
 
       {flights.length === 0 ? (
-        <div className="card px-6 py-12 text-center text-sm text-[var(--muted)]">
-          ✈️ Noch keine Flüge eingetragen.
+        <div className="card flex flex-col items-center gap-2 px-6 py-12 text-center text-sm text-[var(--muted)]">
+          <Plane className="h-8 w-8" strokeWidth={1.5} />
+          Noch keine Flüge eingetragen.
         </div>
       ) : (
         <div className="space-y-3">
@@ -38,7 +46,7 @@ export default function FlightsSection({
                   </h4>
                   <div className="mt-1 flex items-center gap-2 text-lg font-medium">
                     <span>{f.departure_airport || "—"}</span>
-                    <span className="text-[var(--muted)]">→</span>
+                    <ArrowRight className="h-4 w-4 text-[var(--muted)]" strokeWidth={2} />
                     <span>{f.arrival_airport || "—"}</span>
                   </div>
                 </div>
@@ -68,7 +76,10 @@ export default function FlightsSection({
               )}
 
               {f.notes && (
-                <p className="mt-2 text-sm text-[var(--muted)]">📝 {f.notes}</p>
+                <p className="mt-2 flex items-start gap-1.5 text-sm text-[var(--muted)]">
+                  <StickyNote className="mt-0.5 h-3.5 w-3.5 shrink-0" strokeWidth={2} />
+                  <span>{f.notes}</span>
+                </p>
               )}
 
               <div className="mt-3 flex flex-wrap items-center gap-3 border-t pt-3 text-xs">
@@ -82,9 +93,10 @@ export default function FlightsSection({
                     href={trackUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-[var(--primary)] hover:underline"
+                    className="inline-flex items-center gap-1 font-medium hover:underline"
                   >
-                    🛫 Flug verfolgen ↗
+                    <PlaneTakeoff className="h-3.5 w-3.5" strokeWidth={2} />
+                    Flug verfolgen
                   </a>
                 )}
                 {f.booking_url && (
@@ -92,9 +104,10 @@ export default function FlightsSection({
                     href={f.booking_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-[var(--primary)] hover:underline"
+                    className="inline-flex items-center gap-1 font-medium hover:underline"
                   >
-                    Buchung öffnen ↗
+                    <ExternalLink className="h-3.5 w-3.5" strokeWidth={2} />
+                    Buchung öffnen
                   </a>
                 )}
                 {canEdit && (
@@ -103,7 +116,7 @@ export default function FlightsSection({
                       tripId={trip.id}
                       flight={f}
                       label="Bearbeiten"
-                      className="text-xs text-[var(--primary)] hover:underline"
+                      className="text-xs font-medium hover:underline"
                     />
                     <DeleteButton
                       action={deleteFlight}

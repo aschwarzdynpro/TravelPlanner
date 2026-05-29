@@ -30,13 +30,15 @@ export const MEMBER_ROLES: Record<string, string> = {
 
 export const CURRENCIES = ["EUR", "USD", "GBP", "CHF", "JPY", "AUD", "CAD"];
 
+// Noir cover palette — muted, desaturated tones plus neutrals. Calm enough to
+// stay stimmig with the monochrome UI while still distinguishing trips.
 export const COVER_COLORS = [
-  "#2563eb",
-  "#0891b2",
-  "#059669",
-  "#d97706",
-  "#dc2626",
-  "#7c3aed",
-  "#db2777",
-  "#475569",
+  "#18181b",
+  "#3f3f46",
+  "#64748b",
+  "#4b5563",
+  "#6b7280",
+  "#78716c",
+  "#57534e",
+  "#a1a1aa",
 ];

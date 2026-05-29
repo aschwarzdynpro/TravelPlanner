@@ -183,12 +183,12 @@ export default function GlobalActivityFeed({
       ) : (
         <ul className="card divide-y">
           {filtered.map((e) => {
-            const { icon, text } = describeActivity(e);
+            const { Icon, text } = describeActivity(e);
             const actor = e.actorName ?? "Jemand";
             return (
           <li key={e.id} className="flex items-center gap-3 px-4 py-3">
-            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-black/5 text-sm dark:bg-white/10">
-              {icon}
+            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-black/5 text-[var(--muted)] dark:bg-white/10">
+              <Icon className="h-4 w-4" strokeWidth={2} />
             </span>
             <div className="min-w-0 flex-1 text-sm">
               <span className="font-medium" title={actor}>

@@ -12,7 +12,7 @@ export default function MapSection({ areas, accommodations }: WorkspaceData) {
         id: `area-${area.id}`,
         latitude: area.latitude,
         longitude: area.longitude,
-        title: `🗺️ ${area.name}`,
+        title: area.name,
         subtitle: area.region ?? undefined,
       });
     }
@@ -24,7 +24,7 @@ export default function MapSection({ areas, accommodations }: WorkspaceData) {
         id: `acc-${acc.id}`,
         latitude: acc.latitude,
         longitude: acc.longitude,
-        title: `🏨 ${acc.name}`,
+        title: acc.name,
         subtitle: acc.address ?? undefined,
       });
     }
@@ -47,7 +47,7 @@ export default function MapSection({ areas, accommodations }: WorkspaceData) {
         {withoutCoords > 0 && (
           <span>
             {withoutCoords} Eintrag/Einträge ohne Koordinaten. Hinterlege beim
-            Bearbeiten Koordinaten („📍 Koordinaten suchen“), damit sie erscheinen.
+            Bearbeiten Koordinaten („Koordinaten suchen“), damit sie erscheinen.
           </span>
         )}
       </div>

@@ -60,7 +60,7 @@ const STATIC: { match: (p: string) => boolean; crumbs: Crumb[] }[] = [
   },
   {
     match: (p) => p === "/account/general",
-    crumbs: [{ label: "Account" }, { label: "Allgemeine Informationen" }],
+    crumbs: [{ label: "Account" }, { label: "Allgemein" }],
   },
 ];
 

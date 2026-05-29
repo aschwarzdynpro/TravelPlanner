@@ -5,6 +5,7 @@ import { initials } from "@/lib/format";
 import TravelerFormButton from "./TravelerFormButton";
 import DeleteButton from "@/components/DeleteButton";
 import { deleteTraveler } from "@/app/(app)/trips/[id]/actions";
+import { Users, Mail, Phone } from "@/components/icons";
 
 export default function TravelersSection({
   trip,
@@ -28,24 +29,31 @@ export default function TravelersSection({
       </div>
 
       {travelers.length === 0 ? (
-        <div className="card px-6 py-12 text-center text-sm text-[var(--muted)]">
-          🧑‍🤝‍🧑 Noch keine Mitreisenden erfasst. Hier verwaltest du alle Personen,
+        <div className="card flex flex-col items-center gap-2 px-6 py-12 text-center text-sm text-[var(--muted)]">
+          <Users className="h-8 w-8" strokeWidth={1.5} />
+          Noch keine Mitreisenden erfasst. Hier verwaltest du alle Personen,
           die mitreisen – unabhängig davon, ob sie ein App-Konto haben.
         </div>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2">
           {travelers.map((t) => (
             <div key={t.id} className="card flex items-start gap-3 p-4">
-              <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[var(--primary)] text-sm font-semibold text-white">
+              <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[var(--primary)] text-sm font-semibold text-[var(--primary-foreground)]">
                 {initials(t.name)}
               </div>
               <div className="min-w-0 flex-1">
                 <h4 className="font-semibold">{t.name}</h4>
                 {t.email && (
-                  <p className="truncate text-sm text-[var(--muted)]">✉️ {t.email}</p>
+                  <p className="flex items-center gap-1.5 truncate text-sm text-[var(--muted)]">
+                    <Mail className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />
+                    {t.email}
+                  </p>
                 )}
                 {t.phone && (
-                  <p className="text-sm text-[var(--muted)]">📞 {t.phone}</p>
+                  <p className="flex items-center gap-1.5 text-sm text-[var(--muted)]">
+                    <Phone className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />
+                    {t.phone}
+                  </p>
                 )}
                 {t.notes && <p className="mt-1 text-sm">{t.notes}</p>}
                 {canEdit && (
@@ -54,7 +62,7 @@ export default function TravelersSection({
                       tripId={trip.id}
                       traveler={t}
                       label="Bearbeiten"
-                      className="text-[var(--primary)] hover:underline"
+                      className="font-medium hover:underline"
                     />
                     <DeleteButton
                       action={deleteTraveler}

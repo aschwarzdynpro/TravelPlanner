@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { MapPin } from "@/components/icons";
 import type { MapMarker } from "./LeafletMap";
 
 export type { MapMarker } from "./LeafletMap";
@@ -29,8 +30,8 @@ export default function TripMap({
       <div
         className={`grid place-items-center bg-black/[0.03] text-center text-sm text-[var(--muted)] dark:bg-white/5 ${className}`}
       >
-        <div className="max-w-xs px-6">
-          🗺️{" "}
+        <div className="flex max-w-xs flex-col items-center gap-2 px-6">
+          <MapPin className="h-7 w-7" strokeWidth={1.5} />
           {emptyHint ??
             "Noch keine Koordinaten hinterlegt. Hinterlege bei einer Gegend oder Unterkunft Koordinaten, damit sie hier erscheint."}
         </div>

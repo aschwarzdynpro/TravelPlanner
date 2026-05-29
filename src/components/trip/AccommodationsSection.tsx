@@ -19,6 +19,14 @@ import {
   placeMapUrl,
   mapEmbedUrl,
 } from "@/lib/links";
+import {
+  MapPin,
+  RouteIcon,
+  ExternalLink,
+  ArrowUpRight,
+  Hotel,
+  StickyNote,
+} from "@/components/icons";
 
 function AccommodationCard({
   acc,
@@ -44,9 +52,10 @@ function AccommodationCard({
               href={mapsSearchUrl(acc.address)}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm text-[var(--muted)] hover:text-[var(--primary)] hover:underline"
+              className="inline-flex items-center gap-1 text-sm text-[var(--muted)] hover:text-[var(--foreground)] hover:underline"
             >
-              📍 {acc.address}
+              <MapPin className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />
+              {acc.address}
             </a>
           )}
         </div>
@@ -60,7 +69,7 @@ function AccommodationCard({
               {nights ? ` · ${nights} ${nights === 1 ? "Nacht" : "Nächte"}` : ""}
             </div>
           )}
-          <span className="chip bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
+          <span className="chip bg-black/5 text-[var(--muted)] dark:bg-white/10">
             {BOARD_LEVELS[acc.board_level] ?? acc.board_level}
           </span>
         </div>
@@ -119,7 +128,12 @@ function AccommodationCard({
         </div>
       )}
 
-      {acc.notes && <p className="mt-2 text-sm text-[var(--muted)]">📝 {acc.notes}</p>}
+      {acc.notes && (
+        <p className="mt-2 flex items-start gap-1.5 text-sm text-[var(--muted)]">
+          <StickyNote className="mt-0.5 h-3.5 w-3.5 shrink-0" strokeWidth={2} />
+          <span>{acc.notes}</span>
+        </p>
+      )}
 
       <div className="mt-3 flex flex-wrap items-center gap-3 border-t pt-3 text-xs">
         {acc.booking_reference && (
@@ -131,18 +145,20 @@ function AccommodationCard({
           href={mapsDirectionsUrl(mapQuery)}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-[var(--primary)] hover:underline"
+          className="inline-flex items-center gap-1 font-medium hover:underline"
         >
-          🗺️ Route ↗
+          <RouteIcon className="h-3.5 w-3.5" strokeWidth={2} />
+          Route
         </a>
         {acc.booking_url && (
           <a
             href={acc.booking_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[var(--primary)] hover:underline"
+            className="inline-flex items-center gap-1 font-medium hover:underline"
           >
-            Buchung öffnen ↗
+            <ExternalLink className="h-3.5 w-3.5" strokeWidth={2} />
+            Buchung öffnen
           </a>
         )}
         {canEdit && (
@@ -152,7 +168,7 @@ function AccommodationCard({
               areas={areas}
               accommodation={acc}
               label="Bearbeiten"
-              className="text-xs text-[var(--primary)] hover:underline"
+              className="text-xs font-medium hover:underline"
             />
             <DeleteButton
               action={deleteAccommodation}
@@ -192,8 +208,9 @@ export default function AccommodationsSection({
       )}
 
       {areas.length === 0 && accommodations.length === 0 && (
-        <div className="card px-6 py-12 text-center text-sm text-[var(--muted)]">
-          🏨 Noch keine Unterkünfte. Lege zuerst eine Gegend an oder füge direkt
+        <div className="card flex flex-col items-center gap-2 px-6 py-12 text-center text-sm text-[var(--muted)]">
+          <Hotel className="h-8 w-8" strokeWidth={1.5} />
+          Noch keine Unterkünfte. Lege zuerst eine Gegend an oder füge direkt
           eine Unterkunft hinzu.
         </div>
       )}
@@ -216,10 +233,13 @@ export default function AccommodationsSection({
           <div key={area.id} className="card overflow-hidden">
             <div className="flex flex-wrap items-center justify-between gap-2 border-b bg-black/[0.02] px-4 py-3 dark:bg-white/[0.02]">
               <div>
-                <h3 className="font-semibold">
-                  🗺️ {area.name}
+                <h3 className="flex flex-wrap items-center gap-2 font-semibold">
+                  <span className="inline-flex items-center gap-1.5">
+                    <MapPin className="h-4 w-4 shrink-0" strokeWidth={2} />
+                    {area.name}
+                  </span>
                   {area.region && (
-                    <span className="ml-2 text-sm font-normal text-[var(--muted)]">
+                    <span className="text-sm font-normal text-[var(--muted)]">
                       {area.region}
                     </span>
                   )}
@@ -228,9 +248,10 @@ export default function AccommodationsSection({
                       href={areaMapUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="ml-2 text-xs font-normal text-[var(--primary)] hover:underline"
+                      className="inline-flex items-center gap-1 text-xs font-normal hover:underline"
                     >
-                      Karte ↗
+                      Karte
+                      <ArrowUpRight className="h-3 w-3" strokeWidth={2} />
                     </a>
                   )}
                 </h3>
@@ -256,13 +277,13 @@ export default function AccommodationsSection({
                     areas={areas}
                     defaultAreaId={area.id}
                     label="+ Unterkunft"
-                    className="text-[var(--primary)] hover:underline"
+                    className="font-medium hover:underline"
                   />
                   <AreaFormButton
                     tripId={trip.id}
                     area={area}
                     label="Bearbeiten"
-                    className="text-[var(--primary)] hover:underline"
+                    className="font-medium hover:underline"
                   />
                   <DeleteButton
                     action={deleteArea}

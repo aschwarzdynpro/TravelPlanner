@@ -3,6 +3,7 @@
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { Plane } from "@/components/icons";
 
 function LoginForm() {
   const router = useRouter();
@@ -80,7 +81,10 @@ function LoginForm() {
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
-          <div className="text-3xl font-bold tracking-tight">✈️ TravelPlanner</div>
+          <div className="flex items-center justify-center gap-2 text-3xl font-bold tracking-tight">
+            <Plane className="h-7 w-7" strokeWidth={2} />
+            TravelPlanner
+          </div>
           <p className="mt-2 text-sm text-[var(--muted)]">
             Reisen & Events gemeinsam planen
           </p>
@@ -212,7 +216,10 @@ function LoginSkeleton() {
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="w-full max-w-sm animate-pulse">
         <div className="mb-8 text-center">
-          <div className="text-3xl font-bold tracking-tight">✈️ TravelPlanner</div>
+          <div className="flex items-center justify-center gap-2 text-3xl font-bold tracking-tight">
+            <Plane className="h-7 w-7" strokeWidth={2} />
+            TravelPlanner
+          </div>
           <p className="mt-2 text-sm text-[var(--muted)]">
             Reisen & Events gemeinsam planen
           </p>

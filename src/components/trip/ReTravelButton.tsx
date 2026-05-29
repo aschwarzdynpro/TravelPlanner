@@ -4,6 +4,7 @@ import { useState } from "react";
 import Modal from "@/components/Modal";
 import type { Trip } from "./types";
 import { reTravel } from "@/app/(app)/trips/actions";
+import { Repeat } from "@/components/icons";
 
 export default function ReTravelButton({
   trip,
@@ -16,8 +17,12 @@ export default function ReTravelButton({
 
   return (
     <>
-      <button className={className} onClick={() => setOpen(true)}>
-        🔁 Re-Travel
+      <button
+        className={`inline-flex items-center gap-1.5 ${className}`}
+        onClick={() => setOpen(true)}
+      >
+        <Repeat className="h-3.5 w-3.5" strokeWidth={2} />
+        Re-Travel
       </button>
       <Modal open={open} onClose={() => setOpen(false)} title="Reise erneut planen">
         <form action={reTravel} className="space-y-4">

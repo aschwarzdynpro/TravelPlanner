@@ -5,14 +5,17 @@ import Link from "next/link";
 import { initials } from "@/lib/format";
 import Sidebar from "./Sidebar";
 import { BreadcrumbProvider, Breadcrumb } from "./breadcrumb";
+import { X, Menu, Power } from "@/components/icons";
 
 export default function AppShell({
   displayName,
   email,
+  theme = "system",
   children,
 }: {
   displayName: string;
   email: string;
+  theme?: "system" | "light" | "dark";
   children: ReactNode;
 }) {
   const [open, setOpen] = useState(false);
@@ -25,6 +28,24 @@ export default function AppShell({
       document.body.style.overflow = "";
     };
   }, [open]);
+
+  // Reconcile the profile's saved theme with this device. The pre-paint script
+  // only knows localStorage, so on a fresh device we apply the profile value
+  // and mirror it into localStorage for next time.
+  useEffect(() => {
+    const el = document.documentElement;
+    if (theme === "light" || theme === "dark") {
+      el.dataset.theme = theme;
+      try {
+        localStorage.setItem("theme", theme);
+      } catch {}
+    } else {
+      delete el.dataset.theme;
+      try {
+        localStorage.removeItem("theme");
+      } catch {}
+    }
+  }, [theme]);
 
   return (
     <BreadcrumbProvider>
@@ -57,10 +78,10 @@ export default function AppShell({
             <button
               type="button"
               onClick={() => setOpen(false)}
-              className="btn-ghost absolute right-2 top-3 px-2 py-1 text-lg"
+              className="btn-ghost absolute right-2 top-3 px-2 py-1.5"
               aria-label="Menü schließen"
             >
-              ✕
+              <X className="h-4 w-4" strokeWidth={2} />
             </button>
             <Sidebar onNavigate={() => setOpen(false)} />
           </aside>
@@ -75,7 +96,7 @@ export default function AppShell({
                 className="btn-ghost px-2 py-1.5 lg:hidden"
                 aria-label="Menü öffnen"
               >
-                ☰
+                <Menu className="h-4 w-4" strokeWidth={2} />
               </button>
 
               {/* User / profile */}
@@ -84,7 +105,7 @@ export default function AppShell({
                 className="flex items-center gap-2 rounded-lg py-1 pr-2 hover:bg-black/5 dark:hover:bg-white/5"
                 title={email}
               >
-                <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[var(--primary)] text-xs font-semibold text-white">
+                <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[var(--primary)] text-xs font-semibold text-[var(--primary-foreground)]">
                   {initials(displayName)}
                 </span>
                 <span className="hidden text-sm font-medium sm:block">
@@ -102,10 +123,11 @@ export default function AppShell({
               <form action="/auth/signout" method="post">
                 <button
                   type="submit"
-                  className="btn-ghost px-2 py-1.5 text-sm"
+                  className="btn-ghost px-2 py-1.5"
                   title="Abmelden"
+                  aria-label="Abmelden"
                 >
-                  ⏻
+                  <Power className="h-4 w-4" strokeWidth={2} />
                 </button>
               </form>
             </div>

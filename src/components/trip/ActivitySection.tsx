@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { relativeTime } from "@/lib/format";
 import type { WorkspaceData } from "./types";
 import { describeActivity, type ActivityEntry } from "./activity-format";
+import { Bell } from "@/components/icons";
 
 export type { ActivityEntry } from "./activity-format";
 
@@ -55,7 +56,10 @@ export default function ActivitySection({
   return (
     <div className="space-y-4">
       <div>
-        <h3 className="font-semibold">🔔 Aktivität</h3>
+        <h3 className="flex items-center gap-2 font-semibold">
+          <Bell className="h-4 w-4" strokeWidth={2} />
+          Aktivität
+        </h3>
         <p className="text-sm text-[var(--muted)]">
           Wer hat was geändert – live aktualisiert.
         </p>
@@ -69,12 +73,12 @@ export default function ActivitySection({
       ) : (
         <ul className="card divide-y">
           {entries.map((e) => {
-            const { icon, text } = describeActivity(e);
+            const { Icon, text } = describeActivity(e);
             const actor = e.actorName ?? nameFor(e.user_id);
             return (
               <li key={e.id} className="flex items-center gap-3 px-4 py-3">
-                <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-black/5 text-sm dark:bg-white/10">
-                  {icon}
+                <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-black/5 text-[var(--muted)] dark:bg-white/10">
+                  <Icon className="h-4 w-4" strokeWidth={2} />
                 </span>
                 <div className="min-w-0 flex-1 text-sm">
                   <span

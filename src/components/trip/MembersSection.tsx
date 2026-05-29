@@ -11,6 +11,7 @@ import {
   updateMemberRole,
   removeMember,
 } from "@/app/(app)/trips/[id]/actions";
+import { Repeat } from "@/components/icons";
 
 export default function MembersSection({
   trip,
@@ -26,7 +27,10 @@ export default function MembersSection({
         <FollowMeCard trip={trip} canManage={isOwner} />
         <div className="card flex flex-col justify-between gap-3 p-5">
           <div>
-            <h3 className="font-semibold">🔁 Re-Travel</h3>
+            <h3 className="flex items-center gap-2 font-semibold">
+              <Repeat className="h-4 w-4" strokeWidth={2} />
+              Re-Travel
+            </h3>
             <p className="text-sm text-[var(--muted)]">
               Diese Reise als Vorlage nehmen und für einen neuen Termin neu planen.
             </p>
@@ -89,7 +93,7 @@ export default function MembersSection({
                 key={m.id}
                 className="flex flex-wrap items-center gap-3 px-5 py-3"
               >
-                <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[var(--primary)] text-sm font-semibold text-white">
+                <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[var(--primary)] text-sm font-semibold text-[var(--primary-foreground)]">
                   {initials(name)}
                 </div>
                 <div className="min-w-0 flex-1">

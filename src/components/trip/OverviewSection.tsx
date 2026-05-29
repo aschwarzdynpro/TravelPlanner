@@ -2,6 +2,14 @@
 
 import type { WorkspaceData } from "./types";
 import { formatCurrency, formatDate, daysUntil } from "@/lib/format";
+import {
+  Wallet,
+  AlarmClock,
+  Hotel,
+  Plane,
+  TriangleAlert,
+  type LucideIcon,
+} from "@/components/icons";
 
 function StatCard({
   label,
@@ -97,18 +105,24 @@ export default function OverviewSection({
 
       <div className="grid gap-4 lg:grid-cols-2">
         <div className="card p-5">
-          <h3 className="mb-4 font-semibold">💶 Kostenaufschlüsselung</h3>
-          <CostRow label="🏨 Unterkünfte" value={accTotal} total={total} />
-          <CostRow label="✈️ Flüge" value={flightTotal} total={total} />
+          <h3 className="mb-4 flex items-center gap-2 font-semibold">
+            <Wallet className="h-4 w-4" strokeWidth={2} />
+            Kostenaufschlüsselung
+          </h3>
+          <CostRow icon={Hotel} label="Unterkünfte" value={accTotal} total={total} />
+          <CostRow icon={Plane} label="Flüge" value={flightTotal} total={total} />
           <div className="mt-4 flex items-center justify-between border-t pt-3">
             <span className="font-semibold">Summe</span>
             <span className="text-lg font-bold">{formatCurrency(total)}</span>
           </div>
 
           {mixedCurrencies && (
-            <p className="mt-2 text-xs text-amber-700 dark:text-amber-300">
-              ⚠️ Es werden mehrere Währungen verwendet ({currencies.join(", ")});
-              die Summe addiert die Beträge ohne Umrechnung.
+            <p className="mt-2 flex items-start gap-1.5 text-xs text-amber-700 dark:text-amber-300">
+              <TriangleAlert className="mt-0.5 h-3.5 w-3.5 shrink-0" strokeWidth={2} />
+              <span>
+                Es werden mehrere Währungen verwendet ({currencies.join(", ")});
+                die Summe addiert die Beträge ohne Umrechnung.
+              </span>
             </p>
           )}
 
@@ -139,7 +153,8 @@ export default function OverviewSection({
               {overBudget && (
                 <div className="mt-2">
                   <span className="chip bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-300">
-                    ⚠️ Budget überschritten
+                    <TriangleAlert className="h-3 w-3" strokeWidth={2} />
+                    Budget überschritten
                   </span>
                 </div>
               )}
@@ -148,7 +163,10 @@ export default function OverviewSection({
         </div>
 
         <div className="card p-5">
-          <h3 className="mb-4 font-semibold">⏰ Storno-Fristen</h3>
+          <h3 className="mb-4 flex items-center gap-2 font-semibold">
+            <AlarmClock className="h-4 w-4" strokeWidth={2} />
+            Storno-Fristen
+          </h3>
           {deadlines.length === 0 ? (
             <p className="text-sm text-[var(--muted)]">
               Keine anstehenden Stornierungsfristen hinterlegt.
@@ -184,10 +202,12 @@ export default function OverviewSection({
 }
 
 function CostRow({
+  icon: Icon,
   label,
   value,
   total,
 }: {
+  icon: LucideIcon;
   label: string;
   value: number;
   total: number;
@@ -196,7 +216,10 @@ function CostRow({
   return (
     <div className="mb-3">
       <div className="mb-1 flex items-center justify-between text-sm">
-        <span>{label}</span>
+        <span className="flex items-center gap-1.5">
+          <Icon className="h-3.5 w-3.5 text-[var(--muted)]" strokeWidth={2} />
+          {label}
+        </span>
         <span className="font-medium">{formatCurrency(value)}</span>
       </div>
       <div className="h-2 overflow-hidden rounded-full bg-black/5 dark:bg-white/10">
