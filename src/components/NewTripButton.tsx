@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Modal from "@/components/Modal";
 import { createTrip } from "@/app/(app)/trips/actions";
-import { COVER_COLORS, TRIP_KINDS } from "@/lib/constants";
+import { COVER_COLORS, TRIP_KINDS, CURRENCIES } from "@/lib/constants";
 
 export default function NewTripButton() {
   const [open, setOpen] = useState(false);
@@ -55,6 +55,30 @@ export default function NewTripButton() {
             <div>
               <label className="label">Bis</label>
               <input name="end_date" type="date" className="input" />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-3">
+            <div className="col-span-2">
+              <label className="label">Budget (optional)</label>
+              <input
+                name="budget"
+                type="number"
+                step="0.01"
+                min="0"
+                className="input"
+                placeholder="z. B. 2000"
+              />
+            </div>
+            <div>
+              <label className="label">Währung</label>
+              <select name="budget_currency" className="select" defaultValue="EUR">
+                {CURRENCIES.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 

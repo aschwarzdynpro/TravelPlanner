@@ -19,6 +19,9 @@ export async function createTrip(formData: FormData) {
   const name = String(formData.get("name") ?? "").trim();
   if (!name) return;
 
+  const budgetRaw = String(formData.get("budget") ?? "").trim().replace(",", ".");
+  const budget = budgetRaw === "" ? null : Number(budgetRaw);
+
   const { data, error } = await supabase
     .from("trips")
     .insert({
@@ -29,6 +32,8 @@ export async function createTrip(formData: FormData) {
       start_date: (formData.get("start_date") as string) || null,
       end_date: (formData.get("end_date") as string) || null,
       cover_color: String(formData.get("cover_color") ?? "#2563eb"),
+      budget: budget !== null && Number.isFinite(budget) ? budget : null,
+      budget_currency: String(formData.get("budget_currency") ?? "EUR"),
       created_by: user.id,
     })
     .select("id")
@@ -78,6 +83,8 @@ export async function reTravel(formData: FormData) {
       destination: source.destination,
       description: source.description,
       cover_color: source.cover_color,
+      budget: source.budget,
+      budget_currency: source.budget_currency,
       source_trip_id: source.id,
       created_by: user.id,
     })
@@ -124,6 +131,7 @@ export async function reTravel(formData: FormData) {
         check_in_time: a.check_in_time,
         check_out_time: a.check_out_time,
         board_level: a.board_level,
+        price_per_night: a.price_per_night,
         cost: a.cost,
         currency: a.currency,
         cancellation_policy: a.cancellation_policy,

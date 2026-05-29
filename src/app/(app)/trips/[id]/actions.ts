@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { nightsBetween } from "@/lib/format";
 
 async function db() {
   const supabase = await createClient();
@@ -42,6 +43,8 @@ export async function updateTrip(formData: FormData) {
       start_date: str(formData, "start_date"),
       end_date: str(formData, "end_date"),
       cover_color: String(formData.get("cover_color") ?? "#2563eb"),
+      budget: num(formData, "budget"),
+      budget_currency: String(formData.get("budget_currency") ?? "EUR"),
     })
     .eq("id", id);
   done(id);
@@ -77,17 +80,28 @@ export async function saveAccommodation(formData: FormData) {
   const { supabase } = await db();
   const tripId = String(formData.get("trip_id"));
   const id = str(formData, "id");
+  const checkIn = str(formData, "check_in_date");
+  const checkOut = str(formData, "check_out_date");
+  const pricePerNight = num(formData, "price_per_night");
+  let cost = num(formData, "cost");
+  // When only a per-night price is given, derive the total from the stay length
+  // so the existing cost-based totals keep working.
+  if (cost === null && pricePerNight !== null) {
+    const nights = nightsBetween(checkIn, checkOut);
+    if (nights) cost = Math.round(pricePerNight * nights * 100) / 100;
+  }
   const payload = {
     trip_id: tripId,
     area_id: str(formData, "area_id"),
     name: str(formData, "name") ?? "Unterkunft",
     address: str(formData, "address"),
-    check_in_date: str(formData, "check_in_date"),
-    check_out_date: str(formData, "check_out_date"),
+    check_in_date: checkIn,
+    check_out_date: checkOut,
     check_in_time: str(formData, "check_in_time"),
     check_out_time: str(formData, "check_out_time"),
     board_level: String(formData.get("board_level") ?? "none"),
-    cost: num(formData, "cost"),
+    price_per_night: pricePerNight,
+    cost,
     currency: String(formData.get("currency") ?? "EUR"),
     cancellation_policy: str(formData, "cancellation_policy"),
     cancellation_deadline: str(formData, "cancellation_deadline"),

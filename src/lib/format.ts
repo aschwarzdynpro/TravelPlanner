@@ -59,6 +59,20 @@ export function daysUntil(value: string | null | undefined): number | null {
   return Math.round((d.getTime() - today.getTime()) / 86_400_000);
 }
 
+export function nightsBetween(
+  checkIn: string | null | undefined,
+  checkOut: string | null | undefined,
+): number | null {
+  if (!checkIn || !checkOut) return null;
+  const a = new Date(checkIn);
+  const b = new Date(checkOut);
+  if (Number.isNaN(a.getTime()) || Number.isNaN(b.getTime())) return null;
+  a.setHours(0, 0, 0, 0);
+  b.setHours(0, 0, 0, 0);
+  const n = Math.round((b.getTime() - a.getTime()) / 86_400_000);
+  return n > 0 ? n : null;
+}
+
 export function initials(name: string | null | undefined): string {
   if (!name) return "?";
   return name
