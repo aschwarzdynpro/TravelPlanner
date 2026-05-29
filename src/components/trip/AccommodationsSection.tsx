@@ -12,6 +12,7 @@ import AreaFormButton from "./AreaFormButton";
 import AccommodationFormButton from "./AccommodationFormButton";
 import DeleteButton from "@/components/DeleteButton";
 import { deleteArea, deleteAccommodation } from "@/app/(app)/trips/[id]/actions";
+import { mapsSearchUrl, mapsDirectionsUrl, placeMapUrl } from "@/lib/links";
 
 function AccommodationCard({
   acc,
@@ -25,13 +26,21 @@ function AccommodationCard({
   canEdit: boolean;
 }) {
   const left = daysUntil(acc.cancellation_deadline);
+  const mapQuery = acc.address || acc.name;
   return (
     <div className="card p-4">
       <div className="flex items-start justify-between gap-2">
         <div>
           <h4 className="font-semibold">{acc.name}</h4>
           {acc.address && (
-            <p className="text-sm text-[var(--muted)]">📍 {acc.address}</p>
+            <a
+              href={mapsSearchUrl(acc.address)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-[var(--muted)] hover:text-[var(--primary)] hover:underline"
+            >
+              📍 {acc.address}
+            </a>
           )}
         </div>
         <div className="text-right">
@@ -105,6 +114,14 @@ function AccommodationCard({
             Buchung: {acc.booking_reference}
           </span>
         )}
+        <a
+          href={mapsDirectionsUrl(mapQuery)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-[var(--primary)] hover:underline"
+        >
+          🗺️ Route ↗
+        </a>
         {acc.booking_url && (
           <a
             href={acc.booking_url}
@@ -171,6 +188,11 @@ export default function AccommodationsSection({
       {areas.map((area) => {
         const accs = byArea(area.id);
         const areaTotal = accs.reduce((s, a) => s + (a.cost ?? 0), 0);
+        const areaMapUrl = placeMapUrl({
+          latitude: area.latitude,
+          longitude: area.longitude,
+          query: [area.name, area.region].filter(Boolean).join(", "),
+        });
         return (
           <div key={area.id} className="card overflow-hidden">
             <div className="flex flex-wrap items-center justify-between gap-2 border-b bg-black/[0.02] px-4 py-3 dark:bg-white/[0.02]">
@@ -181,6 +203,16 @@ export default function AccommodationsSection({
                     <span className="ml-2 text-sm font-normal text-[var(--muted)]">
                       {area.region}
                     </span>
+                  )}
+                  {areaMapUrl && (
+                    <a
+                      href={areaMapUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="ml-2 text-xs font-normal text-[var(--primary)] hover:underline"
+                    >
+                      Karte ↗
+                    </a>
                   )}
                 </h3>
                 <p className="text-xs text-[var(--muted)]">
