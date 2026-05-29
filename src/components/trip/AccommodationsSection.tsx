@@ -12,7 +12,12 @@ import AreaFormButton from "./AreaFormButton";
 import AccommodationFormButton from "./AccommodationFormButton";
 import DeleteButton from "@/components/DeleteButton";
 import { deleteArea, deleteAccommodation } from "@/app/(app)/trips/[id]/actions";
-import { mapsSearchUrl, mapsDirectionsUrl, placeMapUrl } from "@/lib/links";
+import {
+  mapsSearchUrl,
+  mapsDirectionsUrl,
+  placeMapUrl,
+  mapEmbedUrl,
+} from "@/lib/links";
 
 function AccommodationCard({
   acc,
@@ -188,10 +193,16 @@ export default function AccommodationsSection({
       {areas.map((area) => {
         const accs = byArea(area.id);
         const areaTotal = accs.reduce((s, a) => s + (a.cost ?? 0), 0);
+        const areaQuery = [area.name, area.region].filter(Boolean).join(", ");
         const areaMapUrl = placeMapUrl({
           latitude: area.latitude,
           longitude: area.longitude,
-          query: [area.name, area.region].filter(Boolean).join(", "),
+          query: areaQuery,
+        });
+        const areaEmbedUrl = mapEmbedUrl({
+          latitude: area.latitude,
+          longitude: area.longitude,
+          query: areaQuery,
         });
         return (
           <div key={area.id} className="card overflow-hidden">
@@ -254,6 +265,15 @@ export default function AccommodationsSection({
                 </div>
               )}
             </div>
+            {areaEmbedUrl && (
+              <iframe
+                src={areaEmbedUrl}
+                title={`Karte: ${area.name}`}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                className="h-48 w-full border-0 border-b"
+              />
+            )}
             <div className="grid gap-3 p-4 md:grid-cols-2">
               {accs.length === 0 ? (
                 <p className="text-sm text-[var(--muted)]">

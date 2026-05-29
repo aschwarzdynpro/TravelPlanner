@@ -25,7 +25,7 @@ export default function FlightsSection({
       ) : (
         <div className="space-y-3">
           {flights.map((f) => {
-            const trackUrl = flightTrackUrl(f.airline, f.flight_number);
+            const trackUrl = flightTrackUrl(f.flight_number);
             return (
             <div key={f.id} className="card p-4">
               <div className="flex flex-wrap items-start justify-between gap-2">
