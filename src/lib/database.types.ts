@@ -226,6 +226,7 @@ export type Database = {
           display_name: string | null
           email: string | null
           id: string
+          theme: string
         }
         Insert: {
           avatar_url?: string | null
@@ -233,6 +234,7 @@ export type Database = {
           display_name?: string | null
           email?: string | null
           id: string
+          theme?: string
         }
         Update: {
           avatar_url?: string | null
@@ -240,6 +242,7 @@ export type Database = {
           display_name?: string | null
           email?: string | null
           id?: string
+          theme?: string
         }
         Relationships: []
       }

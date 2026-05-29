@@ -19,6 +19,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="de" className="h-full">
+      <head>
+        {/* Apply the saved theme before paint to avoid a flash. 'system' (or
+            anything else) leaves the media-query default in place. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark'){document.documentElement.dataset.theme=t;}}catch(e){}})();`,
+          }}
+        />
+      </head>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );

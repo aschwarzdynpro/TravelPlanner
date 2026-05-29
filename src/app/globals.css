@@ -26,8 +26,9 @@
   --font-sans: var(--font-geist-sans);
 }
 
+/* Dark tokens, shared between system preference and explicit choice. */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --background: #09090b;
     --surface: #131316;
     --foreground: #f4f4f5;
@@ -37,6 +38,17 @@
     --primary-foreground: #18181b;
     --ring: #52525b;
   }
+}
+
+:root[data-theme="dark"] {
+  --background: #09090b;
+  --surface: #131316;
+  --foreground: #f4f4f5;
+  --muted: #8b8b94;
+  --border: #27272a;
+  --primary: #fafafa;
+  --primary-foreground: #18181b;
+  --ring: #52525b;
 }
 
 * {

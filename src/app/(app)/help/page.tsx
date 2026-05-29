@@ -86,8 +86,8 @@ export default function HelpPage() {
             (in Vorbereitung).
           </li>
           <li>
-            <strong>Account</strong> – dein Profil (Allgemeine Informationen) und
-            deine Sicherheitseinstellungen.
+            <strong>Account</strong> – dein Profil (Allgemein, inkl.
+            Erscheinungsbild) und deine Sicherheitseinstellungen.
           </li>
         </ul>
         <p className="text-[var(--muted)]">
@@ -200,9 +200,9 @@ export default function HelpPage() {
 
       <Section icon={ShieldCheck} title="Account & Sicherheit">
         <p>
-          Unter <strong>Account → Allgemeine Informationen</strong> änderst du
-          deinen Anzeigenamen. Unter <strong>Account → Sicherheit</strong> setzt du
-          ein neues Passwort.
+          Unter <strong>Account → Allgemein</strong> änderst du deinen
+          Anzeigenamen und das Erscheinungsbild (hell/dunkel). Unter{" "}
+          <strong>Account → Sicherheit</strong> setzt du ein neues Passwort.
         </p>
       </Section>
 

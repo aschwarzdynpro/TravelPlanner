@@ -4,7 +4,8 @@ import { updateProfile } from "../actions";
 import ReTravelButton from "@/components/trip/ReTravelButton";
 import { MEMBER_ROLES, TRIP_KINDS } from "@/lib/constants";
 import { formatDateRange, initials } from "@/lib/format";
-import { Users, Share2, ArrowRight } from "@/components/icons";
+import { Users, Share2, ArrowRight, Palette } from "@/components/icons";
+import ThemeToggle from "@/components/account/ThemeToggle";
 
 export const dynamic = "force-dynamic";
 
@@ -16,9 +17,11 @@ export default async function AccountGeneralPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("display_name, email")
+    .select("display_name, email, theme")
     .eq("id", user!.id)
     .maybeSingle();
+
+  const theme = (profile?.theme ?? "system") as "system" | "light" | "dark";
 
   const { data: memberships } = await supabase
     .from("trip_members")
@@ -37,7 +40,7 @@ export default async function AccountGeneralPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Allgemeine Informationen</h1>
+        <h1 className="text-2xl font-bold">Allgemein</h1>
         <p className="text-sm text-[var(--muted)]">
           Dein Profil, deine Kollaborationen und Reise-Features an einem Ort.
         </p>
@@ -72,6 +75,19 @@ export default async function AccountGeneralPage() {
           </Link>
           .
         </p>
+      </div>
+
+      {/* Appearance */}
+      <div className="card p-5">
+        <h2 className="mb-1 flex items-center gap-2 font-semibold">
+          <Palette className="h-4 w-4" strokeWidth={2} />
+          Erscheinungsbild
+        </h2>
+        <p className="mb-3 text-sm text-[var(--muted)]">
+          Wähle zwischen hellem und dunklem Design. „System“ folgt deiner
+          Geräteeinstellung. Die Auswahl wird in deinem Profil gespeichert.
+        </p>
+        <ThemeToggle initial={theme} />
       </div>
 
       {/* Stats */}

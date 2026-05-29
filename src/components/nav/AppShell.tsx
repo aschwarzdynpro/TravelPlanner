@@ -10,10 +10,12 @@ import { X, Menu, Power } from "@/components/icons";
 export default function AppShell({
   displayName,
   email,
+  theme = "system",
   children,
 }: {
   displayName: string;
   email: string;
+  theme?: "system" | "light" | "dark";
   children: ReactNode;
 }) {
   const [open, setOpen] = useState(false);
@@ -26,6 +28,24 @@ export default function AppShell({
       document.body.style.overflow = "";
     };
   }, [open]);
+
+  // Reconcile the profile's saved theme with this device. The pre-paint script
+  // only knows localStorage, so on a fresh device we apply the profile value
+  // and mirror it into localStorage for next time.
+  useEffect(() => {
+    const el = document.documentElement;
+    if (theme === "light" || theme === "dark") {
+      el.dataset.theme = theme;
+      try {
+        localStorage.setItem("theme", theme);
+      } catch {}
+    } else {
+      delete el.dataset.theme;
+      try {
+        localStorage.removeItem("theme");
+      } catch {}
+    }
+  }, [theme]);
 
   return (
     <BreadcrumbProvider>
