@@ -5,6 +5,7 @@ import type { WorkspaceData, TripTodo } from "./types";
 import { formatDate, daysUntil, initials } from "@/lib/format";
 import DeleteButton from "@/components/DeleteButton";
 import TodoFormButton from "./TodoFormButton";
+import RichTextEditor from "@/components/ui/RichTextEditor";
 import { saveNote, toggleTodo, deleteTodo } from "@/app/(app)/trips/[id]/actions";
 import {
   Plus,
@@ -42,11 +43,8 @@ function TodoRow({
           type="submit"
           disabled={!canEdit}
           aria-label={todo.done ? "Als offen markieren" : "Als erledigt markieren"}
-          className={`grid h-5 w-5 place-items-center rounded-md border transition ${
-            todo.done
-              ? "border-[var(--primary)] bg-[var(--primary)] text-[var(--primary-foreground)]"
-              : "border-[var(--border)] hover:border-[var(--ring)]"
-          } ${canEdit ? "cursor-pointer" : "cursor-default"}`}
+          data-checked={todo.done}
+          className={`check-box ${canEdit ? "cursor-pointer" : "cursor-default"}`}
         >
           {todo.done && (
             <svg viewBox="0 0 20 20" className="h-3.5 w-3.5" fill="currentColor" aria-hidden="true">
@@ -221,13 +219,10 @@ export default function PrepSection({
           <form onSubmit={handleSaveNote} className="space-y-3">
             <input type="hidden" name="trip_id" value={trip.id} />
             {note && <input type="hidden" name="id" value={note.id} />}
-            <textarea
+            <RichTextEditor
               name="content"
-              className="textarea"
-              rows={8}
-              defaultValue={note?.content ?? ""}
+              initialHTML={note?.content ?? ""}
               placeholder="Gemeinsame Notizen zur Reise – Packliste, Ideen, Absprachen …"
-              autoFocus
             />
             <div className="flex justify-end gap-2">
               <button
@@ -247,9 +242,10 @@ export default function PrepSection({
             </div>
           </form>
         ) : note && note.content.trim() ? (
-          <p className="whitespace-pre-wrap text-sm leading-relaxed">
-            {note.content}
-          </p>
+          <div
+            className="richtext text-sm leading-relaxed"
+            dangerouslySetInnerHTML={{ __html: note.content }}
+          />
         ) : (
           <p className="text-sm text-[var(--muted)]">
             Noch keine Notizen.

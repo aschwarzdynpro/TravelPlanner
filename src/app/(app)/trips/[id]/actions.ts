@@ -30,6 +30,20 @@ function done(tripId: string) {
   revalidatePath(`/trips/${tripId}`);
 }
 
+// Minimal allowlist sanitizer for rich-text notes (rendered via
+// dangerouslySetInnerHTML). Drops script/style/iframe blocks, inline event
+// handlers and javascript: URLs. The tiptap editor only emits safe formatting
+// tags; this guards against hand-crafted writes.
+function sanitizeHtml(html: string): string {
+  return html
+    .replace(/<\/?(script|style|iframe|object|embed|link|meta)[^>]*>/gi, "")
+    .replace(/\son\w+\s*=\s*"[^"]*"/gi, "")
+    .replace(/\son\w+\s*=\s*'[^']*'/gi, "")
+    .replace(/\son\w+\s*=\s*[^\s>]+/gi, "")
+    .replace(/(href|src)\s*=\s*"\s*javascript:[^"]*"/gi, '$1="#"')
+    .replace(/(href|src)\s*=\s*'\s*javascript:[^']*'/gi, "$1='#'");
+}
+
 type SupabaseClient = Awaited<ReturnType<typeof createClient>>;
 
 /**
@@ -340,7 +354,7 @@ export async function saveNote(formData: FormData) {
   const { supabase, user } = await db();
   const tripId = String(formData.get("trip_id"));
   const id = str(formData, "id");
-  const content = String(formData.get("content") ?? "");
+  const content = sanitizeHtml(String(formData.get("content") ?? ""));
   if (id) {
     await supabase
       .from("trip_notes")

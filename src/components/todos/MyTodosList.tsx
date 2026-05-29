@@ -109,11 +109,8 @@ export default function MyTodosList({ todos }: { todos: MyTodo[] }) {
                   <button
                     type="submit"
                     aria-label={t.done ? "Als offen markieren" : "Als erledigt markieren"}
-                    className={`grid h-5 w-5 place-items-center rounded-md border transition ${
-                      t.done
-                        ? "border-[var(--primary)] bg-[var(--primary)] text-[var(--primary-foreground)]"
-                        : "border-[var(--border)] hover:border-[var(--ring)]"
-                    }`}
+                    data-checked={t.done}
+                    className="check-box cursor-pointer"
                   >
                     {t.done && (
                       <svg viewBox="0 0 20 20" className="h-3.5 w-3.5" fill="currentColor" aria-hidden="true">
