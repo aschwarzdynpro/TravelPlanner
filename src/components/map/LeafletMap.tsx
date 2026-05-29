@@ -3,9 +3,6 @@
 import { useMemo } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
-import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
-import markerIcon from "leaflet/dist/images/marker-icon.png";
-import markerShadow from "leaflet/dist/images/marker-shadow.png";
 
 export type MapMarker = {
   id: string;
@@ -15,12 +12,13 @@ export type MapMarker = {
   subtitle?: string;
 };
 
-// Webpack/Turbopack rewrite the default icon URLs, so point Leaflet at the
-// bundled asset URLs explicitly (otherwise markers render as broken images).
+// Leaflet's default marker icon URLs don't survive bundling, so load the icon
+// assets from the Leaflet CDN explicitly. Keyless, no local asset wiring needed.
+const ICON_BASE = "https://unpkg.com/leaflet@1.9.4/dist/images";
 const DefaultIcon = L.icon({
-  iconRetinaUrl: (markerIcon2x as unknown as { src: string }).src,
-  iconUrl: (markerIcon as unknown as { src: string }).src,
-  shadowUrl: (markerShadow as unknown as { src: string }).src,
+  iconRetinaUrl: `${ICON_BASE}/marker-icon-2x.png`,
+  iconUrl: `${ICON_BASE}/marker-icon.png`,
+  shadowUrl: `${ICON_BASE}/marker-shadow.png`,
   iconSize: [25, 41],
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
