@@ -8,6 +8,7 @@ import { BOARD_LEVELS, BOARD_LEVEL_ORDER, CURRENCIES } from "@/lib/constants";
 import CoordinateFields from "@/components/map/CoordinateFields";
 import SelectMenu from "@/components/ui/SelectMenu";
 import DatePicker from "@/components/ui/DatePicker";
+import PlaceAutocomplete from "@/components/ui/PlaceAutocomplete";
 
 const BOARD_OPTIONS = BOARD_LEVEL_ORDER.map((v) => ({
   value: v,
@@ -32,8 +33,19 @@ export default function AccommodationFormButton({
 }) {
   const [open, setOpen] = useState(false);
   const a = accommodation;
-  const nameRef = useRef<HTMLInputElement>(null);
   const addressRef = useRef<HTMLInputElement>(null);
+
+  // Coordinates picked via the place autocomplete. Bumping `coordsKey`
+  // remounts CoordinateFields so it picks up the new defaults.
+  const [picked, setPicked] = useState<{ lat: number; lng: number } | null>(
+    null,
+  );
+  const [coordsKey, setCoordsKey] = useState(0);
+
+  // Set an uncontrolled input's value and notify React/listeners.
+  function setInput(ref: React.RefObject<HTMLInputElement | null>, value: string) {
+    if (ref.current) ref.current.value = value;
+  }
 
   return (
     <>
@@ -50,16 +62,23 @@ export default function AccommodationFormButton({
           {a && <input type="hidden" name="id" value={a.id} />}
 
           <div>
-            <label className="label">Name *</label>
-            <input
-              ref={nameRef}
+            <label className="label">Name / Ort suchen *</label>
+            <PlaceAutocomplete
               name="name"
-              className="input"
               required
               autoFocus
               defaultValue={a?.name ?? ""}
-              placeholder="z. B. Hotel Belvedere"
+              placeholder="z. B. Hotel Belvedere, Dubrovnik"
+              onSelect={(r) => {
+                setInput(addressRef, r.address);
+                setPicked({ lat: r.latitude, lng: r.longitude });
+                setCoordsKey((k) => k + 1);
+              }}
             />
+            <p className="mt-1.5 text-xs text-[var(--muted)]">
+              Tippe einen Namen: Wird ein Treffer gewählt, füllen sich Adresse und
+              Koordinaten automatisch. Du kannst auch einfach frei eintippen.
+            </p>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
@@ -97,13 +116,10 @@ export default function AccommodationFormButton({
           </div>
 
           <CoordinateFields
-            defaultLatitude={a?.latitude}
-            defaultLongitude={a?.longitude}
-            getQuery={() =>
-              addressRef.current?.value?.trim() ||
-              nameRef.current?.value?.trim() ||
-              ""
-            }
+            key={coordsKey}
+            defaultLatitude={picked?.lat ?? a?.latitude}
+            defaultLongitude={picked?.lng ?? a?.longitude}
+            getQuery={() => addressRef.current?.value?.trim() ?? ""}
           />
 
           <div className="grid grid-cols-2 gap-3">

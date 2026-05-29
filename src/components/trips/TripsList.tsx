@@ -1,67 +1,9 @@
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import NewTripButton from "@/components/NewTripButton";
-import { TRIP_KINDS } from "@/lib/constants";
-import { formatCurrency, formatDateRange, daysUntil } from "@/lib/format";
-import { MapPin, CalendarDays, Users, Crown, Luggage, ChevronRight } from "@/components/icons";
-import type { Tables } from "@/lib/database.types";
+import { Luggage } from "@/components/icons";
+import TripsBrowser, { type TripItem } from "./TripsBrowser";
 
 type Scope = "owned" | "shared";
-type Trip = Tables<"trips">;
-
-function TripCard({
-  trip,
-  role,
-  members,
-  cost,
-}: {
-  trip: Trip;
-  role: string;
-  members: number;
-  cost: number;
-}) {
-  return (
-    <Link
-      href={`/trips/${trip.id}`}
-      className="card group overflow-hidden transition hover:shadow-md"
-    >
-      <div className="h-2" style={{ backgroundColor: trip.cover_color ?? "#18181b" }} />
-      <div className="p-4">
-        <div className="mb-2 flex items-start justify-between gap-2">
-          <h3 className="font-semibold leading-tight group-hover:text-[var(--muted)]">
-            {trip.name}
-          </h3>
-          <span className="chip shrink-0 bg-black/5 dark:bg-white/10">
-            {TRIP_KINDS[trip.kind] ?? trip.kind}
-          </span>
-        </div>
-        {trip.destination && (
-          <p className="flex items-center gap-1.5 text-sm text-[var(--muted)]">
-            <MapPin className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />
-            {trip.destination}
-          </p>
-        )}
-        <p className="mt-1 flex items-center gap-1.5 text-sm text-[var(--muted)]">
-          <CalendarDays className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />
-          {formatDateRange(trip.start_date, trip.end_date)}
-        </p>
-        <div className="mt-4 flex items-center justify-between border-t pt-3 text-sm">
-          <span className="flex items-center gap-1.5 text-[var(--muted)]">
-            <Users className="h-3.5 w-3.5" strokeWidth={2} />
-            {members}
-          </span>
-          <span className="font-semibold">{formatCurrency(cost)}</span>
-        </div>
-        {role === "owner" && (
-          <span className="mt-2 inline-flex items-center gap-1 text-xs text-[var(--muted)]">
-            <Crown className="h-3 w-3" strokeWidth={2} />
-            Du bist Eigentümer
-          </span>
-        )}
-      </div>
-    </Link>
-  );
-}
 
 export default async function TripsList({
   scope,
@@ -127,28 +69,12 @@ export default async function TripsList({
       membersByTrip.set(m.trip_id, (membersByTrip.get(m.trip_id) ?? 0) + 1);
   }
 
-  // A trip is "past" once its effective end (end_date, else start_date) is
-  // before today. Trips without any date count as current/upcoming.
-  const isPast = (t: Trip) => {
-    const ref = t.end_date ?? t.start_date;
-    return ref != null && (daysUntil(ref) ?? 0) < 0;
-  };
-  const upcoming = trips.filter((t) => !isPast(t.trip));
-  const past = trips.filter((t) => isPast(t.trip));
-
-  const grid = (items: typeof trips) => (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {items.map(({ trip, role }) => (
-        <TripCard
-          key={trip.id}
-          trip={trip}
-          role={role}
-          members={membersByTrip.get(trip.id) ?? 1}
-          cost={costByTrip.get(trip.id) ?? 0}
-        />
-      ))}
-    </div>
-  );
+  const items: TripItem[] = trips.map(({ trip, role }) => ({
+    trip,
+    role,
+    members: membersByTrip.get(trip.id) ?? 1,
+    cost: costByTrip.get(trip.id) ?? 0,
+  }));
 
   return (
     <div>
@@ -170,28 +96,7 @@ export default async function TripsList({
           {showNewButton && <NewTripButton />}
         </div>
       ) : (
-        <div className="space-y-6">
-          {upcoming.length > 0 ? (
-            grid(upcoming)
-          ) : (
-            <div className="card px-6 py-10 text-center text-sm text-[var(--muted)]">
-              Keine anstehenden Reisen. Vergangene findest du unten.
-            </div>
-          )}
-
-          {past.length > 0 && (
-            <details className="group">
-              <summary className="flex cursor-pointer list-none items-center gap-2 py-2 text-sm font-medium text-[var(--muted)] hover:text-[var(--foreground)]">
-                <ChevronRight
-                  className="h-4 w-4 transition-transform group-open:rotate-90"
-                  strokeWidth={2}
-                />
-                Vergangene Reisen ({past.length})
-              </summary>
-              <div className="mt-3">{grid(past)}</div>
-            </details>
-          )}
-        </div>
+        <TripsBrowser items={items} />
       )}
     </div>
   );
