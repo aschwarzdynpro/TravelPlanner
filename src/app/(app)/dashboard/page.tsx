@@ -60,6 +60,7 @@ export default async function DashboardPage() {
   const { data: memberships } = await supabase
     .from("trip_members")
     .select("role, status, trips(*)")
+    .eq("user_id", user!.id)
     .order("created_at", { ascending: false });
 
   const rows = (memberships ?? []).filter((m) => m.trips);

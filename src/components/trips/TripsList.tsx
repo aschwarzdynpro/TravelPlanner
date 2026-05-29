@@ -79,10 +79,17 @@ export default async function TripsList({
   showNewButton?: boolean;
 }) {
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
+  // IMPORTANT: filter to MY membership rows. The members_select policy allows
+  // reading membership rows of any *viewable* trip (incl. public Follow-Me
+  // trips), so without this filter a user would see other people's trips here.
   const { data: memberships } = await supabase
     .from("trip_members")
     .select("role, status, trips(*)")
+    .eq("user_id", user!.id)
     .order("created_at", { ascending: false });
 
   const all = (memberships ?? [])
