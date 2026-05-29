@@ -21,6 +21,7 @@ const NAV: NavEntry[] = [
       { href: "/trips/following", label: "Follow-Up Reisen" },
     ],
   },
+  { type: "link", href: "/activity", label: "Feed", icon: "🔔" },
   { type: "link", href: "/help", label: "Hilfe", icon: "❓" },
   {
     type: "group",

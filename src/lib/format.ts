@@ -49,6 +49,22 @@ export function formatTime(value: string | null | undefined): string {
   return value.slice(0, 5);
 }
 
+export function relativeTime(value: string | null | undefined): string {
+  if (!value) return "";
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return "";
+  const diff = Date.now() - d.getTime();
+  const sec = Math.round(diff / 1000);
+  if (sec < 60) return "gerade eben";
+  const min = Math.round(sec / 60);
+  if (min < 60) return `vor ${min} min`;
+  const hours = Math.round(min / 60);
+  if (hours < 24) return `vor ${hours} Std.`;
+  const days = Math.round(hours / 24);
+  if (days < 7) return `vor ${days} ${days === 1 ? "Tag" : "Tagen"}`;
+  return formatDate(value);
+}
+
 export function daysUntil(value: string | null | undefined): number | null {
   if (!value) return null;
   const d = new Date(value);

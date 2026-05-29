@@ -52,6 +52,7 @@ const STATIC: { match: (p: string) => boolean; crumbs: Crumb[] }[] = [
     match: (p) => p === "/trips/following",
     crumbs: [{ label: "Reisen" }, { label: "Follow-Up Reisen" }],
   },
+  { match: (p) => p === "/activity", crumbs: [{ label: "Feed" }] },
   { match: (p) => p === "/help", crumbs: [{ label: "Hilfe" }] },
   {
     match: (p) => p === "/account/security",

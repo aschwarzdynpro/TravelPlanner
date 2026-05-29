@@ -14,6 +14,10 @@ export type Member = Tables<"trip_members"> & {
   } | null;
 };
 
+export type ActivityRow = Tables<"trip_activity"> & {
+  profiles: { display_name: string | null; email: string | null } | null;
+};
+
 export interface WorkspaceData {
   trip: Trip;
   areas: Area[];
@@ -21,6 +25,7 @@ export interface WorkspaceData {
   flights: Flight[];
   travelers: Traveler[];
   members: Member[];
+  activity: ActivityRow[];
   canEdit: boolean;
   isOwner: boolean;
   currentUserId: string;

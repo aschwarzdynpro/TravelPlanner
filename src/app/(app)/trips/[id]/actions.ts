@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { nightsBetween } from "@/lib/format";
+import type { Json } from "@/lib/database.types";
 
 async function db() {
   const supabase = await createClient();
@@ -29,14 +30,38 @@ function done(tripId: string) {
   revalidatePath(`/trips/${tripId}`);
 }
 
+type SupabaseClient = Awaited<ReturnType<typeof createClient>>;
+
+/**
+ * Append an entry to the trip activity feed. Best-effort: a logging failure
+ * must never break the underlying mutation, so errors are swallowed. The RLS
+ * insert policy requires user_id = auth.uid() and edit rights on the trip.
+ */
+async function logActivity(
+  supabase: SupabaseClient,
+  userId: string,
+  tripId: string,
+  action: string,
+  detail: Record<string, Json> = {},
+) {
+  try {
+    await supabase
+      .from("trip_activity")
+      .insert({ trip_id: tripId, user_id: userId, action, detail });
+  } catch {
+    // ignore – the feed is non-critical
+  }
+}
+
 /* ---------- Trip ---------- */
 export async function updateTrip(formData: FormData) {
-  const { supabase } = await db();
+  const { supabase, user } = await db();
   const id = String(formData.get("id"));
+  const name = str(formData, "name") ?? "Unbenannt";
   await supabase
     .from("trips")
     .update({
-      name: str(formData, "name") ?? "Unbenannt",
+      name,
       kind: String(formData.get("kind") ?? "trip"),
       destination: str(formData, "destination"),
       description: str(formData, "description"),
@@ -47,17 +72,19 @@ export async function updateTrip(formData: FormData) {
       budget_currency: String(formData.get("budget_currency") ?? "EUR"),
     })
     .eq("id", id);
+  await logActivity(supabase, user.id, id, "trip.updated", { name });
   done(id);
 }
 
 /* ---------- Areas ---------- */
 export async function saveArea(formData: FormData) {
-  const { supabase } = await db();
+  const { supabase, user } = await db();
   const tripId = String(formData.get("trip_id"));
   const id = str(formData, "id");
+  const name = str(formData, "name") ?? "Neue Gegend";
   const payload = {
     trip_id: tripId,
-    name: str(formData, "name") ?? "Neue Gegend",
+    name,
     region: str(formData, "region"),
     description: str(formData, "description"),
     arrival_date: str(formData, "arrival_date"),
@@ -67,19 +94,31 @@ export async function saveArea(formData: FormData) {
   };
   if (id) await supabase.from("areas").update(payload).eq("id", id);
   else await supabase.from("areas").insert(payload);
+  await logActivity(supabase, user.id, tripId, id ? "area.updated" : "area.created", {
+    name,
+  });
   done(tripId);
 }
 
 export async function deleteArea(formData: FormData) {
-  const { supabase } = await db();
+  const { supabase, user } = await db();
   const tripId = String(formData.get("trip_id"));
-  await supabase.from("areas").delete().eq("id", String(formData.get("id")));
+  const id = String(formData.get("id"));
+  const { data: existing } = await supabase
+    .from("areas")
+    .select("name")
+    .eq("id", id)
+    .maybeSingle();
+  await supabase.from("areas").delete().eq("id", id);
+  await logActivity(supabase, user.id, tripId, "area.deleted", {
+    name: existing?.name ?? null,
+  });
   done(tripId);
 }
 
 /* ---------- Accommodations ---------- */
 export async function saveAccommodation(formData: FormData) {
-  const { supabase } = await db();
+  const { supabase, user } = await db();
   const tripId = String(formData.get("trip_id"));
   const id = str(formData, "id");
   const checkIn = str(formData, "check_in_date");
@@ -115,22 +154,35 @@ export async function saveAccommodation(formData: FormData) {
   };
   if (id) await supabase.from("accommodations").update(payload).eq("id", id);
   else await supabase.from("accommodations").insert(payload);
+  await logActivity(
+    supabase,
+    user.id,
+    tripId,
+    id ? "accommodation.updated" : "accommodation.created",
+    { name: payload.name },
+  );
   done(tripId);
 }
 
 export async function deleteAccommodation(formData: FormData) {
-  const { supabase } = await db();
+  const { supabase, user } = await db();
   const tripId = String(formData.get("trip_id"));
-  await supabase
+  const id = String(formData.get("id"));
+  const { data: existing } = await supabase
     .from("accommodations")
-    .delete()
-    .eq("id", String(formData.get("id")));
+    .select("name")
+    .eq("id", id)
+    .maybeSingle();
+  await supabase.from("accommodations").delete().eq("id", id);
+  await logActivity(supabase, user.id, tripId, "accommodation.deleted", {
+    name: existing?.name ?? null,
+  });
   done(tripId);
 }
 
 /* ---------- Flights ---------- */
 export async function saveFlight(formData: FormData) {
-  const { supabase } = await db();
+  const { supabase, user } = await db();
   const tripId = String(formData.get("trip_id"));
   const id = str(formData, "id");
   const payload = {
@@ -150,43 +202,85 @@ export async function saveFlight(formData: FormData) {
   };
   if (id) await supabase.from("flights").update(payload).eq("id", id);
   else await supabase.from("flights").insert(payload);
+  const flightLabel =
+    [payload.airline, payload.flight_number].filter(Boolean).join(" ") ||
+    [payload.departure_airport, payload.arrival_airport]
+      .filter(Boolean)
+      .join(" → ") ||
+    "Flug";
+  await logActivity(
+    supabase,
+    user.id,
+    tripId,
+    id ? "flight.updated" : "flight.created",
+    { name: flightLabel },
+  );
   done(tripId);
 }
 
 export async function deleteFlight(formData: FormData) {
-  const { supabase } = await db();
+  const { supabase, user } = await db();
   const tripId = String(formData.get("trip_id"));
-  await supabase.from("flights").delete().eq("id", String(formData.get("id")));
+  const id = String(formData.get("id"));
+  const { data: existing } = await supabase
+    .from("flights")
+    .select("airline, flight_number")
+    .eq("id", id)
+    .maybeSingle();
+  await supabase.from("flights").delete().eq("id", id);
+  const flightLabel =
+    [existing?.airline, existing?.flight_number].filter(Boolean).join(" ") ||
+    "Flug";
+  await logActivity(supabase, user.id, tripId, "flight.deleted", {
+    name: flightLabel,
+  });
   done(tripId);
 }
 
 /* ---------- Travelers ---------- */
 export async function saveTraveler(formData: FormData) {
-  const { supabase } = await db();
+  const { supabase, user } = await db();
   const tripId = String(formData.get("trip_id"));
   const id = str(formData, "id");
+  const name = str(formData, "name") ?? "Mitreisende:r";
   const payload = {
     trip_id: tripId,
-    name: str(formData, "name") ?? "Mitreisende:r",
+    name,
     email: str(formData, "email"),
     phone: str(formData, "phone"),
     notes: str(formData, "notes"),
   };
   if (id) await supabase.from("travelers").update(payload).eq("id", id);
   else await supabase.from("travelers").insert(payload);
+  await logActivity(
+    supabase,
+    user.id,
+    tripId,
+    id ? "traveler.updated" : "traveler.created",
+    { name },
+  );
   done(tripId);
 }
 
 export async function deleteTraveler(formData: FormData) {
-  const { supabase } = await db();
+  const { supabase, user } = await db();
   const tripId = String(formData.get("trip_id"));
-  await supabase.from("travelers").delete().eq("id", String(formData.get("id")));
+  const id = String(formData.get("id"));
+  const { data: existing } = await supabase
+    .from("travelers")
+    .select("name")
+    .eq("id", id)
+    .maybeSingle();
+  await supabase.from("travelers").delete().eq("id", id);
+  await logActivity(supabase, user.id, tripId, "traveler.deleted", {
+    name: existing?.name ?? null,
+  });
   done(tripId);
 }
 
 /* ---------- Members / collaboration ---------- */
 export async function inviteMember(formData: FormData) {
-  const { supabase } = await db();
+  const { supabase, user } = await db();
   const tripId = String(formData.get("trip_id"));
   const email = str(formData, "email")?.toLowerCase();
   const role = String(formData.get("role") ?? "editor");
@@ -207,25 +301,36 @@ export async function inviteMember(formData: FormData) {
     role,
     status: existing ? "active" : "invited",
   });
+  await logActivity(supabase, user.id, tripId, "member.invited", {
+    name: email,
+  });
   done(tripId);
 }
 
 export async function updateMemberRole(formData: FormData) {
-  const { supabase } = await db();
+  const { supabase, user } = await db();
   const tripId = String(formData.get("trip_id"));
+  const role = String(formData.get("role"));
   await supabase
     .from("trip_members")
-    .update({ role: String(formData.get("role")) })
+    .update({ role })
     .eq("id", String(formData.get("id")));
+  await logActivity(supabase, user.id, tripId, "member.role_changed", { role });
   done(tripId);
 }
 
 export async function removeMember(formData: FormData) {
-  const { supabase } = await db();
+  const { supabase, user } = await db();
   const tripId = String(formData.get("trip_id"));
-  await supabase
+  const id = String(formData.get("id"));
+  const { data: existing } = await supabase
     .from("trip_members")
-    .delete()
-    .eq("id", String(formData.get("id")));
+    .select("invited_email, profiles(display_name)")
+    .eq("id", id)
+    .maybeSingle();
+  await supabase.from("trip_members").delete().eq("id", id);
+  await logActivity(supabase, user.id, tripId, "member.removed", {
+    name: existing?.profiles?.display_name ?? existing?.invited_email ?? null,
+  });
   done(tripId);
 }

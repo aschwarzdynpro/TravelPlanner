@@ -62,9 +62,9 @@ export default async function DashboardPage() {
           <div className="text-2xl font-bold">{shared.length}</div>
           <div className="text-xs text-[var(--muted)]">Geteilte Reisen</div>
         </Link>
-        <Link href="/trips/following" className="card p-4 transition hover:shadow-md">
-          <div className="text-2xl font-bold">–</div>
-          <div className="text-xs text-[var(--muted)]">Follow-Up</div>
+        <Link href="/activity" className="card p-4 transition hover:shadow-md">
+          <div className="text-2xl font-bold">🔔</div>
+          <div className="text-xs text-[var(--muted)]">Feed</div>
         </Link>
         <Link href="/help" className="card p-4 transition hover:shadow-md">
           <div className="text-2xl font-bold">❓</div>
