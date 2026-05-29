@@ -2,7 +2,6 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { initials } from "@/lib/format";
 import Sidebar from "./Sidebar";
 import { BreadcrumbProvider, Breadcrumb } from "./breadcrumb";
@@ -17,10 +16,9 @@ export default function AppShell({
   children: ReactNode;
 }) {
   const [open, setOpen] = useState(false);
-  const pathname = usePathname();
 
-  // Close the flyout on navigation and lock body scroll while it is open.
-  useEffect(() => setOpen(false), [pathname]);
+  // Lock body scroll while the flyout is open. (Navigation closes it via the
+  // sidebar's onNavigate handler.)
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
     return () => {
