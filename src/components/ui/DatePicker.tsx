@@ -1,12 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { formatDate } from "@/lib/format";
 import { CalendarDays, ChevronRight, X } from "@/components/icons";
+import Popover from "./Popover";
 
 // Themed date picker replacing the native <input type="date"> (which renders
 // OS-styled with a locale-fixed mm/dd/yyyy format). Stores an ISO date
-// (YYYY-MM-DD) in a hidden input so it posts via FormData like before.
+// (YYYY-MM-DD) in a hidden input so it posts via FormData like before. The
+// calendar renders in a portal so it never gets clipped by a scrolling modal.
 
 const WEEKDAYS = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"];
 const MONTHS = [
@@ -30,41 +32,12 @@ export default function DatePicker({
 }) {
   const [value, setValue] = useState(defaultValue); // ISO string or ""
   const [open, setOpen] = useState(false);
-  const [dropUp, setDropUp] = useState(false);
-  // Month currently shown in the calendar.
   const [view, setView] = useState(() => {
     const base = defaultValue ? new Date(defaultValue) : new Date();
     return new Date(base.getFullYear(), base.getMonth(), 1);
   });
-  const ref = useRef<HTMLDivElement>(null);
+  const anchorRef = useRef<HTMLButtonElement>(null);
 
-  // Open upward when there isn't enough room below the trigger (the modal
-  // scroll container would otherwise clip the calendar).
-  function toggle() {
-    if (!open && ref.current) {
-      const rect = ref.current.getBoundingClientRect();
-      setDropUp(window.innerHeight - rect.bottom < 360);
-    }
-    setOpen((o) => !o);
-  }
-
-  useEffect(() => {
-    if (!open) return;
-    function onClick(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    }
-    function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") setOpen(false);
-    }
-    document.addEventListener("mousedown", onClick);
-    document.addEventListener("keydown", onKey);
-    return () => {
-      document.removeEventListener("mousedown", onClick);
-      document.removeEventListener("keydown", onKey);
-    };
-  }, [open]);
-
-  // Build the day grid for the viewed month (Monday-first, 6 weeks).
   const year = view.getFullYear();
   const month = view.getMonth();
   const firstDay = new Date(year, month, 1);
@@ -75,15 +48,15 @@ export default function DatePicker({
     d.setDate(start.getDate() + i);
     return d;
   });
-
   const todayISO = toISO(new Date());
 
   return (
-    <div className="relative" ref={ref}>
+    <div className="relative">
       <input type="hidden" name={name} value={value} />
       <button
+        ref={anchorRef}
         type="button"
-        onClick={toggle}
+        onClick={() => setOpen((o) => !o)}
         className="flex w-full items-center justify-between gap-2 rounded-lg border bg-[var(--surface)] px-3 py-2 text-sm outline-none transition-colors hover:border-[var(--ring)] focus:border-[var(--ring)] focus:ring-2 focus:ring-[var(--ring)]/30"
       >
         <span className={value ? "" : "text-[var(--muted)]"}>
@@ -108,12 +81,13 @@ export default function DatePicker({
         </span>
       </button>
 
-      {open && (
-        <div
-          className={`absolute z-30 w-72 rounded-xl border bg-[var(--surface)] p-3 shadow-lg ${
-            dropUp ? "bottom-full mb-1" : "mt-1"
-          }`}
-        >
+      <Popover
+        anchorRef={anchorRef}
+        open={open}
+        onClose={() => setOpen(false)}
+        width={288}
+      >
+        <div className="rounded-xl border bg-[var(--surface)] p-3 shadow-lg">
           <div className="mb-2 flex items-center justify-between">
             <button
               type="button"
@@ -197,7 +171,7 @@ export default function DatePicker({
             )}
           </div>
         </div>
-      )}
+      </Popover>
     </div>
   );
 }

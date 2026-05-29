@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import { ChevronDown, Check } from "@/components/icons";
+import Popover from "./Popover";
 
 export type SelectOption = {
   value: string;
@@ -9,9 +10,9 @@ export type SelectOption = {
   leading?: ReactNode;
 };
 
-// Themed select to replace the native <select> (which renders OS-styled,
-// inconsistent dropdowns). Writes the chosen value into a hidden input so it
-// posts with a normal form via FormData.
+// Themed select to replace the native <select>. The dropdown is rendered in a
+// portal (via Popover) so it never gets clipped by a scrolling modal. Writes
+// the chosen value into a hidden input so it posts with a normal form.
 export default function SelectMenu({
   name,
   options,
@@ -29,30 +30,15 @@ export default function SelectMenu({
 }) {
   const [value, setValue] = useState(defaultValue);
   const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!open) return;
-    function onClick(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    }
-    function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") setOpen(false);
-    }
-    document.addEventListener("mousedown", onClick);
-    document.addEventListener("keydown", onKey);
-    return () => {
-      document.removeEventListener("mousedown", onClick);
-      document.removeEventListener("keydown", onKey);
-    };
-  }, [open]);
+  const anchorRef = useRef<HTMLButtonElement>(null);
 
   const selected = options.find((o) => o.value === value);
 
   return (
-    <div className={`relative ${className}`} ref={ref}>
+    <div className={`relative ${className}`}>
       <input type="hidden" name={name} value={value} />
       <button
+        ref={anchorRef}
         type="button"
         onClick={() => setOpen((o) => !o)}
         aria-haspopup="listbox"
@@ -71,10 +57,10 @@ export default function SelectMenu({
         />
       </button>
 
-      {open && (
+      <Popover anchorRef={anchorRef} open={open} onClose={() => setOpen(false)}>
         <div
           role="listbox"
-          className="absolute z-30 mt-1 max-h-60 w-full overflow-auto rounded-lg border bg-[var(--surface)] p-1 shadow-lg"
+          className="max-h-60 overflow-auto rounded-lg border bg-[var(--surface)] p-1 shadow-lg"
         >
           {options.map((o) => {
             const active = o.value === value;
@@ -102,7 +88,7 @@ export default function SelectMenu({
             );
           })}
         </div>
-      )}
+      </Popover>
     </div>
   );
 }
