@@ -62,6 +62,8 @@ export async function saveArea(formData: FormData) {
     description: str(formData, "description"),
     arrival_date: str(formData, "arrival_date"),
     departure_date: str(formData, "departure_date"),
+    latitude: num(formData, "latitude"),
+    longitude: num(formData, "longitude"),
   };
   if (id) await supabase.from("areas").update(payload).eq("id", id);
   else await supabase.from("areas").insert(payload);
@@ -103,6 +105,8 @@ export async function saveAccommodation(formData: FormData) {
     price_per_night: pricePerNight,
     cost,
     currency: String(formData.get("currency") ?? "EUR"),
+    latitude: num(formData, "latitude"),
+    longitude: num(formData, "longitude"),
     cancellation_policy: str(formData, "cancellation_policy"),
     cancellation_deadline: str(formData, "cancellation_deadline"),
     booking_reference: str(formData, "booking_reference"),

@@ -7,6 +7,7 @@ import {
   formatDateTime,
   formatTime,
 } from "@/lib/format";
+import TripMap, { type MapMarker } from "@/components/map/TripMap";
 
 export const dynamic = "force-dynamic";
 
@@ -45,6 +46,30 @@ export default async function FollowPage({
   const accByArea = (areaId: string | null) =>
     (accommodations ?? []).filter((a) => a.area_id === areaId);
 
+  const mapMarkers: MapMarker[] = [];
+  for (const area of areas ?? []) {
+    if (area.latitude != null && area.longitude != null) {
+      mapMarkers.push({
+        id: `area-${area.id}`,
+        latitude: area.latitude,
+        longitude: area.longitude,
+        title: `🗺️ ${area.name}`,
+        subtitle: area.region ?? undefined,
+      });
+    }
+  }
+  for (const a of accommodations ?? []) {
+    if (a.latitude != null && a.longitude != null) {
+      mapMarkers.push({
+        id: `acc-${a.id}`,
+        latitude: a.latitude,
+        longitude: a.longitude,
+        title: `🏨 ${a.name}`,
+        subtitle: a.address ?? undefined,
+      });
+    }
+  }
+
   return (
     <div className="min-h-screen">
       <div
@@ -67,6 +92,17 @@ export default async function FollowPage({
       </div>
 
       <div className="mx-auto max-w-3xl space-y-6 px-4 py-8">
+        {/* Map */}
+        {mapMarkers.length > 0 && (
+          <section>
+            <h2 className="mb-3 text-lg font-semibold">🗺️ Karte</h2>
+            <TripMap
+              markers={mapMarkers}
+              className="h-[360px] w-full overflow-hidden rounded-xl border"
+            />
+          </section>
+        )}
+
         {/* Flights */}
         {(flights ?? []).length > 0 && (
           <section>

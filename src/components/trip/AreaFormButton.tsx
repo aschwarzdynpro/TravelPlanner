@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Modal from "@/components/Modal";
 import type { Area } from "./types";
 import { saveArea } from "@/app/(app)/trips/[id]/actions";
+import CoordinateFields from "@/components/map/CoordinateFields";
 
 export default function AreaFormButton({
   tripId,
@@ -17,6 +18,8 @@ export default function AreaFormButton({
   className?: string;
 }) {
   const [open, setOpen] = useState(false);
+  const nameRef = useRef<HTMLInputElement>(null);
+  const regionRef = useRef<HTMLInputElement>(null);
 
   return (
     <>
@@ -35,6 +38,7 @@ export default function AreaFormButton({
           <div>
             <label className="label">Name der Gegend *</label>
             <input
+              ref={nameRef}
               name="name"
               className="input"
               required
@@ -46,12 +50,23 @@ export default function AreaFormButton({
           <div>
             <label className="label">Region / Land</label>
             <input
+              ref={regionRef}
               name="region"
               className="input"
               defaultValue={area?.region ?? ""}
               placeholder="Toskana, Italien"
             />
           </div>
+
+          <CoordinateFields
+            defaultLatitude={area?.latitude}
+            defaultLongitude={area?.longitude}
+            getQuery={() =>
+              [nameRef.current?.value, regionRef.current?.value]
+                .filter(Boolean)
+                .join(", ")
+            }
+          />
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="label">Ankunft</label>

@@ -128,6 +128,8 @@ export async function reTravel(formData: FormData) {
         area_id: a.area_id ? areaMap.get(a.area_id) ?? null : null,
         name: a.name,
         address: a.address,
+        latitude: a.latitude,
+        longitude: a.longitude,
         check_in_time: a.check_in_time,
         check_out_time: a.check_out_time,
         board_level: a.board_level,

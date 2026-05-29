@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Modal from "@/components/Modal";
 import type { Accommodation, Area } from "./types";
 import { saveAccommodation } from "@/app/(app)/trips/[id]/actions";
 import { BOARD_LEVELS, BOARD_LEVEL_ORDER, CURRENCIES } from "@/lib/constants";
+import CoordinateFields from "@/components/map/CoordinateFields";
 
 export default function AccommodationFormButton({
   tripId,
@@ -23,6 +24,8 @@ export default function AccommodationFormButton({
 }) {
   const [open, setOpen] = useState(false);
   const a = accommodation;
+  const nameRef = useRef<HTMLInputElement>(null);
+  const addressRef = useRef<HTMLInputElement>(null);
 
   return (
     <>
@@ -41,6 +44,7 @@ export default function AccommodationFormButton({
           <div>
             <label className="label">Name *</label>
             <input
+              ref={nameRef}
               name="name"
               className="input"
               required
@@ -85,12 +89,23 @@ export default function AccommodationFormButton({
           <div>
             <label className="label">Adresse</label>
             <input
+              ref={addressRef}
               name="address"
               className="input"
               defaultValue={a?.address ?? ""}
               placeholder="Straße, Ort"
             />
           </div>
+
+          <CoordinateFields
+            defaultLatitude={a?.latitude}
+            defaultLongitude={a?.longitude}
+            getQuery={() =>
+              addressRef.current?.value?.trim() ||
+              nameRef.current?.value?.trim() ||
+              ""
+            }
+          />
 
           <div className="grid grid-cols-2 gap-3">
             <div>
