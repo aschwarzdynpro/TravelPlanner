@@ -138,10 +138,16 @@ export default function HelpPage() {
 
       <Section icon="🔔" title="Aktivität">
         <p>
-          Der Tab <strong>Aktivität</strong> zeigt, wer wann was geändert hat –
-          neue oder bearbeitete Unterkünfte, Flüge, Gegenden, Mitreisende und
-          Mitglieder. Die Liste aktualisiert sich <strong>live</strong>: Änderungen
-          von Mitplanenden erscheinen sofort, ohne die Seite neu zu laden.
+          Der Tab <strong>Aktivität</strong> innerhalb einer Reise zeigt, wer wann
+          was geändert hat – neue oder bearbeitete Unterkünfte, Flüge, Gegenden,
+          Mitreisende und Mitglieder. Die Liste aktualisiert sich{" "}
+          <strong>live</strong>: Änderungen von Mitplanenden erscheinen sofort,
+          ohne die Seite neu zu laden.
+        </p>
+        <p>
+          Im Menüpunkt <strong>Aktivität</strong> (linke Seitenleiste) siehst du
+          denselben Feed <strong>reiseübergreifend</strong> – alle Änderungen an
+          Reisen, die dir gehören oder die mit dir geteilt sind, an einem Ort.
         </p>
       </Section>
 

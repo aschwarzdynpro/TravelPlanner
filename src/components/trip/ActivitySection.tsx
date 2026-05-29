@@ -4,65 +4,9 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { relativeTime } from "@/lib/format";
 import type { WorkspaceData } from "./types";
+import { describeActivity, type ActivityEntry } from "./activity-format";
 
-export type ActivityEntry = {
-  id: string;
-  trip_id: string;
-  user_id: string | null;
-  action: string;
-  detail: { name?: string | null; role?: string | null } | null;
-  created_at: string;
-  // Joined on the server for the initial load; resolved from members for
-  // realtime-inserted rows.
-  actorName?: string | null;
-};
-
-const ROLE_LABELS: Record<string, string> = {
-  owner: "Eigentümer",
-  editor: "Bearbeiter",
-  viewer: "Betrachter",
-};
-
-function describe(entry: ActivityEntry): { icon: string; text: string } {
-  const name = entry.detail?.name ?? "";
-  const role = entry.detail?.role ? ROLE_LABELS[entry.detail.role] ?? entry.detail.role : "";
-  switch (entry.action) {
-    case "trip.updated":
-      return { icon: "✏️", text: "hat die Reisedaten aktualisiert" };
-    case "area.created":
-      return { icon: "🗺️", text: `hat die Gegend „${name}" hinzugefügt` };
-    case "area.updated":
-      return { icon: "🗺️", text: `hat die Gegend „${name}" bearbeitet` };
-    case "area.deleted":
-      return { icon: "🗑️", text: `hat die Gegend „${name}" gelöscht` };
-    case "accommodation.created":
-      return { icon: "🏨", text: `hat die Unterkunft „${name}" hinzugefügt` };
-    case "accommodation.updated":
-      return { icon: "🏨", text: `hat die Unterkunft „${name}" bearbeitet` };
-    case "accommodation.deleted":
-      return { icon: "🗑️", text: `hat die Unterkunft „${name}" gelöscht` };
-    case "flight.created":
-      return { icon: "✈️", text: `hat den Flug „${name}" hinzugefügt` };
-    case "flight.updated":
-      return { icon: "✈️", text: `hat den Flug „${name}" bearbeitet` };
-    case "flight.deleted":
-      return { icon: "🗑️", text: `hat den Flug „${name}" gelöscht` };
-    case "traveler.created":
-      return { icon: "🧑", text: `hat „${name}" als Mitreisende:n hinzugefügt` };
-    case "traveler.updated":
-      return { icon: "🧑", text: `hat Mitreisende:n „${name}" bearbeitet` };
-    case "traveler.deleted":
-      return { icon: "🗑️", text: `hat Mitreisende:n „${name}" entfernt` };
-    case "member.invited":
-      return { icon: "📨", text: `hat ${name} eingeladen` };
-    case "member.role_changed":
-      return { icon: "🔑", text: `hat eine Rolle auf ${role} geändert` };
-    case "member.removed":
-      return { icon: "🚪", text: `hat ${name || "ein Mitglied"} entfernt` };
-    default:
-      return { icon: "•", text: entry.action };
-  }
-}
+export type { ActivityEntry } from "./activity-format";
 
 export default function ActivitySection({
   trip,
@@ -125,7 +69,7 @@ export default function ActivitySection({
       ) : (
         <ul className="card divide-y">
           {entries.map((e) => {
-            const { icon, text } = describe(e);
+            const { icon, text } = describeActivity(e);
             const actor = e.actorName ?? nameFor(e.user_id);
             return (
               <li key={e.id} className="flex items-center gap-3 px-4 py-3">
