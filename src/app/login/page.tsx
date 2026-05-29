@@ -14,11 +14,11 @@ function LoginForm() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
-  const [oauthLoading, setOauthLoading] = useState<"google" | "apple" | null>(null);
+  const [oauthLoading, setOauthLoading] = useState<"google" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
 
-  async function handleOAuth(provider: "google" | "apple") {
+  async function handleOAuth(provider: "google") {
     setError(null);
     setOauthLoading(provider);
     const supabase = createClient();
@@ -113,17 +113,6 @@ function LoginForm() {
                 />
               </svg>
               {oauthLoading === "google" ? "Weiterleiten…" : "Mit Google fortfahren"}
-            </button>
-            <button
-              type="button"
-              onClick={() => handleOAuth("apple")}
-              disabled={oauthLoading !== null}
-              className="btn-ghost w-full"
-            >
-              <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M16.36 12.78c.02 2.5 2.19 3.33 2.22 3.34-.02.06-.35 1.2-1.15 2.37-.69 1.02-1.41 2.03-2.55 2.05-1.11.02-1.47-.66-2.74-.66-1.27 0-1.67.64-2.72.68-1.09.04-1.93-1.1-2.63-2.11-1.42-2.07-2.51-5.84-1.05-8.39.72-1.27 2.01-2.07 3.42-2.09 1.07-.02 2.09.72 2.74.72.66 0 1.89-.89 3.19-.76.54.02 2.07.22 3.06 1.65-.08.05-1.82 1.07-1.8 3.18M14.13 4.97c.58-.7.97-1.68.86-2.65-.83.03-1.84.55-2.44 1.25-.54.62-1.01 1.61-.88 2.56.93.07 1.87-.47 2.46-1.16" />
-              </svg>
-              {oauthLoading === "apple" ? "Weiterleiten…" : "Mit Apple fortfahren"}
             </button>
           </div>
 
