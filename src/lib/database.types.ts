@@ -226,6 +226,8 @@ export type Database = {
           display_name: string | null
           email: string | null
           id: string
+          plan: string
+          plan_until: string | null
           theme: string
         }
         Insert: {
@@ -234,6 +236,8 @@ export type Database = {
           display_name?: string | null
           email?: string | null
           id: string
+          plan?: string
+          plan_until?: string | null
           theme?: string
         }
         Update: {
@@ -242,6 +246,8 @@ export type Database = {
           display_name?: string | null
           email?: string | null
           id?: string
+          plan?: string
+          plan_until?: string | null
           theme?: string
         }
         Relationships: []

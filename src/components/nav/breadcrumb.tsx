@@ -63,6 +63,10 @@ const STATIC: { match: (p: string) => boolean; crumbs: Crumb[] }[] = [
     match: (p) => p === "/account/general",
     crumbs: [{ label: "Account" }, { label: "Allgemein" }],
   },
+  {
+    match: (p) => p === "/account/plan",
+    crumbs: [{ label: "Account" }, { label: "Abo" }],
+  },
 ];
 
 export function Breadcrumb() {
