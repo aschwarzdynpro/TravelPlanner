@@ -12,6 +12,7 @@ import FlightsSection from "./FlightsSection";
 import TravelersSection from "./TravelersSection";
 import MembersSection from "./MembersSection";
 import MapSection from "./MapSection";
+import ActivitySection, { type ActivityEntry } from "./ActivitySection";
 import EditTripButton from "./EditTripButton";
 
 const TABS = [
@@ -21,15 +22,26 @@ const TABS = [
   { id: "flights", label: "Flüge", icon: "✈️" },
   { id: "travelers", label: "Mitreisende", icon: "🧑‍🤝‍🧑" },
   { id: "members", label: "Mitglieder", icon: "🤝" },
+  { id: "activity", label: "Aktivität", icon: "🔔" },
 ] as const;
 
 type TabId = (typeof TABS)[number]["id"];
 
 export default function TripWorkspace(data: WorkspaceData) {
   const [tab, setTab] = useState<TabId>("overview");
-  const { trip, accommodations, flights, canEdit } = data;
+  const { trip, accommodations, flights, activity, canEdit } = data;
 
   useBreadcrumbTitle(trip.name);
+
+  const initialActivity: ActivityEntry[] = activity.map((a) => ({
+    id: a.id,
+    trip_id: a.trip_id,
+    user_id: a.user_id,
+    action: a.action,
+    detail: (a.detail ?? {}) as ActivityEntry["detail"],
+    created_at: a.created_at,
+    actorName: a.profiles?.display_name || a.profiles?.email || null,
+  }));
 
   const totalCost =
     accommodations.reduce((s, a) => s + (a.cost ?? 0), 0) +
@@ -72,7 +84,7 @@ export default function TripWorkspace(data: WorkspaceData) {
         </div>
       </div>
 
-      <div className="sticky top-0 z-10 mb-6 -mx-4 grid grid-cols-6 border-b bg-[var(--background)]/95 px-2 backdrop-blur supports-[backdrop-filter]:bg-[var(--background)]/80 sm:mx-0 sm:flex sm:gap-1 sm:px-0">
+      <div className="sticky top-0 z-10 mb-6 -mx-4 grid grid-cols-4 border-b bg-[var(--background)]/95 px-2 backdrop-blur supports-[backdrop-filter]:bg-[var(--background)]/80 sm:mx-0 sm:flex sm:gap-1 sm:px-0">
         {TABS.map((t) => (
           <button
             key={t.id}
@@ -97,6 +109,9 @@ export default function TripWorkspace(data: WorkspaceData) {
       {tab === "flights" && <FlightsSection {...data} />}
       {tab === "travelers" && <TravelersSection {...data} />}
       {tab === "members" && <MembersSection {...data} />}
+      {tab === "activity" && (
+        <ActivitySection {...data} initialActivity={initialActivity} />
+      )}
     </div>
   );
 }

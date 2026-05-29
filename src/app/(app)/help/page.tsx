@@ -136,6 +136,15 @@ export default function HelpPage() {
         </p>
       </Section>
 
+      <Section icon="🔔" title="Aktivität">
+        <p>
+          Der Tab <strong>Aktivität</strong> zeigt, wer wann was geändert hat –
+          neue oder bearbeitete Unterkünfte, Flüge, Gegenden, Mitreisende und
+          Mitglieder. Die Liste aktualisiert sich <strong>live</strong>: Änderungen
+          von Mitplanenden erscheinen sofort, ohne die Seite neu zu laden.
+        </p>
+      </Section>
+
       <Section icon="🤝" title="Mitglieder & Rollen">
         <ul className="ml-4 list-disc space-y-1">
           <li>
