@@ -7,6 +7,7 @@ import {
   formatDate,
   formatTime,
   daysUntil,
+  nightsBetween,
 } from "@/lib/format";
 import AreaFormButton from "./AreaFormButton";
 import AccommodationFormButton from "./AccommodationFormButton";
@@ -27,6 +28,7 @@ function AccommodationCard({
 }) {
   const left = daysUntil(acc.cancellation_deadline);
   const mapQuery = acc.address || acc.name;
+  const nights = nightsBetween(acc.check_in_date, acc.check_out_date);
   return (
     <div className="card p-4">
       <div className="flex items-start justify-between gap-2">
@@ -47,6 +49,12 @@ function AccommodationCard({
           <div className="font-semibold">
             {formatCurrency(acc.cost, acc.currency)}
           </div>
+          {acc.price_per_night != null && (
+            <div className="text-xs text-[var(--muted)]">
+              {formatCurrency(acc.price_per_night, acc.currency)}/Nacht
+              {nights ? ` · ${nights} ${nights === 1 ? "Nacht" : "Nächte"}` : ""}
+            </div>
+          )}
           <span className="chip bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
             {BOARD_LEVELS[acc.board_level] ?? acc.board_level}
           </span>

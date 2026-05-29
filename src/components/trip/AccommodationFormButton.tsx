@@ -132,8 +132,20 @@ export default function AccommodationFormButton({
           </div>
 
           <div className="grid grid-cols-3 gap-3">
-            <div className="col-span-2">
-              <label className="label">Kosten</label>
+            <div>
+              <label className="label">Preis / Nacht</label>
+              <input
+                name="price_per_night"
+                type="number"
+                step="0.01"
+                min="0"
+                className="input"
+                defaultValue={a?.price_per_night ?? ""}
+                placeholder="0,00"
+              />
+            </div>
+            <div>
+              <label className="label">Gesamtkosten</label>
               <input
                 name="cost"
                 type="number"
@@ -159,6 +171,10 @@ export default function AccommodationFormButton({
               </select>
             </div>
           </div>
+          <p className="-mt-2 text-xs text-[var(--muted)]">
+            Nur Preis/Nacht angeben genügt – die Gesamtkosten werden dann aus den
+            Nächten (Check-in bis Check-out) berechnet.
+          </p>
 
           <div className="rounded-lg border border-dashed p-3">
             <div className="mb-2 text-xs font-semibold text-[var(--muted)]">

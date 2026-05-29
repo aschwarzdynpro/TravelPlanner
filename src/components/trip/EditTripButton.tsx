@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Modal from "@/components/Modal";
 import type { Trip } from "./types";
-import { COVER_COLORS, TRIP_KINDS } from "@/lib/constants";
+import { COVER_COLORS, TRIP_KINDS, CURRENCIES } from "@/lib/constants";
 import { updateTrip } from "@/app/(app)/trips/[id]/actions";
 import { deleteTrip } from "@/app/(app)/trips/actions";
 
@@ -66,6 +66,35 @@ export default function EditTripButton({ trip }: { trip: Trip }) {
                 className="input"
                 defaultValue={trip.end_date ?? ""}
               />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-3">
+            <div className="col-span-2">
+              <label className="label">Budget</label>
+              <input
+                name="budget"
+                type="number"
+                step="0.01"
+                min="0"
+                className="input"
+                defaultValue={trip.budget ?? ""}
+                placeholder="z. B. 2000"
+              />
+            </div>
+            <div>
+              <label className="label">Währung</label>
+              <select
+                name="budget_currency"
+                className="select"
+                defaultValue={trip.budget_currency ?? "EUR"}
+              >
+                {CURRENCIES.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 

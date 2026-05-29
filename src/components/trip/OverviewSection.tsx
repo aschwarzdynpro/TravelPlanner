@@ -27,6 +27,7 @@ function StatCard({
 }
 
 export default function OverviewSection({
+  trip,
   accommodations,
   flights,
   travelers,
@@ -39,6 +40,22 @@ export default function OverviewSection({
   const total = accTotal + flightTotal;
   const activeMembers = members.filter((m) => m.status === "active").length;
   const perPerson = travelers.length ? total / travelers.length : 0;
+
+  // Distinct currencies actually used by priced items — used to warn that a
+  // single summed total may mix currencies.
+  const currencies = Array.from(
+    new Set(
+      [...accommodations, ...flights]
+        .filter((i) => i.cost != null)
+        .map((i) => i.currency),
+    ),
+  );
+  const mixedCurrencies = currencies.length > 1;
+
+  const budget = trip.budget;
+  const budgetPct =
+    budget && budget > 0 ? Math.round((total / budget) * 100) : 0;
+  const overBudget = budget != null && total > budget;
 
   // Upcoming cancellation deadlines (accommodations), nearest first.
   const deadlines = accommodations
@@ -87,6 +104,47 @@ export default function OverviewSection({
             <span className="font-semibold">Summe</span>
             <span className="text-lg font-bold">{formatCurrency(total)}</span>
           </div>
+
+          {mixedCurrencies && (
+            <p className="mt-2 text-xs text-amber-700 dark:text-amber-300">
+              ⚠️ Es werden mehrere Währungen verwendet ({currencies.join(", ")});
+              die Summe addiert die Beträge ohne Umrechnung.
+            </p>
+          )}
+
+          {budget != null && (
+            <div className="mt-4 border-t pt-3">
+              <div className="mb-1 flex items-center justify-between text-sm">
+                <span className="font-medium">Budget</span>
+                <span className="font-medium">
+                  {formatCurrency(budget, trip.budget_currency)}
+                </span>
+              </div>
+              <div className="h-2 overflow-hidden rounded-full bg-black/5 dark:bg-white/10">
+                <div
+                  className={`h-full rounded-full ${
+                    overBudget ? "bg-red-500" : "bg-emerald-500"
+                  }`}
+                  style={{ width: `${Math.min(budgetPct, 100)}%` }}
+                />
+              </div>
+              <div className="mt-1 flex items-center justify-between text-xs text-[var(--muted)]">
+                <span>{budgetPct}% genutzt</span>
+                <span>
+                  {overBudget
+                    ? `${formatCurrency(total - budget, trip.budget_currency)} über Budget`
+                    : `${formatCurrency(budget - total, trip.budget_currency)} übrig`}
+                </span>
+              </div>
+              {overBudget && (
+                <div className="mt-2">
+                  <span className="chip bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-300">
+                    ⚠️ Budget überschritten
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="card p-5">
