@@ -31,7 +31,7 @@ export default async function ActivityPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Aktivität</h1>
+        <h1 className="text-2xl font-bold">Feed</h1>
         <p className="text-sm text-[var(--muted)]">
           Alle Änderungen an deinen und mit dir geteilten Reisen – live
           aktualisiert.

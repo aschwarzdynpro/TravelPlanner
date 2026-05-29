@@ -64,7 +64,7 @@ export default async function DashboardPage() {
         </Link>
         <Link href="/activity" className="card p-4 transition hover:shadow-md">
           <div className="text-2xl font-bold">🔔</div>
-          <div className="text-xs text-[var(--muted)]">Aktivität</div>
+          <div className="text-xs text-[var(--muted)]">Feed</div>
         </Link>
         <Link href="/help" className="card p-4 transition hover:shadow-md">
           <div className="text-2xl font-bold">❓</div>

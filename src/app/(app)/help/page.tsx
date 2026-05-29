@@ -145,9 +145,11 @@ export default function HelpPage() {
           ohne die Seite neu zu laden.
         </p>
         <p>
-          Im Menüpunkt <strong>Aktivität</strong> (linke Seitenleiste) siehst du
-          denselben Feed <strong>reiseübergreifend</strong> – alle Änderungen an
-          Reisen, die dir gehören oder die mit dir geteilt sind, an einem Ort.
+          Im Menüpunkt <strong>Feed</strong> (linke Seitenleiste) siehst du
+          dieselben Einträge <strong>reiseübergreifend</strong> – alle Änderungen
+          an Reisen, die dir gehören oder die mit dir geteilt sind, an einem Ort.
+          Dort kannst du nach <strong>Reise</strong> und <strong>Person</strong>{" "}
+          filtern.
         </p>
       </Section>
 
