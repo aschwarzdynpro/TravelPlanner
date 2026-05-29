@@ -76,7 +76,8 @@ export default function HelpPage() {
           </li>
           <li>
             <strong>Reisen → Meine Reisen</strong> – Reisen, die dir gehören (du
-            bist Eigentümer).
+            bist Eigentümer). Oben kannst du nach Name/Ziel <strong>suchen</strong>{" "}
+            und nach <strong>Typ</strong> filtern.
           </li>
           <li>
             <strong>Reisen → Geteilte Reisen</strong> – Reisen, zu denen du
@@ -108,6 +109,12 @@ export default function HelpPage() {
           Gegend an und ordne dann Unterkünfte zu.
         </p>
         <ul className="ml-4 list-disc space-y-1">
+          <li>
+            Tipp: Nutze oben im Unterkunfts-Formular die{" "}
+            <strong>Hotel-/Ortssuche</strong> – tippe einen Namen, wähle einen
+            Vorschlag, und Name, Adresse und Koordinaten werden automatisch
+            ausgefüllt.
+          </li>
           <li>
             Jede Unterkunft kann Check-in/-out, Verpflegung, Storno-Frist, Kosten
             und einen Buchungslink enthalten.

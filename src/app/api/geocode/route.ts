@@ -10,6 +10,10 @@ import { createClient } from "@/lib/supabase/server";
 
 export type GeocodeResult = {
   label: string;
+  // Short place name (e.g. the hotel/POI name) when available.
+  name: string;
+  // Concise address line (street, city, country) for autofill.
+  address: string;
   latitude: number;
   longitude: number;
 };
@@ -31,8 +35,8 @@ export async function GET(request: NextRequest) {
   const url = new URL("https://nominatim.openstreetmap.org/search");
   url.searchParams.set("q", q);
   url.searchParams.set("format", "jsonv2");
-  url.searchParams.set("limit", "5");
-  url.searchParams.set("addressdetails", "0");
+  url.searchParams.set("limit", "6");
+  url.searchParams.set("addressdetails", "1");
 
   try {
     const res = await fetch(url, {
@@ -51,15 +55,29 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const raw = (await res.json()) as Array<{
+    type NominatimRow = {
       display_name: string;
+      name?: string;
       lat: string;
       lon: string;
-    }>;
+      address?: Record<string, string>;
+    };
+    const raw = (await res.json()) as NominatimRow[];
+
+    // Build a concise address line from the most useful parts.
+    const addressLine = (a: Record<string, string> | undefined): string => {
+      if (!a) return "";
+      const street = [a.road, a.house_number].filter(Boolean).join(" ");
+      const city = a.city || a.town || a.village || a.municipality || "";
+      const parts = [street, [a.postcode, city].filter(Boolean).join(" "), a.country];
+      return parts.filter(Boolean).join(", ");
+    };
 
     const results: GeocodeResult[] = raw
       .map((r) => ({
         label: r.display_name,
+        name: r.name || r.display_name.split(",")[0] || "",
+        address: addressLine(r.address) || r.display_name,
         latitude: Number(r.lat),
         longitude: Number(r.lon),
       }))
