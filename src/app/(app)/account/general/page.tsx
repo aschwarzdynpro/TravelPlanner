@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { updateProfile } from "./actions";
+import { updateProfile } from "../actions";
 import ReTravelButton from "@/components/trip/ReTravelButton";
 import { MEMBER_ROLES, TRIP_KINDS } from "@/lib/constants";
 import { formatDateRange, initials } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
-export default async function MembersPage() {
+export default async function AccountGeneralPage() {
   const supabase = await createClient();
   const {
     data: { user },
@@ -36,7 +36,7 @@ export default async function MembersPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Member-Bereich</h1>
+        <h1 className="text-2xl font-bold">Allgemeine Informationen</h1>
         <p className="text-sm text-[var(--muted)]">
           Dein Profil, deine Kollaborationen und Reise-Features an einem Ort.
         </p>
@@ -64,6 +64,13 @@ export default async function MembersPage() {
             Profil speichern
           </button>
         </form>
+        <p className="mt-2 text-xs text-[var(--muted)]">
+          Dein Passwort änderst du unter{" "}
+          <Link href="/account/security" className="text-[var(--primary)] hover:underline">
+            Account → Sicherheit
+          </Link>
+          .
+        </p>
       </div>
 
       {/* Stats */}

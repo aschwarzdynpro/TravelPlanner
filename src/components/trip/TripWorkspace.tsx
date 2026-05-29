@@ -5,6 +5,7 @@ import Link from "next/link";
 import type { WorkspaceData } from "./types";
 import { TRIP_KINDS } from "@/lib/constants";
 import { formatCurrency, formatDateRange } from "@/lib/format";
+import { useBreadcrumbTitle } from "@/components/nav/breadcrumb";
 import OverviewSection from "./OverviewSection";
 import AccommodationsSection from "./AccommodationsSection";
 import FlightsSection from "./FlightsSection";
@@ -25,6 +26,8 @@ type TabId = (typeof TABS)[number]["id"];
 export default function TripWorkspace(data: WorkspaceData) {
   const [tab, setTab] = useState<TabId>("overview");
   const { trip, accommodations, flights, canEdit } = data;
+
+  useBreadcrumbTitle(trip.name);
 
   const totalCost =
     accommodations.reduce((s, a) => s + (a.cost ?? 0), 0) +
@@ -67,19 +70,19 @@ export default function TripWorkspace(data: WorkspaceData) {
         </div>
       </div>
 
-      <div className="sticky top-0 z-10 mb-6 -mx-4 flex gap-1 overflow-x-auto border-b bg-[var(--background)]/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-[var(--background)]/80 sm:mx-0 sm:px-0">
+      <div className="sticky top-0 z-10 mb-6 -mx-4 grid grid-cols-5 border-b bg-[var(--background)]/95 px-2 backdrop-blur supports-[backdrop-filter]:bg-[var(--background)]/80 sm:mx-0 sm:flex sm:gap-1 sm:px-0">
         {TABS.map((t) => (
           <button
             key={t.id}
             onClick={() => setTab(t.id)}
-            className={`flex shrink-0 items-center gap-1.5 border-b-2 px-3 py-2 text-sm font-medium transition ${
+            className={`flex min-w-0 flex-col items-center gap-0.5 border-b-2 px-1 py-2 text-[11px] font-medium transition sm:flex-row sm:gap-1.5 sm:px-3 sm:text-sm ${
               tab === t.id
                 ? "border-[var(--primary)] text-[var(--primary)]"
                 : "border-transparent text-[var(--muted)] hover:text-[var(--foreground)]"
             }`}
           >
-            <span>{t.icon}</span>
-            {t.label}
+            <span className="text-base leading-none sm:text-sm">{t.icon}</span>
+            <span className="max-w-full truncate">{t.label}</span>
           </button>
         ))}
       </div>

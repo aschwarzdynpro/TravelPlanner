@@ -17,6 +17,6 @@ export async function updateProfile(formData: FormData) {
     .update({ display_name: displayName || null })
     .eq("id", user.id);
 
-  revalidatePath("/members");
+  revalidatePath("/account/general");
   revalidatePath("/trips");
 }
