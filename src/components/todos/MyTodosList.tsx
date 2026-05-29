@@ -101,7 +101,10 @@ export default function MyTodosList({ todos }: { todos: MyTodo[] }) {
             const left = daysUntil(t.due_date);
             const overdue = !t.done && left !== null && left < 0;
             return (
-              <li key={t.id} className="flex items-start gap-3 px-4 py-3">
+              <li
+                key={t.id}
+                className="flex items-start gap-3 px-4 py-3 transition-colors hover:bg-black/[0.03] dark:hover:bg-white/[0.04]"
+              >
                 <form action={toggleTodo} className="pt-0.5">
                   <input type="hidden" name="trip_id" value={t.trip_id} />
                   <input type="hidden" name="id" value={t.id} />

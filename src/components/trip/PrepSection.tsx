@@ -33,7 +33,7 @@ function TodoRow({
     todo.assignee?.display_name || todo.assignee?.email || null;
 
   return (
-    <li className="flex items-start gap-3 px-4 py-3">
+    <li className="group flex items-start gap-3 px-4 py-3 transition-colors hover:bg-black/[0.03] dark:hover:bg-white/[0.04]">
       {/* Toggle done */}
       <form action={toggleTodo} className="pt-0.5">
         <input type="hidden" name="trip_id" value={tripId} />
@@ -91,19 +91,25 @@ function TodoRow({
       </div>
 
       {canEdit && (
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="flex shrink-0 items-center gap-1 opacity-60 transition-opacity group-hover:opacity-100">
           <TodoFormButton
             tripId={tripId}
             members={members}
             todo={todo}
-            label={<Pencil className="h-3.5 w-3.5" strokeWidth={2} />}
-            className="rounded-md p-1.5 text-[var(--muted)] hover:bg-black/5 hover:text-[var(--foreground)] dark:hover:bg-white/5"
+            label={
+              <>
+                <Pencil className="h-3.5 w-3.5" strokeWidth={2} />
+                <span className="sr-only sm:not-sr-only">Bearbeiten</span>
+              </>
+            }
+            className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-[var(--muted)] transition-colors hover:bg-black/[0.06] hover:text-[var(--foreground)] dark:hover:bg-white/[0.08]"
           />
           <DeleteButton
             action={deleteTodo}
             id={todo.id}
             tripId={tripId}
             confirmText={`Aufgabe „${todo.title}" löschen?`}
+            className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-red-600 transition-colors hover:bg-red-50 dark:hover:bg-red-950/40"
           />
         </div>
       )}
