@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { initials } from "@/lib/format";
 import Sidebar from "./Sidebar";
 import { BreadcrumbProvider, Breadcrumb } from "./breadcrumb";
@@ -16,6 +17,16 @@ export default function AppShell({
   children: ReactNode;
 }) {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+
+  // Close the flyout on navigation and lock body scroll while it is open.
+  useEffect(() => setOpen(false), [pathname]);
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
 
   return (
     <BreadcrumbProvider>
@@ -27,18 +38,35 @@ export default function AppShell({
           </div>
         </aside>
 
-        {/* Mobile drawer */}
-        {open && (
-          <div className="fixed inset-0 z-50 lg:hidden">
-            <div
-              className="absolute inset-0 bg-black/40"
+        {/* Mobile flyout */}
+        <div
+          className={`fixed inset-0 z-50 lg:hidden ${
+            open ? "" : "pointer-events-none"
+          }`}
+          aria-hidden={!open}
+        >
+          <div
+            className={`absolute inset-0 bg-black/40 transition-opacity duration-200 ${
+              open ? "opacity-100" : "opacity-0"
+            }`}
+            onClick={() => setOpen(false)}
+          />
+          <aside
+            className={`absolute left-0 top-0 h-full w-72 max-w-[80%] border-r bg-[var(--surface)] shadow-xl transition-transform duration-200 ease-out ${
+              open ? "translate-x-0" : "-translate-x-full"
+            }`}
+          >
+            <button
+              type="button"
               onClick={() => setOpen(false)}
-            />
-            <aside className="absolute left-0 top-0 h-full w-64 border-r bg-[var(--surface)] shadow-xl">
-              <Sidebar onNavigate={() => setOpen(false)} />
-            </aside>
-          </div>
-        )}
+              className="btn-ghost absolute right-2 top-3 px-2 py-1 text-lg"
+              aria-label="Menü schließen"
+            >
+              ✕
+            </button>
+            <Sidebar onNavigate={() => setOpen(false)} />
+          </aside>
+        </div>
 
         <div className="flex min-w-0 flex-1 flex-col">
           <header className="sticky top-0 z-30 border-b bg-[var(--surface)]/80 backdrop-blur">
