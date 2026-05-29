@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { formatDate, daysUntil } from "@/lib/format";
 import { toggleTodo } from "@/app/(app)/trips/[id]/actions";
 import { CalendarDays, ListChecks } from "@/components/icons";
+import FilterMenu from "@/components/ui/FilterMenu";
 
 export type MyTodo = {
   id: string;
@@ -21,9 +22,38 @@ type Filter = "open" | "all";
 
 export default function MyTodosList({ todos }: { todos: MyTodo[] }) {
   const [filter, setFilter] = useState<Filter>("open");
+  const [tripFilter, setTripFilter] = useState("");
 
-  const visible = filter === "open" ? todos.filter((t) => !t.done) : todos;
-  const openCount = todos.filter((t) => !t.done).length;
+  // Distinct trips present in the list, for the trip filter menu.
+  const tripOptions = useMemo(() => {
+    const map = new Map<string, { label: string; color: string | null }>();
+    for (const t of todos) {
+      if (!map.has(t.trip_id)) {
+        map.set(t.trip_id, {
+          label: t.tripName || "Unbenannte Reise",
+          color: t.tripColor,
+        });
+      }
+    }
+    return [...map.entries()]
+      .map(([value, { label, color }]) => ({
+        value,
+        label,
+        leading: (
+          <span
+            className="inline-block h-2.5 w-2.5 shrink-0 rounded-full"
+            style={{ backgroundColor: color ?? "#94a3b8" }}
+          />
+        ),
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label, "de"));
+  }, [todos]);
+
+  const byTrip = tripFilter
+    ? todos.filter((t) => t.trip_id === tripFilter)
+    : todos;
+  const visible = filter === "open" ? byTrip.filter((t) => !t.done) : byTrip;
+  const openCount = byTrip.filter((t) => !t.done).length;
 
   return (
     <div className="space-y-4">
@@ -32,7 +62,7 @@ export default function MyTodosList({ todos }: { todos: MyTodo[] }) {
           {(
             [
               ["open", `Offen (${openCount})`],
-              ["all", `Alle (${todos.length})`],
+              ["all", `Alle (${byTrip.length})`],
             ] as const
           ).map(([value, label]) => (
             <button
@@ -49,6 +79,13 @@ export default function MyTodosList({ todos }: { todos: MyTodo[] }) {
             </button>
           ))}
         </div>
+        <FilterMenu
+          label="Reise"
+          allLabel="Alle Reisen"
+          options={tripOptions}
+          value={tripFilter}
+          onChange={setTripFilter}
+        />
       </div>
 
       {visible.length === 0 ? (

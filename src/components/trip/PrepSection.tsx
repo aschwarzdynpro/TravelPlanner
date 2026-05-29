@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import type { WorkspaceData, TripTodo } from "./types";
 import { formatDate, daysUntil, initials } from "@/lib/format";
 import DeleteButton from "@/components/DeleteButton";
@@ -12,6 +12,7 @@ import {
   ListChecks,
   CalendarDays,
   Pencil,
+  Loader2,
 } from "@/components/icons";
 
 function TodoRow({
@@ -121,6 +122,16 @@ export default function PrepSection({
 }: WorkspaceData) {
   const note = notes[0] ?? null; // single shared note pad per trip
   const [editingNote, setEditingNote] = useState(false);
+  const [savingNote, startSaveNote] = useTransition();
+
+  function handleSaveNote(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const fd = new FormData(e.currentTarget);
+    startSaveNote(async () => {
+      await saveNote(fd);
+      setEditingNote(false);
+    });
+  }
 
   const openTodos = todos.filter((t) => !t.done);
   const doneTodos = todos.filter((t) => t.done);
@@ -207,7 +218,7 @@ export default function PrepSection({
         </div>
 
         {editingNote ? (
-          <form action={saveNote} className="space-y-3">
+          <form onSubmit={handleSaveNote} className="space-y-3">
             <input type="hidden" name="trip_id" value={trip.id} />
             {note && <input type="hidden" name="id" value={note.id} />}
             <textarea
@@ -223,15 +234,15 @@ export default function PrepSection({
                 type="button"
                 className="btn-ghost"
                 onClick={() => setEditingNote(false)}
+                disabled={savingNote}
               >
                 Abbrechen
               </button>
-              <button
-                type="submit"
-                className="btn-primary"
-                onClick={() => setEditingNote(false)}
-              >
-                Speichern
+              <button type="submit" className="btn-primary" disabled={savingNote}>
+                {savingNote && (
+                  <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2} />
+                )}
+                {savingNote ? "Speichern…" : "Speichern"}
               </button>
             </div>
           </form>

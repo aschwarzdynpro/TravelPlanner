@@ -5,7 +5,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { relativeTime, initials } from "@/lib/format";
 import { describeActivity } from "@/components/trip/activity-format";
-import FilterMenu from "./FilterMenu";
+import FilterMenu from "@/components/ui/FilterMenu";
 
 function ColorDot({ color }: { color?: string | null }) {
   return (

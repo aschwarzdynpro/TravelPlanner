@@ -55,6 +55,7 @@ export {
   Sun,
   Moon,
   Palette,
+  Loader2,
   PlaneTakeoff,
   PlaneLanding,
   Crown,

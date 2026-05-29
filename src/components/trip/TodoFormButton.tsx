@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import Modal from "@/components/Modal";
 import type { TripTodo, Member } from "./types";
 import { saveTodo } from "@/app/(app)/trips/[id]/actions";
+import { Loader2 } from "@/components/icons";
 
 export default function TodoFormButton({
   tripId,
@@ -19,10 +20,20 @@ export default function TodoFormButton({
   className?: string;
 }) {
   const [open, setOpen] = useState(false);
+  const [pending, startTransition] = useTransition();
   const t = todo;
 
   // Only active members with a linked account can be assignees.
   const assignable = members.filter((m) => m.user_id && m.status === "active");
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const fd = new FormData(e.currentTarget);
+    startTransition(async () => {
+      await saveTodo(fd);
+      setOpen(false);
+    });
+  }
 
   return (
     <>
@@ -34,7 +45,7 @@ export default function TodoFormButton({
         onClose={() => setOpen(false)}
         title={t ? "Aufgabe bearbeiten" : "Aufgabe hinzufügen"}
       >
-        <form action={saveTodo} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <input type="hidden" name="trip_id" value={tripId} />
           {t && <input type="hidden" name="id" value={t.id} />}
 
@@ -89,11 +100,17 @@ export default function TodoFormButton({
           </div>
 
           <div className="flex justify-end gap-2 pt-2">
-            <button type="button" className="btn-ghost" onClick={() => setOpen(false)}>
+            <button
+              type="button"
+              className="btn-ghost"
+              onClick={() => setOpen(false)}
+              disabled={pending}
+            >
               Abbrechen
             </button>
-            <button type="submit" className="btn-primary">
-              Speichern
+            <button type="submit" className="btn-primary" disabled={pending}>
+              {pending && <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2} />}
+              {pending ? "Speichern…" : "Speichern"}
             </button>
           </div>
         </form>

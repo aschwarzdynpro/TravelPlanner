@@ -14,6 +14,7 @@
   --primary: #18181b;
   --primary-foreground: #fafafa;
   --ring: #a1a1aa;
+  color-scheme: light;
 }
 
 @theme inline {
@@ -37,6 +38,7 @@
     --primary: #fafafa;
     --primary-foreground: #18181b;
     --ring: #52525b;
+    color-scheme: dark;
   }
 }
 
@@ -49,6 +51,11 @@
   --primary: #fafafa;
   --primary-foreground: #18181b;
   --ring: #52525b;
+  color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
 }
 
 * {
