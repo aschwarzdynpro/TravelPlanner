@@ -5,6 +5,7 @@ import Link from "next/link";
 import type { WorkspaceData } from "./types";
 import { TRIP_KINDS } from "@/lib/constants";
 import { formatCurrency, formatDateRange } from "@/lib/format";
+import { useBreadcrumbTitle } from "@/components/nav/breadcrumb";
 import OverviewSection from "./OverviewSection";
 import AccommodationsSection from "./AccommodationsSection";
 import FlightsSection from "./FlightsSection";
@@ -25,6 +26,8 @@ type TabId = (typeof TABS)[number]["id"];
 export default function TripWorkspace(data: WorkspaceData) {
   const [tab, setTab] = useState<TabId>("overview");
   const { trip, accommodations, flights, canEdit } = data;
+
+  useBreadcrumbTitle(trip.name);
 
   const totalCost =
     accommodations.reduce((s, a) => s + (a.cost ?? 0), 0) +
