@@ -5,27 +5,41 @@ import type { GeocodeResult } from "@/app/api/geocode/route";
 import { Search, Loader2, MapPin } from "@/components/icons";
 import Popover from "./Popover";
 
-// Debounced place search (hotels, addresses, POIs) over the geocode proxy.
-// On pick it calls onSelect with name/address/coordinates so a form can
-// autofill several fields at once. Standalone — it owns its own input.
+// Debounced place search (hotels, addresses, POIs) over the geocode proxy that
+// doubles as a normal text field: the typed value posts under `name`, so you
+// can either pick a suggestion (which autofills via onSelect) or just type a
+// free name. Picking a result does not lock the field — it stays editable.
 export default function PlaceAutocomplete({
+  name,
   defaultValue = "",
   placeholder = "Hotel oder Ort suchen …",
+  required = false,
+  autoFocus = false,
   onSelect,
 }: {
+  // When set, the visible input posts under this form field name.
+  name?: string;
   defaultValue?: string;
   placeholder?: string;
+  required?: boolean;
+  autoFocus?: boolean;
   onSelect: (r: GeocodeResult) => void;
 }) {
   const [query, setQuery] = useState(defaultValue);
   const [results, setResults] = useState<GeocodeResult[]>([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  // Skip searching for: the initial seeded value, and right after a pick.
+  const skipNext = useRef(Boolean(defaultValue));
   const anchorRef = useRef<HTMLInputElement>(null);
 
   // Debounced search whenever the typed query changes. All state updates happen
   // inside async callbacks (timer / fetch), never synchronously in the effect.
   useEffect(() => {
+    if (skipNext.current) {
+      skipNext.current = false;
+      return;
+    }
     const q = query.trim();
     const ctrl = new AbortController();
     const t = setTimeout(async () => {
@@ -63,6 +77,9 @@ export default function PlaceAutocomplete({
         />
         <input
           ref={anchorRef}
+          name={name}
+          required={required}
+          autoFocus={autoFocus}
           className="input pl-9"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -85,9 +102,12 @@ export default function PlaceAutocomplete({
               <button
                 type="button"
                 onClick={() => {
-                  onSelect(r);
+                  // Keep the chosen name in the field, but don't re-search it.
+                  skipNext.current = true;
                   setQuery(r.name);
+                  setResults([]);
                   setOpen(false);
+                  onSelect(r);
                 }}
                 className="flex w-full items-start gap-2 rounded-md px-2.5 py-2 text-left text-sm transition-colors hover:bg-black/[0.06] dark:hover:bg-white/[0.08]"
               >

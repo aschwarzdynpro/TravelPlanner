@@ -33,7 +33,6 @@ export default function AccommodationFormButton({
 }) {
   const [open, setOpen] = useState(false);
   const a = accommodation;
-  const nameRef = useRef<HTMLInputElement>(null);
   const addressRef = useRef<HTMLInputElement>(null);
 
   // Coordinates picked via the place autocomplete. Bumping `coordsKey`
@@ -62,34 +61,24 @@ export default function AccommodationFormButton({
           <input type="hidden" name="trip_id" value={tripId} />
           {a && <input type="hidden" name="id" value={a.id} />}
 
-          <div className="rounded-lg border border-dashed p-3">
-            <label className="label">Hotel / Ort suchen</label>
+          <div>
+            <label className="label">Name / Ort suchen *</label>
             <PlaceAutocomplete
+              name="name"
+              required
+              autoFocus
+              defaultValue={a?.name ?? ""}
               placeholder="z. B. Hotel Belvedere, Dubrovnik"
               onSelect={(r) => {
-                setInput(nameRef, r.name);
                 setInput(addressRef, r.address);
                 setPicked({ lat: r.latitude, lng: r.longitude });
                 setCoordsKey((k) => k + 1);
               }}
             />
             <p className="mt-1.5 text-xs text-[var(--muted)]">
-              Übernimmt Name, Adresse und Koordinaten automatisch – du kannst
-              alles darunter noch anpassen.
+              Tippe einen Namen: Wird ein Treffer gewählt, füllen sich Adresse und
+              Koordinaten automatisch. Du kannst auch einfach frei eintippen.
             </p>
-          </div>
-
-          <div>
-            <label className="label">Name *</label>
-            <input
-              ref={nameRef}
-              name="name"
-              className="input"
-              required
-              autoFocus
-              defaultValue={a?.name ?? ""}
-              placeholder="z. B. Hotel Belvedere"
-            />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
@@ -130,11 +119,7 @@ export default function AccommodationFormButton({
             key={coordsKey}
             defaultLatitude={picked?.lat ?? a?.latitude}
             defaultLongitude={picked?.lng ?? a?.longitude}
-            getQuery={() =>
-              addressRef.current?.value?.trim() ||
-              nameRef.current?.value?.trim() ||
-              ""
-            }
+            getQuery={() => addressRef.current?.value?.trim() ?? ""}
           />
 
           <div className="grid grid-cols-2 gap-3">
