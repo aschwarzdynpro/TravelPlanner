@@ -18,6 +18,12 @@ export type ActivityRow = Tables<"trip_activity"> & {
   profiles: { display_name: string | null; email: string | null } | null;
 };
 
+export type TripNote = Tables<"trip_notes">;
+
+export type TripTodo = Tables<"trip_todos"> & {
+  assignee: { display_name: string | null; email: string | null } | null;
+};
+
 export interface WorkspaceData {
   trip: Trip;
   areas: Area[];
@@ -26,6 +32,8 @@ export interface WorkspaceData {
   travelers: Traveler[];
   members: Member[];
   activity: ActivityRow[];
+  notes: TripNote[];
+  todos: TripTodo[];
   canEdit: boolean;
   isOwner: boolean;
   currentUserId: string;

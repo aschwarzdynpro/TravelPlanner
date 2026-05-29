@@ -31,6 +31,8 @@ export default async function TripPage({
     { data: travelers },
     { data: members },
     { data: activity },
+    { data: notes },
+    { data: todos },
   ] = await Promise.all([
     supabase
       .from("areas")
@@ -60,6 +62,18 @@ export default async function TripPage({
       .eq("trip_id", id)
       .order("created_at", { ascending: false })
       .limit(50),
+    supabase
+      .from("trip_notes")
+      .select("*")
+      .eq("trip_id", id)
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("trip_todos")
+      .select("*, assignee:profiles!trip_todos_assigned_to_fkey(display_name, email)")
+      .eq("trip_id", id)
+      .order("done")
+      .order("due_date", { nullsFirst: false })
+      .order("created_at"),
   ]);
 
   const myMembership = (members ?? []).find((m) => m.user_id === user?.id);
@@ -78,6 +92,8 @@ export default async function TripPage({
       travelers={travelers ?? []}
       members={members ?? []}
       activity={activity ?? []}
+      notes={notes ?? []}
+      todos={todos ?? []}
       canEdit={canEdit}
       isOwner={isOwner}
       currentUserId={user?.id ?? ""}
