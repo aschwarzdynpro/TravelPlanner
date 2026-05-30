@@ -20,26 +20,28 @@ type Trip = Tables<"trips">;
 
 function TripRow({ trip, badge }: { trip: Trip; badge?: string }) {
   return (
-    <li className="flex items-center gap-3 px-5 py-3">
-      <span
-        className="h-9 w-1.5 shrink-0 rounded-full"
-        style={{ backgroundColor: trip.cover_color ?? "#18181b" }}
-      />
-      <div className="min-w-0 flex-1">
-        <Link
-          href={`/trips/${trip.id}`}
-          className="font-medium hover:text-[var(--muted)]"
-        >
-          {trip.name}
-        </Link>
-        <div className="text-xs text-[var(--muted)]">
-          {TRIP_KINDS[trip.kind] ?? trip.kind} ·{" "}
-          {formatDateRange(trip.start_date, trip.end_date)}
+    <li>
+      <Link
+        href={`/trips/${trip.id}`}
+        className="flex items-center gap-3 px-5 py-3 transition hover:bg-black/[0.03] dark:hover:bg-white/5"
+      >
+        <span
+          className="h-9 w-1.5 shrink-0 rounded-full"
+          style={{ backgroundColor: trip.cover_color ?? "#18181b" }}
+        />
+        <div className="min-w-0 flex-1">
+          <span className="font-medium">{trip.name}</span>
+          <div className="text-xs text-[var(--muted)]">
+            {TRIP_KINDS[trip.kind] ?? trip.kind} ·{" "}
+            {formatDateRange(trip.start_date, trip.end_date)}
+          </div>
         </div>
-      </div>
-      {badge && (
-        <span className="chip shrink-0 bg-black/5 dark:bg-white/10">{badge}</span>
-      )}
+        {badge && (
+          <span className="chip shrink-0 bg-black/5 dark:bg-white/10">
+            {badge}
+          </span>
+        )}
+      </Link>
     </li>
   );
 }
