@@ -41,8 +41,8 @@ export default async function FollowingTripsPage() {
           <Share2 className="h-10 w-10 text-[var(--muted)]" strokeWidth={1.5} />
           <h2 className="text-lg font-semibold">Noch nichts im Blick</h2>
           <p className="max-w-md text-sm text-[var(--muted)]">
-            Öffne einen geteilten „Follow-Me"-Link und tippe auf „Dieser Reise
-            folgen". Gefolgte Reisen sammeln sich hier und du behältst
+            Öffne einen geteilten „Follow-Me“-Link und tippe auf „Dieser Reise
+            folgen“. Gefolgte Reisen sammeln sich hier und du behältst
             Aktualisierungen im Blick.
           </p>
         </div>
