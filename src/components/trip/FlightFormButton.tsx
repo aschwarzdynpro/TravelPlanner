@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useFormStatus } from "react-dom";
 import Modal from "@/components/Modal";
 import type { Flight } from "./types";
 import { saveFlight } from "@/app/(app)/trips/[id]/actions";
@@ -152,7 +153,13 @@ function FlightForm({
   }
 
   return (
-    <form action={saveFlight} className="space-y-4">
+    <form
+      action={async (formData) => {
+        await saveFlight(formData);
+        onClose();
+      }}
+      className="space-y-4"
+    >
       <input type="hidden" name="trip_id" value={tripId} />
       {f && <input type="hidden" name="id" value={f.id} />}
 
@@ -346,15 +353,36 @@ function FlightForm({
         />
       </div>
 
-      <div className="flex justify-end gap-2 pt-2">
-        <button type="button" className="btn-ghost" onClick={onClose}>
-          Abbrechen
-        </button>
-        <button type="submit" className="btn-primary">
-          Speichern
-        </button>
-      </div>
+      <FormActions onCancel={onClose} />
     </form>
+  );
+}
+
+// Submit + cancel row inside the <form> so useFormStatus reflects the pending
+// server action: spinner + locked buttons while saving.
+function FormActions({ onCancel }: { onCancel: () => void }) {
+  const { pending } = useFormStatus();
+  return (
+    <div className="flex justify-end gap-2 pt-2">
+      <button
+        type="button"
+        className="btn-ghost"
+        onClick={onCancel}
+        disabled={pending}
+      >
+        Abbrechen
+      </button>
+      <button type="submit" className="btn-primary" disabled={pending}>
+        {pending ? (
+          <>
+            <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2} />
+            Speichern…
+          </>
+        ) : (
+          "Speichern"
+        )}
+      </button>
+    </div>
   );
 }
 
