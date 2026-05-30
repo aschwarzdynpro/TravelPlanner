@@ -10,6 +10,7 @@ import {
   Settings,
   Plane,
   ClipboardList,
+  TrendingUp,
   type LucideIcon,
 } from "@/components/icons";
 
@@ -32,6 +33,7 @@ const NAV: NavEntry[] = [
     ],
   },
   { type: "link", href: "/todos", label: "Meine Aufgaben", icon: ClipboardList },
+  { type: "link", href: "/insights", label: "Auswertungen", icon: TrendingUp },
   { type: "link", href: "/activity", label: "Feed", icon: Bell },
   { type: "link", href: "/help", label: "Hilfe", icon: CircleHelp },
   {

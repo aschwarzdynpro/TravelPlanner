@@ -17,6 +17,7 @@ export {
   ListChecks,
   ClipboardList,
   Wallet,
+  TrendingUp,
   CalendarDays,
   History,
   Clock,

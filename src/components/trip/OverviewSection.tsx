@@ -2,11 +2,13 @@
 
 import type { WorkspaceData } from "./types";
 import { formatCurrency, formatDate, daysUntil } from "@/lib/format";
+import { tripMetrics, costByCountry } from "@/lib/analytics";
 import {
   Wallet,
   AlarmClock,
   Hotel,
   Plane,
+  MapPin,
   TriangleAlert,
   type LucideIcon,
 } from "@/components/icons";
@@ -45,22 +47,11 @@ export default function OverviewSection({
   onNavigate,
 }: WorkspaceData & { onNavigate: (tab: string) => void }) {
   const openTodos = todos.filter((t) => !t.done).length;
-  const accTotal = accommodations.reduce((s, a) => s + (a.cost ?? 0), 0);
-  const flightTotal = flights.reduce((s, f) => s + (f.cost ?? 0), 0);
-  const total = accTotal + flightTotal;
+  const m = tripMetrics(accommodations, flights);
+  const { accTotal, flightTotal, total, currencies, mixedCurrencies } = m;
   const activeMembers = members.filter((m) => m.status === "active").length;
   const perPerson = travelers.length ? total / travelers.length : 0;
-
-  // Distinct currencies actually used by priced items — used to warn that a
-  // single summed total may mix currencies.
-  const currencies = Array.from(
-    new Set(
-      [...accommodations, ...flights]
-        .filter((i) => i.cost != null)
-        .map((i) => i.currency),
-    ),
-  );
-  const mixedCurrencies = currencies.length > 1;
+  const byCountry = costByCountry(accommodations, areas);
 
   const budget = trip.budget;
   const budgetPct =
@@ -89,12 +80,21 @@ export default function OverviewSection({
         <StatCard
           label="Unterkünfte"
           value={String(accommodations.length)}
-          hint={`${areas.length} Gegenden`}
+          hint={
+            m.nights > 0
+              ? `Ø ${formatCurrency(m.avgPerNight)} / Nacht`
+              : `${areas.length} Gegenden`
+          }
           onClick={() => onNavigate("stays")}
         />
         <StatCard
           label="Flüge"
           value={String(flights.length)}
+          hint={
+            m.flightCount > 0
+              ? `Ø ${formatCurrency(m.avgPerFlight)} / Flug`
+              : undefined
+          }
           onClick={() => onNavigate("flights")}
         />
         <StatCard
@@ -205,6 +205,40 @@ export default function OverviewSection({
           )}
         </div>
       </div>
+
+      {byCountry.length > 0 && accTotal > 0 && (
+        <div className="card p-5">
+          <h3 className="mb-4 flex items-center gap-2 font-semibold">
+            <MapPin className="h-4 w-4" strokeWidth={2} />
+            Unterkunftskosten pro Land
+          </h3>
+          <div className="space-y-3">
+            {byCountry.map((c) => (
+              <div key={c.code ?? "none"}>
+                <div className="mb-1 flex items-center justify-between text-sm">
+                  <span>
+                    {c.name}
+                    {c.nights > 0 && (
+                      <span className="ml-1.5 text-xs text-[var(--muted)]">
+                        · Ø {formatCurrency(c.cost / c.nights)} / Nacht
+                      </span>
+                    )}
+                  </span>
+                  <span className="font-medium">{formatCurrency(c.cost)}</span>
+                </div>
+                <div className="h-2 overflow-hidden rounded-full bg-black/5 dark:bg-white/10">
+                  <div
+                    className="h-full rounded-full bg-[var(--primary)]"
+                    style={{
+                      width: `${accTotal > 0 ? Math.round((c.cost / accTotal) * 100) : 0}%`,
+                    }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
