@@ -72,18 +72,25 @@ export default function FollowMeCard({
           </p>
         </div>
         {canManage && (
-          <label className="inline-flex shrink-0 cursor-pointer items-center gap-2">
-            <input
-              type="checkbox"
-              className="peer sr-only"
-              checked={trip.is_public}
-              disabled={pending}
-              onChange={(e) => toggle(e.target.checked)}
+          <button
+            type="button"
+            role="switch"
+            aria-checked={trip.is_public}
+            aria-label="Follow-Me-Link aktivieren"
+            disabled={pending}
+            onClick={() => toggle(!trip.is_public)}
+            className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full transition disabled:opacity-60 ${
+              trip.is_public
+                ? "bg-[var(--primary)]"
+                : "bg-black/20 dark:bg-white/20"
+            }`}
+          >
+            <span
+              className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white transition ${
+                trip.is_public ? "translate-x-5" : ""
+              }`}
             />
-            <span className="relative h-6 w-11 rounded-full bg-black/20 transition peer-checked:bg-[var(--primary)] dark:bg-white/20">
-              <span className="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white transition peer-checked:translate-x-5" />
-            </span>
-          </label>
+          </button>
         )}
       </div>
 
