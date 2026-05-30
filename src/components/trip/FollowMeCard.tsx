@@ -2,8 +2,22 @@
 
 import { useEffect, useState, useTransition } from "react";
 import type { Trip } from "./types";
-import { setTripVisibility } from "@/app/(app)/trips/actions";
+import { setTripVisibility, setShareLevel } from "@/app/(app)/trips/actions";
 import { Share2, Check, Copy } from "@/components/icons";
+
+const SHARE_LEVELS: { value: string; label: string; hint: string }[] = [
+  { value: "basic", label: "Nur Zeiten & Gegenden", hint: "Zeitraum und Gegenden" },
+  {
+    value: "plus",
+    label: "+ Hotels & Flüge",
+    hint: "zusätzlich Unterkünfte und Flüge (ohne Kosten)",
+  },
+  {
+    value: "full",
+    label: "+ Budget & Kosten",
+    hint: "zusätzlich Budget, Preise und Kosten",
+  },
+];
 
 export default function FollowMeCard({
   trip,
@@ -15,6 +29,16 @@ export default function FollowMeCard({
   const [origin, setOrigin] = useState("");
   const [copied, setCopied] = useState(false);
   const [pending, startTransition] = useTransition();
+  const [level, setLevel] = useState(trip.share_level ?? "full");
+  const [levelPending, startLevel] = useTransition();
+
+  function chooseLevel(next: string) {
+    setLevel(next);
+    const fd = new FormData();
+    fd.set("id", trip.id);
+    fd.set("share_level", next);
+    startLevel(() => setShareLevel(fd));
+  }
 
   // Read the origin only after mount to avoid an SSR/CSR hydration mismatch.
   // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -64,22 +88,54 @@ export default function FollowMeCard({
       </div>
 
       {trip.is_public ? (
-        <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-          <input readOnly value={link} className="input font-mono text-xs" />
-          <button onClick={copy} className="btn-ghost shrink-0">
-            {copied ? (
-              <>
-                <Check className="h-4 w-4" strokeWidth={2} />
-                Kopiert
-              </>
-            ) : (
-              <>
-                <Copy className="h-4 w-4" strokeWidth={2} />
-                Link kopieren
-              </>
-            )}
-          </button>
-        </div>
+        <>
+          <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+            <input readOnly value={link} className="input font-mono text-xs" />
+            <button onClick={copy} className="btn-ghost shrink-0">
+              {copied ? (
+                <>
+                  <Check className="h-4 w-4" strokeWidth={2} />
+                  Kopiert
+                </>
+              ) : (
+                <>
+                  <Copy className="h-4 w-4" strokeWidth={2} />
+                  Link kopieren
+                </>
+              )}
+            </button>
+          </div>
+
+          {canManage && (
+            <div className="mt-4">
+              <div className="mb-1.5 text-xs font-medium text-[var(--muted)]">
+                Sichtbar für Empfänger
+              </div>
+              <div className="inline-flex flex-col gap-1 rounded-lg border bg-[var(--surface)] p-1 sm:flex-row">
+                {SHARE_LEVELS.map((l) => (
+                  <button
+                    key={l.value}
+                    type="button"
+                    onClick={() => chooseLevel(l.value)}
+                    disabled={levelPending}
+                    title={l.hint}
+                    className={`rounded-md px-3 py-1.5 text-left text-sm font-medium transition disabled:opacity-60 ${
+                      level === l.value
+                        ? "bg-[var(--primary)] text-[var(--primary-foreground)]"
+                        : "text-[var(--muted)] hover:bg-black/5 dark:hover:bg-white/5"
+                    }`}
+                  >
+                    {l.label}
+                  </button>
+                ))}
+              </div>
+              <p className="mt-1.5 text-xs text-[var(--muted)]">
+                {SHARE_LEVELS.find((l) => l.value === level)?.hint}. Empfänger
+                sehen ausschließlich diese Inhalte.
+              </p>
+            </div>
+          )}
+        </>
       ) : (
         <p className="mt-4 text-sm text-[var(--muted)]">
           {canManage

@@ -6,19 +6,70 @@ import {
   formatDateRange,
   formatDateTime,
   formatTime,
+  formatCurrency,
 } from "@/lib/format";
 import TripMap, { type MapMarker } from "@/components/map/TripMap";
-import {
-  Share2,
-  MapIcon,
-  Plane,
-  Hotel,
-  MapPin,
-  PlaneLanding,
-  PlaneTakeoff,
-} from "@/components/icons";
+import { Share2, MapIcon, Plane, Hotel, MapPin } from "@/components/icons";
+import FollowButton from "@/components/trip/FollowButton";
 
 export const dynamic = "force-dynamic";
+
+// Shape returned by the get_shared_trip RPC (already masked per share level).
+type SharedArea = {
+  id: string;
+  name: string;
+  region: string | null;
+  description: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  arrival_date: string | null;
+  departure_date: string | null;
+  sort_order: number;
+};
+type SharedStay = {
+  id: string;
+  area_id: string | null;
+  name: string;
+  address: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  check_in_date: string | null;
+  check_out_date: string | null;
+  check_in_time: string | null;
+  check_out_time: string | null;
+  board_level: string;
+  cost: number | null;
+  price_per_night: number | null;
+  currency: string | null;
+};
+type SharedFlight = {
+  id: string;
+  airline: string | null;
+  flight_number: string | null;
+  departure_airport: string | null;
+  arrival_airport: string | null;
+  departure_time: string | null;
+  arrival_time: string | null;
+  cost: number | null;
+  currency: string | null;
+};
+type SharedTrip = {
+  trip: {
+    name: string;
+    kind: string;
+    destination: string | null;
+    description: string | null;
+    start_date: string | null;
+    end_date: string | null;
+    cover_color: string | null;
+    share_level: "basic" | "plus" | "full";
+    budget: number | null;
+    budget_currency: string | null;
+  };
+  areas: SharedArea[];
+  accommodations: SharedStay[];
+  flights: SharedFlight[];
+};
 
 export default async function FollowPage({
   params,
@@ -28,35 +79,57 @@ export default async function FollowPage({
   const { token } = await params;
   const supabase = await createClient();
 
-  const { data: trip } = await supabase
-    .from("trips")
-    .select("*")
-    .eq("share_token", token)
-    .eq("is_public", true)
-    .maybeSingle();
+  // The RPC returns ONLY what the share level allows, and only for a public
+  // trip — so narrower levels can't be bypassed via the API.
+  const { data: shared } = await supabase.rpc("get_shared_trip", {
+    p_token: token,
+  });
+  if (!shared) notFound();
 
-  if (!trip) notFound();
+  const data = shared as unknown as SharedTrip;
+  const { trip, areas, accommodations, flights } = data;
+  const showCosts = trip.share_level === "full";
 
-  const [{ data: areas }, { data: accommodations }, { data: flights }] =
-    await Promise.all([
-      supabase.from("areas").select("*").eq("trip_id", trip.id).order("sort_order"),
-      supabase
-        .from("accommodations")
-        .select("*")
-        .eq("trip_id", trip.id)
-        .order("check_in_date", { nullsFirst: false }),
-      supabase
-        .from("flights")
-        .select("*")
-        .eq("trip_id", trip.id)
-        .order("departure_time", { nullsFirst: false }),
-    ]);
+  // For the follow button: resolve current user + the trip id behind the token.
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  let tripId: string | null = null;
+  let isFollowing = false;
+  let isMember = false;
+  if (user) {
+    const { data: trow } = await supabase
+      .from("trips")
+      .select("id, created_by")
+      .eq("share_token", token)
+      .eq("is_public", true)
+      .maybeSingle();
+    tripId = trow?.id ?? null;
+    if (tripId) {
+      const [{ data: follow }, { data: membership }] = await Promise.all([
+        supabase
+          .from("trip_follows")
+          .select("id")
+          .eq("trip_id", tripId)
+          .eq("user_id", user.id)
+          .maybeSingle(),
+        supabase
+          .from("trip_members")
+          .select("id")
+          .eq("trip_id", tripId)
+          .eq("user_id", user.id)
+          .maybeSingle(),
+      ]);
+      isFollowing = Boolean(follow);
+      isMember = Boolean(membership) || trow?.created_by === user.id;
+    }
+  }
 
   const accByArea = (areaId: string | null) =>
-    (accommodations ?? []).filter((a) => a.area_id === areaId);
+    accommodations.filter((a) => a.area_id === areaId);
 
   const mapMarkers: MapMarker[] = [];
-  for (const area of areas ?? []) {
+  for (const area of areas) {
     if (area.latitude != null && area.longitude != null) {
       mapMarkers.push({
         id: `area-${area.id}`,
@@ -67,7 +140,7 @@ export default async function FollowPage({
       });
     }
   }
-  for (const a of accommodations ?? []) {
+  for (const a of accommodations) {
     if (a.latitude != null && a.longitude != null) {
       mapMarkers.push({
         id: `acc-${a.id}`,
@@ -98,10 +171,25 @@ export default async function FollowPage({
           {trip.description && (
             <p className="mt-3 max-w-2xl opacity-90">{trip.description}</p>
           )}
+          {tripId && !isMember && (
+            <div className="mt-4">
+              <FollowButton tripId={tripId} initialFollowing={isFollowing} />
+            </div>
+          )}
         </div>
       </div>
 
       <div className="mx-auto max-w-3xl space-y-6 px-4 py-8">
+        {/* Budget (full only) */}
+        {showCosts && trip.budget != null && (
+          <section className="card p-4">
+            <span className="text-sm text-[var(--muted)]">Budget: </span>
+            <span className="font-semibold">
+              {formatCurrency(trip.budget, trip.budget_currency ?? "EUR")}
+            </span>
+          </section>
+        )}
+
         {/* Map */}
         {mapMarkers.length > 0 && (
           <section>
@@ -117,23 +205,31 @@ export default async function FollowPage({
         )}
 
         {/* Flights */}
-        {(flights ?? []).length > 0 && (
+        {flights.length > 0 && (
           <section>
             <h2 className="mb-3 flex items-center gap-2 text-lg font-semibold">
               <Plane className="h-5 w-5" strokeWidth={2} />
               Flüge
             </h2>
             <div className="space-y-2">
-              {(flights ?? []).map((f) => (
-                <div key={f.id} className="card flex flex-wrap items-center gap-3 p-4">
+              {flights.map((f) => (
+                <div
+                  key={f.id}
+                  className="card flex flex-wrap items-center gap-3 p-4"
+                >
                   <div className="text-lg font-medium">
                     {f.departure_airport || "—"} → {f.arrival_airport || "—"}
                   </div>
                   <div className="text-sm text-[var(--muted)]">
-                    {f.airline} {f.flight_number}
+                    {[f.airline, f.flight_number].filter(Boolean).join(" ")}
                   </div>
                   <div className="ml-auto text-right text-sm">
                     <div>{formatDateTime(f.departure_time)}</div>
+                    {showCosts && f.cost != null && (
+                      <div className="text-[var(--muted)]">
+                        {formatCurrency(f.cost, f.currency ?? "EUR")}
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
@@ -142,7 +238,7 @@ export default async function FollowPage({
         )}
 
         {/* Areas + accommodations */}
-        {(areas ?? []).map((area) => (
+        {areas.map((area) => (
           <section key={area.id}>
             <h2 className="mb-1 flex items-center gap-2 text-lg font-semibold">
               <MapPin className="h-5 w-5" strokeWidth={2} />
@@ -156,11 +252,13 @@ export default async function FollowPage({
                   `${formatDate(area.arrival_date)} – ${formatDate(area.departure_date)}`}
               </p>
             )}
-            <div className="grid gap-3 sm:grid-cols-2">
-              {accByArea(area.id).map((a) => (
-                <PublicStay key={a.id} a={a} />
-              ))}
-            </div>
+            {accByArea(area.id).length > 0 && (
+              <div className="grid gap-3 sm:grid-cols-2">
+                {accByArea(area.id).map((a) => (
+                  <PublicStay key={a.id} a={a} showCosts={showCosts} />
+                ))}
+              </div>
+            )}
           </section>
         ))}
 
@@ -172,7 +270,7 @@ export default async function FollowPage({
             </h2>
             <div className="grid gap-3 sm:grid-cols-2">
               {accByArea(null).map((a) => (
-                <PublicStay key={a.id} a={a} />
+                <PublicStay key={a.id} a={a} showCosts={showCosts} />
               ))}
             </div>
           </section>
@@ -186,22 +284,17 @@ export default async function FollowPage({
   );
 }
 
-function PublicStay({
-  a,
-}: {
-  a: {
-    name: string;
-    address: string | null;
-    check_in_date: string | null;
-    check_out_date: string | null;
-    check_in_time: string | null;
-    check_out_time: string | null;
-    board_level: string;
-  };
-}) {
+function PublicStay({ a, showCosts }: { a: SharedStay; showCosts: boolean }) {
   return (
     <div className="card p-4">
-      <h3 className="font-semibold">{a.name}</h3>
+      <div className="flex items-start justify-between gap-2">
+        <h3 className="font-semibold">{a.name}</h3>
+        {showCosts && a.cost != null && (
+          <span className="shrink-0 text-sm font-medium">
+            {formatCurrency(a.cost, a.currency ?? "EUR")}
+          </span>
+        )}
+      </div>
       {a.address && (
         <p className="flex items-center gap-1.5 text-sm text-[var(--muted)]">
           <MapPin className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />
@@ -209,14 +302,12 @@ function PublicStay({
         </p>
       )}
       <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm">
-        <span className="inline-flex items-center gap-1.5">
-          <PlaneLanding className="h-3.5 w-3.5 text-[var(--muted)]" strokeWidth={2} />
-          {formatDate(a.check_in_date)}
+        <span>
+          Check-in: {formatDate(a.check_in_date)}
           {a.check_in_time && ` ${formatTime(a.check_in_time)}`}
         </span>
-        <span className="inline-flex items-center gap-1.5">
-          <PlaneTakeoff className="h-3.5 w-3.5 text-[var(--muted)]" strokeWidth={2} />
-          {formatDate(a.check_out_date)}
+        <span>
+          Check-out: {formatDate(a.check_out_date)}
           {a.check_out_time && ` ${formatTime(a.check_out_time)}`}
         </span>
       </div>
