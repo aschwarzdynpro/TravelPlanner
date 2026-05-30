@@ -1,7 +1,9 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useFormStatus } from "react-dom";
 import Modal from "@/components/Modal";
+import { Loader2 } from "@/components/icons";
 import type { Accommodation, Area } from "./types";
 import { saveAccommodation } from "@/app/(app)/trips/[id]/actions";
 import { BOARD_LEVELS, BOARD_LEVEL_ORDER, CURRENCIES } from "@/lib/constants";
@@ -57,7 +59,15 @@ export default function AccommodationFormButton({
         onClose={() => setOpen(false)}
         title={a ? "Unterkunft bearbeiten" : "Unterkunft hinzufügen"}
       >
-        <form action={saveAccommodation} className="space-y-4">
+        <form
+          action={async (formData) => {
+            // Run the server action, then close the dialog. On error the action
+            // throws and we keep the form open so nothing is silently lost.
+            await saveAccommodation(formData);
+            setOpen(false);
+          }}
+          className="space-y-4"
+        >
           <input type="hidden" name="trip_id" value={tripId} />
           {a && <input type="hidden" name="id" value={a.id} />}
 
@@ -252,16 +262,37 @@ export default function AccommodationFormButton({
             />
           </div>
 
-          <div className="flex justify-end gap-2 pt-2">
-            <button type="button" className="btn-ghost" onClick={() => setOpen(false)}>
-              Abbrechen
-            </button>
-            <button type="submit" className="btn-primary">
-              Speichern
-            </button>
-          </div>
+          <FormActions onCancel={() => setOpen(false)} />
         </form>
       </Modal>
     </>
+  );
+}
+
+// Submit + cancel row. Lives inside the <form> so useFormStatus reflects the
+// pending server action: shows a spinner and locks the buttons while saving.
+function FormActions({ onCancel }: { onCancel: () => void }) {
+  const { pending } = useFormStatus();
+  return (
+    <div className="flex justify-end gap-2 pt-2">
+      <button
+        type="button"
+        className="btn-ghost"
+        onClick={onCancel}
+        disabled={pending}
+      >
+        Abbrechen
+      </button>
+      <button type="submit" className="btn-primary" disabled={pending}>
+        {pending ? (
+          <>
+            <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2} />
+            Speichern…
+          </>
+        ) : (
+          "Speichern"
+        )}
+      </button>
+    </div>
   );
 }
