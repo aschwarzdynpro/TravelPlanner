@@ -57,7 +57,15 @@ export default function AccommodationFormButton({
         onClose={() => setOpen(false)}
         title={a ? "Unterkunft bearbeiten" : "Unterkunft hinzufügen"}
       >
-        <form action={saveAccommodation} className="space-y-4">
+        <form
+          action={async (formData) => {
+            // Run the server action, then close the dialog. On error the action
+            // throws and we keep the form open so nothing is silently lost.
+            await saveAccommodation(formData);
+            setOpen(false);
+          }}
+          className="space-y-4"
+        >
           <input type="hidden" name="trip_id" value={tripId} />
           {a && <input type="hidden" name="id" value={a.id} />}
 
