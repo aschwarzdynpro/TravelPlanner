@@ -35,7 +35,7 @@ export default function SelectMenu({
   const selected = options.find((o) => o.value === value);
 
   return (
-    <div className={`relative ${className}`}>
+    <div className={`relative min-w-0 ${className}`}>
       <input type="hidden" name={name} value={value} />
       <button
         ref={anchorRef}

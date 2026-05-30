@@ -99,7 +99,9 @@ body {
   .input,
   .select,
   .textarea {
-    @apply w-full rounded-lg border bg-[var(--surface)] px-3 py-2 text-sm outline-none transition-colors hover:border-[var(--ring)] focus:border-[var(--ring)] focus:ring-2 focus:ring-[var(--ring)]/30;
+    /* min-w-0 lets inputs shrink inside grid/flex columns instead of forcing
+       horizontal overflow on narrow (mobile) screens. */
+    @apply w-full min-w-0 rounded-lg border bg-[var(--surface)] px-3 py-2 text-sm outline-none transition-colors hover:border-[var(--ring)] focus:border-[var(--ring)] focus:ring-2 focus:ring-[var(--ring)]/30;
   }
   .label {
     @apply block text-xs font-medium text-[var(--muted)] mb-1;
