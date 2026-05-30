@@ -17,7 +17,8 @@ export type PlanHolder = {
 export type Feature =
   | "ai.trip_suggestions" // KI-Vorschläge für Reisen/Gegenden
   | "ai.prep_suggestions" // Vorbereitungen aus ähnlichen Reisemustern
-  | "ai.activity_suggestions"; // Aktivitätenvorschläge in der Gegend
+  | "ai.activity_suggestions" // Aktivitätenvorschläge in der Gegend
+  | "hotel.ratings"; // Hotel-Kategorie & Bewertung zur Unterkunft
 
 /** Numeric limits that differ per plan (null = unbegrenzt). */
 export type Limit = "maxTrips";
@@ -26,6 +27,7 @@ const FEATURE_PLAN: Record<Feature, Plan> = {
   "ai.trip_suggestions": "pro",
   "ai.prep_suggestions": "pro",
   "ai.activity_suggestions": "pro",
+  "hotel.ratings": "pro",
 };
 
 const LIMITS: Record<Plan, Record<Limit, number | null>> = {
@@ -57,6 +59,12 @@ const FEATURE_META: Record<Feature, FeatureMeta> = {
     title: "Aktivitäten in der Gegend",
     description:
       "Passende Unternehmungen und Sehenswürdigkeiten rund um deine Unterkünfte.",
+    available: false,
+  },
+  "hotel.ratings": {
+    title: "Hotel-Kategorie & Bewertung",
+    description:
+      "Sterne-Kategorie und Gesamtbewertung zu deinen Unterkünften, direkt bei der Auswahl.",
     available: false,
   },
 };

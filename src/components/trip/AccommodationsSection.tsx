@@ -11,9 +11,12 @@ import {
   ageOn,
 } from "@/lib/format";
 import { countryName } from "@/lib/countries";
+import { featureMeta } from "@/lib/entitlements";
 import AreaFormButton from "./AreaFormButton";
 import AccommodationFormButton from "./AccommodationFormButton";
 import DeleteButton from "@/components/DeleteButton";
+import ProBadge from "@/components/billing/ProBadge";
+import UpgradeNotice from "@/components/billing/UpgradeNotice";
 import { deleteArea, deleteAccommodation } from "@/app/(app)/trips/[id]/actions";
 import {
   mapsSearchUrl,
@@ -32,6 +35,8 @@ import {
   Plus,
   Pencil,
   Trash2,
+  Star,
+  Sparkles,
 } from "@/components/icons";
 
 function AccommodationCard({
@@ -40,12 +45,14 @@ function AccommodationCard({
   travelers,
   tripId,
   canEdit,
+  isPro,
 }: {
   acc: Accommodation;
   areas: WorkspaceData["areas"];
   travelers: Traveler[];
   tripId: string;
   canEdit: boolean;
+  isPro: boolean;
 }) {
   const left = daysUntil(acc.cancellation_deadline);
   const mapQuery = acc.address || acc.name;
@@ -158,6 +165,8 @@ function AccommodationCard({
         </p>
       )}
 
+      <HotelRating isPro={isPro} />
+
       <div className="mt-3 flex flex-wrap items-center gap-3 border-t pt-3 text-xs">
         {acc.booking_reference && (
           <span className="text-[var(--muted)]">
@@ -228,6 +237,7 @@ export default function AccommodationsSection({
   accommodations,
   travelers,
   canEdit,
+  isPro,
 }: WorkspaceData) {
   const byArea = (areaId: string | null) =>
     accommodations.filter((a) => a.area_id === areaId);
@@ -364,6 +374,7 @@ export default function AccommodationsSection({
                     travelers={travelers}
                     tripId={trip.id}
                     canEdit={canEdit}
+                    isPro={isPro}
                   />
                 ))
               )}
@@ -386,11 +397,42 @@ export default function AccommodationsSection({
                 travelers={travelers}
                 tripId={trip.id}
                 canEdit={canEdit}
+                isPro={isPro}
               />
             ))}
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+// Pro feature: hotel category & rating. The live data source (Google Places)
+// isn't wired yet, so this only gates + previews. Free users get an upgrade
+// hint; Pro users see a "coming soon" placeholder. Enforcement that actually
+// matters will live server-side once a data source is added.
+function HotelRating({ isPro }: { isPro: boolean }) {
+  const meta = featureMeta("hotel.ratings");
+
+  if (!isPro) {
+    return (
+      <div className="mt-3">
+        <UpgradeNotice title={meta.title} description={meta.description} />
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-3 flex items-center justify-between gap-2 rounded-lg border border-dashed p-3">
+      <span className="flex items-center gap-2 text-sm">
+        <Star className="h-4 w-4 text-[var(--muted)]" strokeWidth={2} />
+        <span className="font-medium">{meta.title}</span>
+        <ProBadge />
+      </span>
+      <span className="inline-flex items-center gap-1 text-xs text-[var(--muted)]">
+        <Sparkles className="h-3.5 w-3.5" strokeWidth={2} />
+        kommt bald
+      </span>
     </div>
   );
 }

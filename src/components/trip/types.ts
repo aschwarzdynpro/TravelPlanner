@@ -37,4 +37,6 @@ export interface WorkspaceData {
   canEdit: boolean;
   isOwner: boolean;
   currentUserId: string;
+  // Whether the current user has an active Pro plan (gates premium UI).
+  isPro: boolean;
 }
