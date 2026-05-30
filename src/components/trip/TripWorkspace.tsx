@@ -27,6 +27,8 @@ import {
   ArrowLeft,
   MapPin,
   CalendarDays,
+  Printer,
+  Download,
   type LucideIcon,
 } from "@/components/icons";
 
@@ -107,12 +109,30 @@ export default function TripWorkspace(data: WorkspaceData) {
               <p className="mt-2 max-w-2xl text-sm">{trip.description}</p>
             )}
           </div>
-          <div className="flex items-center gap-3">
-            <div className="text-right">
-              <div className="text-xs text-[var(--muted)]">Gesamtkosten</div>
-              <div className="text-xl font-bold">{formatCurrency(totalCost)}</div>
+          <div className="flex flex-col items-end gap-3">
+            <div className="flex items-center gap-3">
+              <div className="text-right">
+                <div className="text-xs text-[var(--muted)]">Gesamtkosten</div>
+                <div className="text-xl font-bold">{formatCurrency(totalCost)}</div>
+              </div>
+              {canEdit && <EditTripButton trip={trip} />}
             </div>
-            {canEdit && <EditTripButton trip={trip} />}
+            <div className="flex items-center gap-3 text-sm">
+              <Link
+                href={`/trips/${trip.id}/print`}
+                className="inline-flex items-center gap-1.5 text-[var(--muted)] hover:text-[var(--foreground)]"
+              >
+                <Printer className="h-4 w-4" strokeWidth={2} />
+                Drucken / PDF
+              </Link>
+              <a
+                href={`/trips/${trip.id}/calendar`}
+                className="inline-flex items-center gap-1.5 text-[var(--muted)] hover:text-[var(--foreground)]"
+              >
+                <Download className="h-4 w-4" strokeWidth={2} />
+                Kalender
+              </a>
+            </div>
           </div>
         </div>
       </div>
