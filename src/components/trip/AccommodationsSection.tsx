@@ -9,6 +9,7 @@ import {
   daysUntil,
   nightsBetween,
 } from "@/lib/format";
+import { countryName } from "@/lib/countries";
 import AreaFormButton from "./AreaFormButton";
 import AccommodationFormButton from "./AccommodationFormButton";
 import DeleteButton from "@/components/DeleteButton";
@@ -245,9 +246,11 @@ export default function AccommodationsSection({
                     <MapPin className="h-4 w-4 shrink-0" strokeWidth={2} />
                     {area.name}
                   </span>
-                  {area.region && (
+                  {(area.region || area.country_code) && (
                     <span className="text-sm font-normal text-[var(--muted)]">
-                      {area.region}
+                      {[area.region, area.country_code && countryName(area.country_code)]
+                        .filter(Boolean)
+                        .join(", ")}
                     </span>
                   )}
                   {areaMapUrl && (

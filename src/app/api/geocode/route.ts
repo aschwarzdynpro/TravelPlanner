@@ -14,6 +14,8 @@ export type GeocodeResult = {
   name: string;
   // Concise address line (street, city, country) for autofill.
   address: string;
+  // ISO 3166-1 alpha-2 country code (upper-case) when known.
+  countryCode: string | null;
   latitude: number;
   longitude: number;
 };
@@ -64,6 +66,12 @@ export async function GET(request: NextRequest) {
     };
     const raw = (await res.json()) as NominatimRow[];
 
+    // Nominatim returns address.country_code as lower-case alpha-2.
+    const countryCode = (a: Record<string, string> | undefined): string | null => {
+      const cc = a?.country_code;
+      return cc && /^[a-z]{2}$/.test(cc) ? cc.toUpperCase() : null;
+    };
+
     // Build a concise address line from the most useful parts.
     const addressLine = (a: Record<string, string> | undefined): string => {
       if (!a) return "";
@@ -78,6 +86,7 @@ export async function GET(request: NextRequest) {
         label: r.display_name,
         name: r.name || r.display_name.split(",")[0] || "",
         address: addressLine(r.address) || r.display_name,
+        countryCode: countryCode(r.address),
         latitude: Number(r.lat),
         longitude: Number(r.lon),
       }))

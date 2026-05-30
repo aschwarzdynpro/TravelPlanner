@@ -14,10 +14,14 @@ export default function CoordinateFields({
   // from sibling fields (e.g. address or name). Provided via a getter so it
   // reads the latest input values at click time.
   getQuery,
+  // Notified with the full geocoding result when a place is picked, so callers
+  // can auto-fill related fields (e.g. country).
+  onResult,
 }: {
   defaultLatitude?: number | null;
   defaultLongitude?: number | null;
   getQuery: () => string;
+  onResult?: (r: GeocodeResult) => void;
 }) {
   const [lat, setLat] = useState(defaultLatitude?.toString() ?? "");
   const [lng, setLng] = useState(defaultLongitude?.toString() ?? "");
@@ -70,6 +74,7 @@ export default function CoordinateFields({
     setLng(r.longitude.toFixed(6));
     setResults(null);
     setError(null);
+    onResult?.(r);
   }
 
   function clear() {
