@@ -1,6 +1,6 @@
 "use client";
 
-import type { WorkspaceData, Accommodation } from "./types";
+import type { WorkspaceData, Accommodation, Traveler } from "./types";
 import { BOARD_LEVELS } from "@/lib/constants";
 import {
   formatCurrency,
@@ -8,6 +8,7 @@ import {
   formatTime,
   daysUntil,
   nightsBetween,
+  ageOn,
 } from "@/lib/format";
 import { countryName } from "@/lib/countries";
 import AreaFormButton from "./AreaFormButton";
@@ -19,6 +20,7 @@ import {
   mapsDirectionsUrl,
   placeMapUrl,
   mapEmbedUrl,
+  bookingSearchUrl,
 } from "@/lib/links";
 import {
   MapPin,
@@ -35,17 +37,34 @@ import {
 function AccommodationCard({
   acc,
   areas,
+  travelers,
   tripId,
   canEdit,
 }: {
   acc: Accommodation;
   areas: WorkspaceData["areas"];
+  travelers: Traveler[];
   tripId: string;
   canEdit: boolean;
 }) {
   const left = daysUntil(acc.cancellation_deadline);
   const mapQuery = acc.address || acc.name;
   const nights = nightsBetween(acc.check_in_date, acc.check_out_date);
+
+  // Split travelers into adults/children by their age at check-in, so the
+  // Booking search can prefill child ages (which affect pricing). Travelers
+  // without a birth date count as adults.
+  const childAges = travelers
+    .map((t) => ageOn(t.birth_date, acc.check_in_date))
+    .filter((a): a is number => a != null && a < 18);
+  const adults = Math.max(1, travelers.length - childAges.length);
+  const bookingUrl = bookingSearchUrl({
+    query: acc.address || acc.name,
+    checkIn: acc.check_in_date,
+    checkOut: acc.check_out_date,
+    adults,
+    childAges,
+  });
   return (
     <div className="card p-4">
       <div className="flex items-start justify-between gap-2">
@@ -154,6 +173,18 @@ function AccommodationCard({
           <RouteIcon className="h-3.5 w-3.5" strokeWidth={2} />
           Route
         </a>
+        {bookingUrl && (
+          <a
+            href={bookingUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 font-medium hover:underline"
+            title="Auf Booking.com suchen (Datum & Gäste vorausgefüllt)"
+          >
+            <Hotel className="h-3.5 w-3.5" strokeWidth={2} />
+            Auf Booking suchen
+          </a>
+        )}
         {acc.booking_url && (
           <a
             href={acc.booking_url}
@@ -195,6 +226,7 @@ export default function AccommodationsSection({
   trip,
   areas,
   accommodations,
+  travelers,
   canEdit,
 }: WorkspaceData) {
   const byArea = (areaId: string | null) =>
@@ -329,6 +361,7 @@ export default function AccommodationsSection({
                     key={acc.id}
                     acc={acc}
                     areas={areas}
+                    travelers={travelers}
                     tripId={trip.id}
                     canEdit={canEdit}
                   />
@@ -350,6 +383,7 @@ export default function AccommodationsSection({
                 key={acc.id}
                 acc={acc}
                 areas={areas}
+                travelers={travelers}
                 tripId={trip.id}
                 canEdit={canEdit}
               />

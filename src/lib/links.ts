@@ -57,6 +57,33 @@ export function mapEmbedUrl(opts: {
 }
 
 /**
+ * Booking.com search deep link, prefilled from accommodation data. Keyless —
+ * just opens a search. Dates are YYYY-MM-DD; children are passed as repeated
+ * `age` params (Booking uses these for child pricing). Returns null when there
+ * is nothing to search for.
+ */
+export function bookingSearchUrl(opts: {
+  query?: string | null; // destination text (name and/or address)
+  checkIn?: string | null;
+  checkOut?: string | null;
+  adults?: number | null;
+  childAges?: number[]; // ages of children (<18)
+}): string | null {
+  const q = opts.query?.trim();
+  if (!q) return null;
+  const params = new URLSearchParams();
+  params.set("ss", q);
+  if (opts.checkIn) params.set("checkin", opts.checkIn);
+  if (opts.checkOut) params.set("checkout", opts.checkOut);
+  params.set("group_adults", String(Math.max(1, opts.adults ?? 2)));
+  const ages = (opts.childAges ?? []).filter((a) => a >= 0 && a < 18);
+  params.set("group_children", String(ages.length));
+  // Booking expects one `age` entry per child.
+  for (const a of ages) params.append("age", String(a));
+  return `https://www.booking.com/searchresults.html?${params.toString()}`;
+}
+
+/**
  * Flight-tracking link on Flightradar24 from a flight number, e.g. "LH1234".
  * The number is normalised to the spaceless code Flightradar24 expects.
  * Returns null when there is no flight number to track.

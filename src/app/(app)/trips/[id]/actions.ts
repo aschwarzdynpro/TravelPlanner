@@ -265,6 +265,7 @@ export async function saveTraveler(formData: FormData) {
     name,
     email: str(formData, "email"),
     phone: str(formData, "phone"),
+    birth_date: str(formData, "birth_date"),
     notes: str(formData, "notes"),
   };
   if (id) await supabase.from("travelers").update(payload).eq("id", id);
