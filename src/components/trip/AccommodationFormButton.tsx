@@ -24,13 +24,15 @@ export default function AccommodationFormButton({
   accommodation,
   defaultAreaId,
   label,
+  title,
   className = "btn-primary",
 }: {
   tripId: string;
   areas: Area[];
   accommodation?: Accommodation;
   defaultAreaId?: string | null;
-  label: string;
+  label: React.ReactNode;
+  title?: string;
   className?: string;
 }) {
   const [open, setOpen] = useState(false);
@@ -51,7 +53,7 @@ export default function AccommodationFormButton({
 
   return (
     <>
-      <button className={className} onClick={() => setOpen(true)}>
+      <button className={className} title={title} onClick={() => setOpen(true)}>
         {label}
       </button>
       <Modal

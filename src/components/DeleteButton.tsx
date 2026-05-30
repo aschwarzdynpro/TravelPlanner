@@ -7,13 +7,17 @@ export default function DeleteButton({
   id,
   tripId,
   label = "Löschen",
+  title,
   confirmText = "Wirklich löschen?",
   className = "text-xs text-red-600 hover:underline",
 }: {
   action: Action;
   id: string;
   tripId: string;
-  label?: string;
+  // Accepts an icon (or any node), not just text.
+  label?: React.ReactNode;
+  // Tooltip / accessible name — useful when label is an icon only.
+  title?: string;
   confirmText?: string;
   className?: string;
 }) {
@@ -26,7 +30,12 @@ export default function DeleteButton({
     >
       <input type="hidden" name="id" value={id} />
       <input type="hidden" name="trip_id" value={tripId} />
-      <button type="submit" className={className}>
+      <button
+        type="submit"
+        className={className}
+        title={title}
+        aria-label={title}
+      >
         {label}
       </button>
     </form>

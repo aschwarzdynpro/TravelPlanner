@@ -12,6 +12,8 @@ import {
   ExternalLink,
   ArrowRight,
   StickyNote,
+  Pencil,
+  Trash2,
 } from "@/components/icons";
 
 export default function FlightsSection({
@@ -111,17 +113,21 @@ export default function FlightsSection({
                   </a>
                 )}
                 {canEdit && (
-                  <div className="ml-auto flex items-center gap-3">
+                  <div className="ml-auto flex items-center gap-1.5">
                     <FlightFormButton
                       tripId={trip.id}
                       flight={f}
-                      label="Bearbeiten"
-                      className="text-xs font-medium hover:underline"
+                      label={<Pencil className="h-4 w-4" strokeWidth={2} />}
+                      title="Flug bearbeiten"
+                      className="icon-btn"
                     />
                     <DeleteButton
                       action={deleteFlight}
                       id={f.id}
                       tripId={trip.id}
+                      label={<Trash2 className="h-4 w-4" strokeWidth={2} />}
+                      title="Flug löschen"
+                      className="icon-btn icon-btn-danger"
                       confirmText="Diesen Flug löschen?"
                     />
                   </div>
