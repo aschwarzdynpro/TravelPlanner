@@ -55,8 +55,9 @@ declare
   show_costs boolean;     -- costs/budget (full only)
   result jsonb;
 begin
+  -- share_token is a uuid column; the token arrives as text, so cast to compare.
   select * into t from public.trips
-  where share_token = p_token and is_public = true;
+  where share_token::text = p_token and is_public = true;
   if not found then
     return null;
   end if;
