@@ -224,6 +224,18 @@ export default function HelpPage() {
             ganz ohne Konto.
           </li>
           <li>
+            <strong>Freigabestufen:</strong> Du legst fest, was Empfänger sehen –
+            nur <em>Zeiten &amp; Gegenden</em>, zusätzlich <em>Hotels &amp; Flüge</em>{" "}
+            (ohne Kosten) oder <em>+ Budget &amp; Kosten</em>. Die Begrenzung gilt
+            serverseitig, nicht nur in der Anzeige.
+          </li>
+          <li>
+            <strong>Folgen:</strong> Bist du angemeldet und öffnest einen
+            Follow-Me-Link, kannst du der Reise folgen. Gefolgte Reisen erscheinen
+            unter <strong>Reisen → Follow-Up Reisen</strong> – solange der Link
+            aktiv bleibt.
+          </li>
+          <li>
             <strong>Re-Travel:</strong> Dupliziere eine bestehende Reise als Vorlage
             für eine neue – inklusive Gegenden, Unterkünften und Mitreisenden.
           </li>

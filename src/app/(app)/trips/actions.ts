@@ -164,3 +164,41 @@ export async function reTravel(formData: FormData) {
   revalidatePath("/trips");
   redirect(`/trips/${newTrip.id}`);
 }
+
+const SHARE_LEVELS = ["basic", "plus", "full"] as const;
+type ShareLevel = (typeof SHARE_LEVELS)[number];
+
+// Owner/editor sets how much a shared (Follow-Me) trip reveals. The actual
+// field masking happens server-side in get_shared_trip; this only stores the
+// chosen level. RLS (trips_update) already restricts who may update the row.
+export async function setShareLevel(formData: FormData) {
+  const { supabase } = await requireUser();
+  const id = String(formData.get("id"));
+  const level = String(formData.get("share_level"));
+  if (!SHARE_LEVELS.includes(level as ShareLevel)) return;
+  await supabase.from("trips").update({ share_level: level }).eq("id", id);
+  revalidatePath(`/trips/${id}`);
+  revalidatePath(`/follow`);
+}
+
+// Follow a shared trip (by token). Only succeeds while the trip is public —
+// enforced by the follows_insert RLS check (can_view_trip).
+export async function followTrip(formData: FormData) {
+  const { supabase, user } = await requireUser();
+  const tripId = String(formData.get("trip_id"));
+  await supabase
+    .from("trip_follows")
+    .insert({ trip_id: tripId, user_id: user.id });
+  revalidatePath("/trips/following");
+}
+
+export async function unfollowTrip(formData: FormData) {
+  const { supabase, user } = await requireUser();
+  const tripId = String(formData.get("trip_id"));
+  await supabase
+    .from("trip_follows")
+    .delete()
+    .eq("trip_id", tripId)
+    .eq("user_id", user.id);
+  revalidatePath("/trips/following");
+}

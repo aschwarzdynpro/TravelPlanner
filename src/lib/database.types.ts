@@ -342,6 +342,42 @@ export type Database = {
           },
         ]
       }
+      trip_follows: {
+        Row: {
+          created_at: string
+          id: string
+          trip_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          trip_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          trip_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trip_follows_trip_id_fkey"
+            columns: ["trip_id"]
+            isOneToOne: false
+            referencedRelation: "trips"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trip_follows_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       trip_members: {
         Row: {
           created_at: string
@@ -510,6 +546,7 @@ export type Database = {
           is_public: boolean
           kind: string
           name: string
+          share_level: string
           share_token: string
           source_trip_id: string | null
           start_date: string | null
@@ -528,6 +565,7 @@ export type Database = {
           is_public?: boolean
           kind?: string
           name: string
+          share_level?: string
           share_token?: string
           source_trip_id?: string | null
           start_date?: string | null
@@ -546,6 +584,7 @@ export type Database = {
           is_public?: boolean
           kind?: string
           name?: string
+          share_level?: string
           share_token?: string
           source_trip_id?: string | null
           start_date?: string | null
@@ -576,8 +615,11 @@ export type Database = {
       can_edit_trip: { Args: { _trip_id: string }; Returns: boolean }
       can_view_trip: { Args: { _trip_id: string }; Returns: boolean }
       claim_invites: { Args: never; Returns: number }
+      get_followed_trips: { Args: never; Returns: Json }
+      get_shared_trip: { Args: { p_token: string }; Returns: Json }
       is_trip_editor: { Args: { _trip_id: string }; Returns: boolean }
       is_trip_member: { Args: { _trip_id: string }; Returns: boolean }
+      is_trip_participant: { Args: { _trip_id: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
