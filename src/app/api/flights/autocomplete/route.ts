@@ -7,9 +7,16 @@ import {
   type FlightSuggestion,
 } from "@/lib/airlabs";
 
-// GET /api/flights/autocomplete?q=LH44
+// GET /api/flights/autocomplete?q=LH441
 // Server-side proxy to AirLabs; the API key never reaches the browser.
 // Cached ~1h since flight schedules change slowly.
+//
+// AirLabs has no progressive flight-number search on the free plan: /schedules
+// only matches a COMPLETE flight_iata (partial like "LH44" returns nothing) and
+// the /autocomplete endpoint is for places, not flights. So this returns a
+// single confirm-able match once the user has typed the full number, which the
+// UI shows as a pick-to-fill suggestion. /schedules has no airline_name, so the
+// label is built from the IATA + route.
 export const revalidate = 3600;
 
 export async function GET(req: NextRequest) {

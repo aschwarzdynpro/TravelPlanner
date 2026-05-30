@@ -7,9 +7,14 @@ import {
   type AirlabsFlightRow,
 } from "@/lib/airlabs";
 
-// GET /api/flights/status?flight_iata=LH441&date=YYYY-MM-DD
+// GET /api/flights/status?flight_iata=LH441
 // Live flight status proxy. Cached ~2 min so gate/delay stay fresh without
 // burning the quota.
+//
+// Note: the AirLabs free plan rejects the `dep_date` param ("restricted_access"),
+// so we don't filter by date here — /flight returns the current/next leg for
+// the number. A `date` query param is still accepted but ignored, so the client
+// contract stays stable if you upgrade the plan later.
 export const revalidate = 120;
 
 const FLIGHT_IATA = /^[A-Z0-9]{2,3}\d{1,4}$/;
@@ -19,7 +24,6 @@ export async function GET(req: NextRequest) {
     .get("flight_iata")
     ?.replace(/\s+/g, "")
     .toUpperCase();
-  const date = req.nextUrl.searchParams.get("date")?.trim();
 
   if (!flightIata || !FLIGHT_IATA.test(flightIata)) {
     return NextResponse.json({ status: null }, { status: 400 });
@@ -29,13 +33,9 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    // Flight numbers aren't unique without a date; pass it through when given.
-    const params: Record<string, string> = { flight_iata: flightIata };
-    if (date && /^\d{4}-\d{2}-\d{2}$/.test(date)) params.dep_date = date;
-
     const data = await airlabsFetch<{
       response?: AirlabsFlightRow | AirlabsFlightRow[];
-    }>("flight", params, 120);
+    }>("flight", { flight_iata: flightIata }, 120);
 
     // AirLabs /flight returns a single object; /schedules an array. Handle both.
     const row = Array.isArray(data.response)
