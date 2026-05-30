@@ -11,10 +11,10 @@ import {
 // Live flight status proxy. Cached ~2 min so gate/delay stay fresh without
 // burning the quota.
 //
-// Note: the AirLabs free plan rejects the `dep_date` param ("restricted_access"),
-// so we don't filter by date here — /flight returns the current/next leg for
-// the number. A `date` query param is still accepted but ignored, so the client
-// contract stays stable if you upgrade the plan later.
+// Note: verified against the live API that /flight ignores `dep_date` (it is
+// accepted but always returns the current/next leg for the number), so we don't
+// send it. A `date` query param is still accepted by this route but unused, so
+// the client contract stays stable if a future plan/endpoint honours dates.
 export const revalidate = 120;
 
 const FLIGHT_IATA = /^[A-Z0-9]{2,3}\d{1,4}$/;
