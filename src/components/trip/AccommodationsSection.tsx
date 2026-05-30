@@ -26,6 +26,9 @@ import {
   ArrowUpRight,
   Hotel,
   StickyNote,
+  Plus,
+  Pencil,
+  Trash2,
 } from "@/components/icons";
 
 function AccommodationCard({
@@ -162,18 +165,22 @@ function AccommodationCard({
           </a>
         )}
         {canEdit && (
-          <div className="ml-auto flex items-center gap-3">
+          <div className="ml-auto flex items-center gap-1.5">
             <AccommodationFormButton
               tripId={tripId}
               areas={areas}
               accommodation={acc}
-              label="Bearbeiten"
-              className="text-xs font-medium hover:underline"
+              label={<Pencil className="h-4 w-4" strokeWidth={2} />}
+              title="Unterkunft bearbeiten"
+              className="icon-btn"
             />
             <DeleteButton
               action={deleteAccommodation}
               id={acc.id}
               tripId={tripId}
+              label={<Trash2 className="h-4 w-4" strokeWidth={2} />}
+              title="Unterkunft löschen"
+              className="icon-btn icon-btn-danger"
               confirmText={`„${acc.name}" löschen?`}
             />
           </div>
@@ -271,24 +278,29 @@ export default function AccommodationsSection({
                 )}
               </div>
               {canEdit && (
-                <div className="flex items-center gap-3 text-xs">
+                <div className="flex items-center gap-1.5">
                   <AccommodationFormButton
                     tripId={trip.id}
                     areas={areas}
                     defaultAreaId={area.id}
-                    label="+ Unterkunft"
-                    className="font-medium hover:underline"
+                    label={<Plus className="h-4 w-4" strokeWidth={2} />}
+                    title="Unterkunft in dieser Gegend hinzufügen"
+                    className="icon-btn"
                   />
                   <AreaFormButton
                     tripId={trip.id}
                     area={area}
-                    label="Bearbeiten"
-                    className="font-medium hover:underline"
+                    label={<Pencil className="h-4 w-4" strokeWidth={2} />}
+                    title="Gegend bearbeiten"
+                    className="icon-btn"
                   />
                   <DeleteButton
                     action={deleteArea}
                     id={area.id}
                     tripId={trip.id}
+                    label={<Trash2 className="h-4 w-4" strokeWidth={2} />}
+                    title="Gegend löschen"
+                    className="icon-btn icon-btn-danger"
                     confirmText={`Gegend „${area.name}" löschen? Unterkünfte bleiben erhalten (ohne Gegend).`}
                   />
                 </div>

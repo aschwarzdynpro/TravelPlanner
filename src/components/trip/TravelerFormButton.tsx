@@ -11,11 +11,13 @@ export default function TravelerFormButton({
   tripId,
   traveler,
   label,
+  title,
   className = "btn-primary",
 }: {
   tripId: string;
   traveler?: Traveler;
-  label: string;
+  label: React.ReactNode;
+  title?: string;
   className?: string;
 }) {
   const [open, setOpen] = useState(false);
@@ -23,7 +25,7 @@ export default function TravelerFormButton({
 
   return (
     <>
-      <button className={className} onClick={() => setOpen(true)}>
+      <button className={className} title={title} onClick={() => setOpen(true)}>
         {label}
       </button>
       <Modal

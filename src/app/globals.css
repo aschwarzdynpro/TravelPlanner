@@ -88,6 +88,14 @@ body {
   .btn-danger {
     @apply border border-red-200 text-red-600 hover:bg-red-50 active:scale-[0.98] dark:border-red-900/50 dark:hover:bg-red-950/40;
   }
+  /* Square icon-only button for compact card action bars. Pair with a title/
+     aria-label for accessibility. icon-btn-danger tints the hover red. */
+  .icon-btn {
+    @apply inline-flex h-8 w-8 items-center justify-center rounded-lg border bg-transparent text-[var(--muted)] transition hover:border-[var(--ring)] hover:bg-black/[0.06] hover:text-[var(--foreground)] active:scale-95 disabled:opacity-50 disabled:pointer-events-none cursor-pointer dark:hover:bg-white/[0.08];
+  }
+  .icon-btn-danger {
+    @apply hover:border-red-200 hover:bg-red-50 hover:text-red-600 dark:hover:border-red-900/50 dark:hover:bg-red-950/40 dark:hover:text-red-400;
+  }
   .input,
   .select,
   .textarea {

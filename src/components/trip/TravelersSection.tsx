@@ -5,7 +5,7 @@ import { initials } from "@/lib/format";
 import TravelerFormButton from "./TravelerFormButton";
 import DeleteButton from "@/components/DeleteButton";
 import { deleteTraveler } from "@/app/(app)/trips/[id]/actions";
-import { Users, Mail, Phone } from "@/components/icons";
+import { Users, Mail, Phone, Pencil, Trash2 } from "@/components/icons";
 
 export default function TravelersSection({
   trip,
@@ -57,17 +57,21 @@ export default function TravelersSection({
                 )}
                 {t.notes && <p className="mt-1 text-sm">{t.notes}</p>}
                 {canEdit && (
-                  <div className="mt-2 flex items-center gap-3 text-xs">
+                  <div className="mt-2 flex items-center gap-1.5">
                     <TravelerFormButton
                       tripId={trip.id}
                       traveler={t}
-                      label="Bearbeiten"
-                      className="font-medium hover:underline"
+                      label={<Pencil className="h-4 w-4" strokeWidth={2} />}
+                      title="Mitreisende:n bearbeiten"
+                      className="icon-btn"
                     />
                     <DeleteButton
                       action={deleteTraveler}
                       id={t.id}
                       tripId={trip.id}
+                      label={<Trash2 className="h-4 w-4" strokeWidth={2} />}
+                      title="Mitreisende:n entfernen"
+                      className="icon-btn icon-btn-danger"
                       confirmText={`„${t.name}" entfernen?`}
                     />
                   </div>

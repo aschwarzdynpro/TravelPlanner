@@ -13,11 +13,13 @@ export default function AreaFormButton({
   tripId,
   area,
   label,
+  title,
   className = "btn-primary",
 }: {
   tripId: string;
   area?: Area;
-  label: string;
+  label: React.ReactNode;
+  title?: string;
   className?: string;
 }) {
   const [open, setOpen] = useState(false);
@@ -26,7 +28,7 @@ export default function AreaFormButton({
 
   return (
     <>
-      <button className={className} onClick={() => setOpen(true)}>
+      <button className={className} title={title} onClick={() => setOpen(true)}>
         {label}
       </button>
       <Modal
