@@ -6,26 +6,26 @@ import { Share2, MapPin, CalendarDays, ArrowRight } from "@/components/icons";
 
 export const dynamic = "force-dynamic";
 
+type FollowedTrip = {
+  id: string;
+  name: string;
+  kind: string;
+  destination: string | null;
+  start_date: string | null;
+  end_date: string | null;
+  cover_color: string | null;
+  share_token: string;
+};
+
 export default async function FollowingTripsPage() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
 
-  // Trips the user follows. The embedded trip is only returned while the user
-  // may still see it (RLS) — i.e. it is still public. is_public is re-checked
-  // below so a since-unshared trip drops out of the list.
-  const { data: follows } = await supabase
-    .from("trip_follows")
-    .select("trip_id, trips(id, name, kind, destination, start_date, end_date, cover_color, share_token, is_public)")
-    .eq("user_id", user!.id)
-    .order("created_at", { ascending: false });
-
-  const trips = (follows ?? [])
-    .map((f) => f.trips)
-    .filter(
-      (t): t is NonNullable<typeof t> => Boolean(t) && t!.is_public === true,
-    );
+  // The followed trips that are still public, with only safe display columns.
+  // Served by a SECURITY DEFINER function because non-members no longer read
+  // public trips directly (share-level boundary); a trip that was unshared
+  // drops out automatically.
+  const { data } = await supabase.rpc("get_followed_trips");
+  const trips = (data as unknown as FollowedTrip[] | null) ?? [];
 
   return (
     <div>

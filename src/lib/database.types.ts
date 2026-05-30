@@ -615,9 +615,11 @@ export type Database = {
       can_edit_trip: { Args: { _trip_id: string }; Returns: boolean }
       can_view_trip: { Args: { _trip_id: string }; Returns: boolean }
       claim_invites: { Args: never; Returns: number }
+      get_followed_trips: { Args: never; Returns: Json }
       get_shared_trip: { Args: { p_token: string }; Returns: Json }
       is_trip_editor: { Args: { _trip_id: string }; Returns: boolean }
       is_trip_member: { Args: { _trip_id: string }; Returns: boolean }
+      is_trip_participant: { Args: { _trip_id: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never

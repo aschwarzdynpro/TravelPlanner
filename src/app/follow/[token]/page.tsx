@@ -55,6 +55,8 @@ type SharedFlight = {
 };
 type SharedTrip = {
   trip: {
+    id: string;
+    created_by: string;
     name: string;
     kind: string;
     destination: string | null;
@@ -90,39 +92,32 @@ export default async function FollowPage({
   const { trip, areas, accommodations, flights } = data;
   const showCosts = trip.share_level === "full";
 
-  // For the follow button: resolve current user + the trip id behind the token.
+  // The trip id comes from the RPC (non-members can no longer read the trips
+  // row directly). The follow/membership lookups below are scoped to the
+  // current user by RLS.
+  const tripId = trip.id;
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  let tripId: string | null = null;
   let isFollowing = false;
   let isMember = false;
   if (user) {
-    const { data: trow } = await supabase
-      .from("trips")
-      .select("id, created_by")
-      .eq("share_token", token)
-      .eq("is_public", true)
-      .maybeSingle();
-    tripId = trow?.id ?? null;
-    if (tripId) {
-      const [{ data: follow }, { data: membership }] = await Promise.all([
-        supabase
-          .from("trip_follows")
-          .select("id")
-          .eq("trip_id", tripId)
-          .eq("user_id", user.id)
-          .maybeSingle(),
-        supabase
-          .from("trip_members")
-          .select("id")
-          .eq("trip_id", tripId)
-          .eq("user_id", user.id)
-          .maybeSingle(),
-      ]);
-      isFollowing = Boolean(follow);
-      isMember = Boolean(membership) || trow?.created_by === user.id;
-    }
+    const [{ data: follow }, { data: membership }] = await Promise.all([
+      supabase
+        .from("trip_follows")
+        .select("id")
+        .eq("trip_id", tripId)
+        .eq("user_id", user.id)
+        .maybeSingle(),
+      supabase
+        .from("trip_members")
+        .select("id")
+        .eq("trip_id", tripId)
+        .eq("user_id", user.id)
+        .maybeSingle(),
+    ]);
+    isFollowing = Boolean(follow);
+    isMember = Boolean(membership) || trip.created_by === user.id;
   }
 
   const accByArea = (areaId: string | null) =>
@@ -171,7 +166,7 @@ export default async function FollowPage({
           {trip.description && (
             <p className="mt-3 max-w-2xl opacity-90">{trip.description}</p>
           )}
-          {tripId && !isMember && (
+          {user && !isMember && (
             <div className="mt-4">
               <FollowButton tripId={tripId} initialFollowing={isFollowing} />
             </div>
