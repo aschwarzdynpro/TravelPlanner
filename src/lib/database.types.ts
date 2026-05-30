@@ -107,6 +107,7 @@ export type Database = {
       areas: {
         Row: {
           arrival_date: string | null
+          country_code: string | null
           created_at: string
           departure_date: string | null
           description: string | null
@@ -120,6 +121,7 @@ export type Database = {
         }
         Insert: {
           arrival_date?: string | null
+          country_code?: string | null
           created_at?: string
           departure_date?: string | null
           description?: string | null
@@ -133,6 +135,7 @@ export type Database = {
         }
         Update: {
           arrival_date?: string | null
+          country_code?: string | null
           created_at?: string
           departure_date?: string | null
           description?: string | null

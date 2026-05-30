@@ -106,6 +106,7 @@ export async function reTravel(formData: FormData) {
           trip_id: newTrip.id,
           name: a.name,
           region: a.region,
+          country_code: a.country_code,
           description: a.description,
           latitude: a.latitude,
           longitude: a.longitude,

@@ -96,10 +96,13 @@ export async function saveArea(formData: FormData) {
   const tripId = String(formData.get("trip_id"));
   const id = str(formData, "id");
   const name = str(formData, "name") ?? "Neue Gegend";
+  const countryRaw = str(formData, "country_code");
   const payload = {
     trip_id: tripId,
     name,
     region: str(formData, "region"),
+    country_code:
+      countryRaw && /^[A-Z]{2}$/.test(countryRaw) ? countryRaw : null,
     description: str(formData, "description"),
     arrival_date: str(formData, "arrival_date"),
     departure_date: str(formData, "departure_date"),

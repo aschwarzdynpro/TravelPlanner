@@ -7,6 +7,7 @@ import { Loader2 } from "@/components/icons";
 import type { Area } from "./types";
 import { saveArea } from "@/app/(app)/trips/[id]/actions";
 import CoordinateFields from "@/components/map/CoordinateFields";
+import CountrySelect from "@/components/ui/CountrySelect";
 import DatePicker from "@/components/ui/DatePicker";
 
 export default function AreaFormButton({
@@ -25,6 +26,8 @@ export default function AreaFormButton({
   const [open, setOpen] = useState(false);
   const nameRef = useRef<HTMLInputElement>(null);
   const regionRef = useRef<HTMLInputElement>(null);
+  // Controlled so geocoding can auto-fill it; posts as country_code.
+  const [country, setCountry] = useState(area?.country_code ?? "");
 
   return (
     <>
@@ -58,15 +61,25 @@ export default function AreaFormButton({
               placeholder="z. B. Chianti / Florenz"
             />
           </div>
-          <div>
-            <label className="label">Region / Land</label>
-            <input
-              ref={regionRef}
-              name="region"
-              className="input"
-              defaultValue={area?.region ?? ""}
-              placeholder="Toskana, Italien"
-            />
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="label">Land</label>
+              <CountrySelect
+                name="country_code"
+                value={country}
+                onChange={setCountry}
+              />
+            </div>
+            <div>
+              <label className="label">Region (optional)</label>
+              <input
+                ref={regionRef}
+                name="region"
+                className="input"
+                defaultValue={area?.region ?? ""}
+                placeholder="z. B. Toskana"
+              />
+            </div>
           </div>
 
           <CoordinateFields
@@ -77,6 +90,10 @@ export default function AreaFormButton({
                 .filter(Boolean)
                 .join(", ")
             }
+            // Auto-fill the country from the picked place unless already set.
+            onResult={(r) => {
+              if (r.countryCode && !country) setCountry(r.countryCode);
+            }}
           />
           <div className="grid grid-cols-2 gap-3">
             <div>
