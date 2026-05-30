@@ -67,5 +67,7 @@ export {
   Crown,
   Sparkles,
   Lock,
+  Printer,
+  Download,
   type LucideIcon,
 } from "lucide-react";
