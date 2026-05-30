@@ -156,6 +156,7 @@ export async function reTravel(formData: FormData) {
         name: t.name,
         email: t.email,
         phone: t.phone,
+        birth_date: t.birth_date,
         linked_user_id: t.linked_user_id,
         notes: t.notes,
       })),

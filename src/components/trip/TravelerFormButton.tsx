@@ -6,6 +6,7 @@ import Modal from "@/components/Modal";
 import { Loader2 } from "@/components/icons";
 import type { Traveler } from "./types";
 import { saveTraveler } from "@/app/(app)/trips/[id]/actions";
+import DatePicker from "@/components/ui/DatePicker";
 
 export default function TravelerFormButton({
   tripId,
@@ -71,6 +72,14 @@ export default function TravelerFormButton({
                 defaultValue={t?.phone ?? ""}
               />
             </div>
+          </div>
+          <div>
+            <label className="label">Geburtsdatum</label>
+            <DatePicker name="birth_date" defaultValue={t?.birth_date ?? ""} />
+            <p className="mt-1 text-xs text-[var(--muted)]">
+              Optional – ermöglicht z. B. korrekte Kinderpreise bei der
+              Hotelsuche.
+            </p>
           </div>
           <div>
             <label className="label">Notizen</label>

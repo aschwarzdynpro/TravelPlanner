@@ -1,7 +1,7 @@
 "use client";
 
 import type { WorkspaceData } from "./types";
-import { initials } from "@/lib/format";
+import { initials, ageOn } from "@/lib/format";
 import TravelerFormButton from "./TravelerFormButton";
 import DeleteButton from "@/components/DeleteButton";
 import { deleteTraveler } from "@/app/(app)/trips/[id]/actions";
@@ -42,7 +42,14 @@ export default function TravelersSection({
                 {initials(t.name)}
               </div>
               <div className="min-w-0 flex-1">
-                <h4 className="font-semibold">{t.name}</h4>
+                <h4 className="font-semibold">
+                  {t.name}
+                  {ageOn(t.birth_date) != null && (
+                    <span className="ml-1.5 text-sm font-normal text-[var(--muted)]">
+                      · {ageOn(t.birth_date)} J.
+                    </span>
+                  )}
+                </h4>
                 {t.email && (
                   <p className="flex items-center gap-1.5 truncate text-sm text-[var(--muted)]">
                     <Mail className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />

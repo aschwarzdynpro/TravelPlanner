@@ -98,3 +98,21 @@ export function initials(name: string | null | undefined): string {
     .map((p) => p[0]?.toUpperCase() ?? "")
     .join("");
 }
+
+/**
+ * Age in whole years on a given date (defaults to today). Returns null for a
+ * missing/invalid birth date. Used to derive traveler ages for child pricing.
+ */
+export function ageOn(
+  birthDate: string | null | undefined,
+  onDate?: string | null,
+): number | null {
+  if (!birthDate) return null;
+  const b = new Date(birthDate);
+  const ref = onDate ? new Date(onDate) : new Date();
+  if (Number.isNaN(b.getTime()) || Number.isNaN(ref.getTime())) return null;
+  let age = ref.getFullYear() - b.getFullYear();
+  const m = ref.getMonth() - b.getMonth();
+  if (m < 0 || (m === 0 && ref.getDate() < b.getDate())) age--;
+  return age >= 0 ? age : null;
+}
