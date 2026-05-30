@@ -10,20 +10,30 @@ export type MapMarker = {
   longitude: number;
   title: string;
   subtitle?: string;
+  // Distinguishes the pin style/colour. Defaults to "area".
+  kind?: "area" | "hotel";
+  // Optional extra line shown in the popup (e.g. price · dates).
+  detail?: string;
 };
 
-// Leaflet's default marker icon URLs don't survive bundling, so load the icon
-// assets from the Leaflet CDN explicitly. Keyless, no local asset wiring needed.
-const ICON_BASE = "https://unpkg.com/leaflet@1.9.4/dist/images";
-const DefaultIcon = L.icon({
-  iconRetinaUrl: `${ICON_BASE}/marker-icon-2x.png`,
-  iconUrl: `${ICON_BASE}/marker-icon.png`,
-  shadowUrl: `${ICON_BASE}/marker-shadow.png`,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41],
-});
+// Colour-coded teardrop pin built as a div icon, so we don't depend on bundled
+// image assets and can tint area vs. hotel pins differently.
+function pinIcon(color: string) {
+  return L.divIcon({
+    className: "",
+    html: `<div style="
+      width:22px;height:22px;border-radius:50% 50% 50% 0;
+      background:${color};transform:rotate(-45deg);
+      border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.4);
+    "></div>`,
+    iconSize: [22, 22],
+    iconAnchor: [11, 22],
+    popupAnchor: [0, -20],
+  });
+}
+
+const AREA_ICON = pinIcon("#2563eb"); // blue
+const HOTEL_ICON = pinIcon("#e11d48"); // rose
 
 export default function LeafletMap({
   markers,
@@ -70,13 +80,23 @@ export default function LeafletMap({
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
       {markers.map((m) => (
-        <Marker key={m.id} position={[m.latitude, m.longitude]} icon={DefaultIcon}>
+        <Marker
+          key={m.id}
+          position={[m.latitude, m.longitude]}
+          icon={m.kind === "hotel" ? HOTEL_ICON : AREA_ICON}
+        >
           <Popup>
             <strong>{m.title}</strong>
             {m.subtitle && (
               <>
                 <br />
                 {m.subtitle}
+              </>
+            )}
+            {m.detail && (
+              <>
+                <br />
+                <span style={{ color: "#666" }}>{m.detail}</span>
               </>
             )}
           </Popup>

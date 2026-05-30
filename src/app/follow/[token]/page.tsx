@@ -132,6 +132,7 @@ export default async function FollowPage({
         longitude: area.longitude,
         title: area.name,
         subtitle: area.region ?? undefined,
+        kind: "area",
       });
     }
   }
@@ -143,6 +144,7 @@ export default async function FollowPage({
         longitude: a.longitude,
         title: a.name,
         subtitle: a.address ?? undefined,
+        kind: "hotel",
       });
     }
   }
