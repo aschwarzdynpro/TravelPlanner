@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
 import type { WorkspaceData } from "./types";
 import { TRIP_KINDS } from "@/lib/constants";
@@ -15,6 +15,7 @@ import MapSection from "./MapSection";
 import ActivitySection, { type ActivityEntry } from "./ActivitySection";
 import PrepSection from "./PrepSection";
 import EditTripButton from "./EditTripButton";
+import Popover from "@/components/ui/Popover";
 import {
   LayoutDashboard,
   Hotel,
@@ -29,15 +30,21 @@ import {
   CalendarDays,
   Printer,
   Download,
+  ChevronDown,
+  Check,
   type LucideIcon,
 } from "@/components/icons";
 
-const TABS: { id: string; label: string; icon: LucideIcon }[] = [
-  { id: "overview", label: "Übersicht", icon: LayoutDashboard },
+type TabDef = { id: string; label: string; icon: LucideIcon; primary?: boolean };
+
+// Primary tabs stay visible; the rest live under a "Mehr" menu so the bar fits
+// on mobile without wrapping to two rows.
+const TABS: TabDef[] = [
+  { id: "overview", label: "Übersicht", icon: LayoutDashboard, primary: true },
+  { id: "stays", label: "Unterkünfte", icon: Hotel, primary: true },
+  { id: "map", label: "Karte", icon: MapIcon, primary: true },
+  { id: "flights", label: "Flüge", icon: Plane, primary: true },
   { id: "prep", label: "Vorbereitung", icon: ClipboardList },
-  { id: "stays", label: "Unterkünfte", icon: Hotel },
-  { id: "map", label: "Karte", icon: MapIcon },
-  { id: "flights", label: "Flüge", icon: Plane },
   { id: "travelers", label: "Mitreisende", icon: Users },
   { id: "members", label: "Mitglieder", icon: UserPlus },
   { id: "activity", label: "Aktivität", icon: Bell },
@@ -55,7 +62,13 @@ type TabId =
 
 export default function TripWorkspace(data: WorkspaceData) {
   const [tab, setTab] = useState<TabId>("overview");
+  const [moreOpen, setMoreOpen] = useState(false);
+  const moreRef = useRef<HTMLButtonElement>(null);
   const { trip, accommodations, flights, activity, canEdit } = data;
+
+  const primaryTabs = TABS.filter((t) => t.primary);
+  const secondaryTabs = TABS.filter((t) => !t.primary);
+  const activeSecondary = secondaryTabs.find((t) => t.id === tab);
 
   useBreadcrumbTitle(trip.name);
 
@@ -137,8 +150,8 @@ export default function TripWorkspace(data: WorkspaceData) {
         </div>
       </div>
 
-      <div className="sticky top-0 z-10 mb-6 -mx-4 grid grid-cols-4 border-b bg-[var(--background)]/95 px-2 backdrop-blur supports-[backdrop-filter]:bg-[var(--background)]/80 sm:mx-0 sm:flex sm:gap-1 sm:px-0">
-        {TABS.map((t) => {
+      <div className="sticky top-0 z-10 mb-6 -mx-4 grid grid-cols-5 border-b bg-[var(--background)]/95 px-2 backdrop-blur supports-[backdrop-filter]:bg-[var(--background)]/80 sm:mx-0 sm:flex sm:gap-1 sm:px-0">
+        {primaryTabs.map((t) => {
           const Icon = t.icon;
           return (
             <button
@@ -155,6 +168,54 @@ export default function TripWorkspace(data: WorkspaceData) {
             </button>
           );
         })}
+
+        {/* "Mehr" dropdown for the secondary tabs. */}
+        <button
+          ref={moreRef}
+          onClick={() => setMoreOpen((o) => !o)}
+          className={`flex min-w-0 flex-col items-center gap-0.5 border-b-2 px-1 py-2 text-[11px] font-medium transition sm:flex-row sm:gap-1.5 sm:px-3 sm:text-sm ${
+            activeSecondary
+              ? "border-[var(--primary)] text-[var(--foreground)]"
+              : "border-transparent text-[var(--muted)] hover:text-[var(--foreground)]"
+          }`}
+          aria-haspopup="menu"
+          aria-expanded={moreOpen}
+        >
+          <ChevronDown className="h-4 w-4 shrink-0" strokeWidth={2} />
+          <span className="max-w-full truncate">
+            {activeSecondary ? activeSecondary.label : "Mehr"}
+          </span>
+        </button>
+        <Popover anchorRef={moreRef} open={moreOpen} onClose={() => setMoreOpen(false)}>
+          <div
+            role="menu"
+            className="min-w-44 rounded-lg border bg-[var(--surface)] p-1 shadow-lg"
+          >
+            {secondaryTabs.map((t) => {
+              const Icon = t.icon;
+              const active = tab === t.id;
+              return (
+                <button
+                  key={t.id}
+                  role="menuitem"
+                  onClick={() => {
+                    setTab(t.id as TabId);
+                    setMoreOpen(false);
+                  }}
+                  className={`flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left text-sm transition-colors ${
+                    active
+                      ? "bg-[var(--primary)]/10 text-[var(--foreground)]"
+                      : "hover:bg-black/[0.06] dark:hover:bg-white/[0.08]"
+                  }`}
+                >
+                  <Icon className="h-4 w-4 shrink-0 text-[var(--muted)]" strokeWidth={2} />
+                  <span className="min-w-0 flex-1 truncate">{t.label}</span>
+                  {active && <Check className="h-4 w-4 shrink-0" strokeWidth={2} />}
+                </button>
+              );
+            })}
+          </div>
+        </Popover>
       </div>
 
       {tab === "overview" && (
