@@ -53,10 +53,27 @@ export default function OverviewSection({
   const perPerson = travelers.length ? total / travelers.length : 0;
   const byCountry = costByCountry(accommodations, areas);
 
+  // Paid vs. open. Only accommodations carry a paid flag today; everything not
+  // marked paid (incl. all flights) counts as open.
+  const paid = accommodations
+    .filter((a) => a.is_paid)
+    .reduce((s, a) => s + (a.cost ?? 0), 0);
+  const open = total - paid;
+
   const budget = trip.budget;
   const budgetPct =
     budget && budget > 0 ? Math.round((total / budget) * 100) : 0;
   const overBudget = budget != null && total > budget;
+
+  // Upcoming/overdue payment due dates on unpaid accommodations, nearest first.
+  const dues = accommodations
+    .filter((a) => !a.is_paid && a.payment_due_date)
+    .map((a) => ({
+      name: a.name,
+      date: a.payment_due_date!,
+      left: daysUntil(a.payment_due_date),
+    }))
+    .sort((a, b) => (a.left ?? 0) - (b.left ?? 0));
 
   // Upcoming cancellation deadlines (accommodations), nearest first.
   const deadlines = accommodations
@@ -122,6 +139,22 @@ export default function OverviewSection({
           <div className="mt-4 flex items-center justify-between border-t pt-3">
             <span className="font-semibold">Summe</span>
             <span className="text-lg font-bold">{formatCurrency(total)}</span>
+          </div>
+
+          {/* Paid vs. open split */}
+          <div className="mt-3 grid grid-cols-2 gap-3 border-t pt-3 text-sm">
+            <div className="rounded-lg bg-black/[0.03] p-2 dark:bg-white/5">
+              <div className="text-xs text-[var(--muted)]">Bereits bezahlt</div>
+              <div className="font-semibold text-green-700 dark:text-green-300">
+                {formatCurrency(paid)}
+              </div>
+            </div>
+            <div className="rounded-lg bg-black/[0.03] p-2 dark:bg-white/5">
+              <div className="text-xs text-[var(--muted)]">Noch offen</div>
+              <div className="font-semibold text-amber-700 dark:text-amber-300">
+                {formatCurrency(open)}
+              </div>
+            </div>
           </div>
 
           {mixedCurrencies && (
@@ -205,6 +238,45 @@ export default function OverviewSection({
           )}
         </div>
       </div>
+
+      {dues.length > 0 && (
+        <div className="card p-5">
+          <h3 className="mb-4 flex items-center gap-2 font-semibold">
+            <Wallet className="h-4 w-4" strokeWidth={2} />
+            Offene Zahlungen
+          </h3>
+          <ul className="space-y-2">
+            {dues.map((d, i) => {
+              const overdue = (d.left ?? 0) < 0;
+              const soon = (d.left ?? 99) >= 0 && (d.left ?? 99) <= 7;
+              return (
+                <li
+                  key={i}
+                  className="flex items-center justify-between gap-2 text-sm"
+                >
+                  <span className="truncate">{d.name}</span>
+                  <span className="flex shrink-0 items-center gap-2">
+                    <span className="text-[var(--muted)]">
+                      {formatDate(d.date)}
+                    </span>
+                    <span
+                      className={`chip ${
+                        overdue || soon
+                          ? "bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-300"
+                          : "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300"
+                      }`}
+                    >
+                      {overdue
+                        ? "überfällig"
+                        : `in ${d.left} ${d.left === 1 ? "Tag" : "Tagen"}`}
+                    </span>
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
 
       {byCountry.length > 0 && accTotal > 0 && (
         <div className="card p-5">

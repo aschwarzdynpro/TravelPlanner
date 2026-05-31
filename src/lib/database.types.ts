@@ -31,10 +31,12 @@ export type Database = {
           created_at: string
           currency: string
           id: string
+          is_paid: boolean
           latitude: number | null
           longitude: number | null
           name: string
           notes: string | null
+          payment_due_date: string | null
           price_per_night: number | null
           trip_id: string
           updated_at: string
@@ -55,10 +57,12 @@ export type Database = {
           created_at?: string
           currency?: string
           id?: string
+          is_paid?: boolean
           latitude?: number | null
           longitude?: number | null
           name: string
           notes?: string | null
+          payment_due_date?: string | null
           price_per_night?: number | null
           trip_id: string
           updated_at?: string
@@ -79,10 +83,12 @@ export type Database = {
           created_at?: string
           currency?: string
           id?: string
+          is_paid?: boolean
           latitude?: number | null
           longitude?: number | null
           name?: string
           notes?: string | null
+          payment_due_date?: string | null
           price_per_night?: number | null
           trip_id?: string
           updated_at?: string

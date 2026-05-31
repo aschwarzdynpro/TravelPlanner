@@ -163,6 +163,8 @@ export async function saveAccommodation(formData: FormData) {
     currency: String(formData.get("currency") ?? "EUR"),
     latitude: num(formData, "latitude"),
     longitude: num(formData, "longitude"),
+    is_paid: formData.get("is_paid") === "on",
+    payment_due_date: str(formData, "payment_due_date"),
     cancellation_policy: str(formData, "cancellation_policy"),
     cancellation_deadline: str(formData, "cancellation_deadline"),
     booking_reference: str(formData, "booking_reference"),

@@ -208,6 +208,25 @@ export default function AccommodationFormButton({
             Nächten (Check-in bis Check-out) berechnet.
           </p>
 
+          <div className="grid grid-cols-2 items-end gap-3">
+            <label className="flex cursor-pointer items-center gap-2 text-sm font-medium">
+              <input
+                type="checkbox"
+                name="is_paid"
+                defaultChecked={a?.is_paid ?? false}
+                className="h-4 w-4 rounded border"
+              />
+              Bereits bezahlt
+            </label>
+            <div>
+              <label className="label">Zahlziel (optional)</label>
+              <DatePicker
+                name="payment_due_date"
+                defaultValue={a?.payment_due_date ?? ""}
+              />
+            </div>
+          </div>
+
           <div className="rounded-lg border border-dashed p-3">
             <div className="mb-2 text-xs font-semibold text-[var(--muted)]">
               Stornierung
