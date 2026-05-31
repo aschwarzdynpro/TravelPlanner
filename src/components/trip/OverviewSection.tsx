@@ -10,6 +10,7 @@ import {
   Plane,
   MapPin,
   TriangleAlert,
+  ChevronDown,
   type LucideIcon,
 } from "@/components/icons";
 
@@ -136,7 +137,7 @@ export default function OverviewSection({
         />
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="space-y-4">
         <div className="card p-5">
           <h3 className="mb-4 flex items-center gap-2 font-semibold">
             <Wallet className="h-4 w-4" strokeWidth={2} />
@@ -211,16 +212,12 @@ export default function OverviewSection({
           )}
         </div>
 
-        <div className="card p-5">
-          <h3 className="mb-4 flex items-center gap-2 font-semibold">
-            <AlarmClock className="h-4 w-4" strokeWidth={2} />
-            Storno-Fristen
-          </h3>
-          {deadlines.length === 0 ? (
-            <p className="text-sm text-[var(--muted)]">
-              Keine anstehenden Stornierungsfristen hinterlegt.
-            </p>
-          ) : (
+        {deadlines.length > 0 && (
+          <CollapsibleCard
+            icon={AlarmClock}
+            title="Storno-Fristen"
+            badge={String(deadlines.length)}
+          >
             <ul className="space-y-2">
               {deadlines.slice(0, 6).map((d, i) => (
                 <li
@@ -243,16 +240,16 @@ export default function OverviewSection({
                 </li>
               ))}
             </ul>
-          )}
-        </div>
+          </CollapsibleCard>
+        )}
       </div>
 
       {dues.length > 0 && (
-        <div className="card p-5">
-          <h3 className="mb-4 flex items-center gap-2 font-semibold">
-            <Wallet className="h-4 w-4" strokeWidth={2} />
-            Offene Zahlungen
-          </h3>
+        <CollapsibleCard
+          icon={Wallet}
+          title="Offene Zahlungen"
+          badge={String(dues.length)}
+        >
           <ul className="space-y-2">
             {dues.map((d, i) => {
               const overdue = (d.left ?? 0) < 0;
@@ -283,15 +280,11 @@ export default function OverviewSection({
               );
             })}
           </ul>
-        </div>
+        </CollapsibleCard>
       )}
 
       {byCountry.length > 0 && accTotal > 0 && (
-        <div className="card p-5">
-          <h3 className="mb-4 flex items-center gap-2 font-semibold">
-            <MapPin className="h-4 w-4" strokeWidth={2} />
-            Unterkunftskosten pro Land
-          </h3>
+        <CollapsibleCard icon={MapPin} title="Unterkunftskosten pro Land">
           <div className="space-y-3">
             {byCountry.map((c) => (
               <div key={c.code ?? "none"}>
@@ -317,9 +310,42 @@ export default function OverviewSection({
               </div>
             ))}
           </div>
-        </div>
+        </CollapsibleCard>
       )}
     </div>
+  );
+}
+
+// Collapsible card for secondary detail blocks. Closed by default so the
+// overview stays calm; native <details> = accessible, no extra JS.
+function CollapsibleCard({
+  icon: Icon,
+  title,
+  badge,
+  children,
+}: {
+  icon: LucideIcon;
+  title: string;
+  badge?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <details className="card group p-0 [&_summary::-webkit-details-marker]:hidden">
+      <summary className="flex cursor-pointer list-none items-center gap-2 p-5 font-semibold">
+        <Icon className="h-4 w-4 shrink-0" strokeWidth={2} />
+        <span>{title}</span>
+        {badge && (
+          <span className="chip bg-black/5 text-[var(--muted)] dark:bg-white/10">
+            {badge}
+          </span>
+        )}
+        <ChevronDown
+          className="ml-auto h-4 w-4 shrink-0 text-[var(--muted)] transition-transform group-open:rotate-180"
+          strokeWidth={2}
+        />
+      </summary>
+      <div className="px-5 pb-5">{children}</div>
+    </details>
   );
 }
 
