@@ -64,7 +64,8 @@ export default function TripWorkspace(data: WorkspaceData) {
   const [tab, setTab] = useState<TabId>("overview");
   const [moreOpen, setMoreOpen] = useState(false);
   const moreRef = useRef<HTMLButtonElement>(null);
-  const { trip, accommodations, flights, activity, canEdit } = data;
+  const { trip, accommodations, flights, activity, canEdit, showPrintPdf } =
+    data;
 
   const primaryTabs = TABS.filter((t) => t.primary);
   const secondaryTabs = TABS.filter((t) => !t.primary);
@@ -131,13 +132,17 @@ export default function TripWorkspace(data: WorkspaceData) {
               {canEdit && <EditTripButton trip={trip} />}
             </div>
             <div className="flex items-center gap-3 text-sm">
-              <Link
-                href={`/trips/${trip.id}/print`}
-                className="inline-flex items-center gap-1.5 text-[var(--muted)] hover:text-[var(--foreground)]"
-              >
-                <Printer className="h-4 w-4" strokeWidth={2} />
-                Drucken / PDF
-              </Link>
+              {/* Print/PDF is gated behind a global admin flag (default off).
+                  The print page itself stays available by URL. */}
+              {showPrintPdf && (
+                <Link
+                  href={`/trips/${trip.id}/print`}
+                  className="inline-flex items-center gap-1.5 text-[var(--muted)] hover:text-[var(--foreground)]"
+                >
+                  <Printer className="h-4 w-4" strokeWidth={2} />
+                  Drucken / PDF
+                </Link>
+              )}
               <a
                 href={`/trips/${trip.id}/calendar`}
                 className="inline-flex items-center gap-1.5 text-[var(--muted)] hover:text-[var(--foreground)]"

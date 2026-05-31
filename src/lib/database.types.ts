@@ -14,6 +14,35 @@ export type Database = {
   }
   public: {
     Tables: {
+      app_settings: {
+        Row: {
+          key: string
+          updated_at: string
+          updated_by: string | null
+          value: Json
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: Json
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "app_settings_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       accommodations: {
         Row: {
           address: string | null
@@ -241,6 +270,7 @@ export type Database = {
           display_name: string | null
           email: string | null
           id: string
+          is_admin: boolean
           plan: string
           plan_until: string | null
           show_area_maps: boolean
@@ -252,6 +282,7 @@ export type Database = {
           display_name?: string | null
           email?: string | null
           id: string
+          is_admin?: boolean
           plan?: string
           plan_until?: string | null
           show_area_maps?: boolean
@@ -263,6 +294,7 @@ export type Database = {
           display_name?: string | null
           email?: string | null
           id?: string
+          is_admin?: boolean
           plan?: string
           plan_until?: string | null
           show_area_maps?: boolean
@@ -638,6 +670,7 @@ export type Database = {
       claim_invites: { Args: never; Returns: number }
       get_followed_trips: { Args: never; Returns: Json }
       get_shared_trip: { Args: { p_token: string }; Returns: Json }
+      is_admin: { Args: never; Returns: boolean }
       is_trip_editor: { Args: { _trip_id: string }; Returns: boolean }
       is_trip_member: { Args: { _trip_id: string }; Returns: boolean }
       is_trip_participant: { Args: { _trip_id: string }; Returns: boolean }

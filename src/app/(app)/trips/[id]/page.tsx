@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import TripWorkspace from "@/components/trip/TripWorkspace";
 import { isPro as isProPlan } from "@/lib/entitlements";
+import { getAppSettings } from "@/lib/app-settings";
 
 export const dynamic = "force-dynamic";
 
@@ -91,6 +92,7 @@ export default async function TripPage({
     myMembership?.role === "owner" ||
     myMembership?.role === "editor";
   const isOwner = trip.created_by === user?.id || myMembership?.role === "owner";
+  const settings = await getAppSettings();
 
   return (
     <TripWorkspace
@@ -108,6 +110,7 @@ export default async function TripPage({
       currentUserId={user?.id ?? ""}
       isPro={isProPlan(profile)}
       showAreaMaps={profile?.show_area_maps ?? true}
+      showPrintPdf={settings.showPrintPdf}
     />
   );
 }

@@ -50,3 +50,25 @@ export async function setShowAreaMaps(value: boolean) {
     .eq("id", user.id);
   revalidatePath("/account/settings");
 }
+
+// Admin: set a global app setting. RLS (app_settings_write) already restricts
+// writes to admins; we additionally verify here so a non-admin gets a clear
+// no-op rather than a silent RLS rejection.
+export async function setAppSetting(key: string, value: boolean) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return;
+  const { data: admin } = await supabase.rpc("is_admin");
+  if (admin !== true) return;
+  await supabase
+    .from("app_settings")
+    .upsert(
+      { key, value, updated_at: new Date().toISOString(), updated_by: user.id },
+      { onConflict: "key" },
+    );
+  revalidatePath("/account/admin");
+  // Trip pages read this flag, so refresh them too.
+  revalidatePath("/trips", "layout");
+}

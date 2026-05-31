@@ -16,7 +16,7 @@ export default async function AppLayout({
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("display_name, email, theme")
+    .select("display_name, email, theme, is_admin")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -25,7 +25,12 @@ export default async function AppLayout({
   const theme = (profile?.theme ?? "system") as "system" | "light" | "dark";
 
   return (
-    <AppShell displayName={displayName} email={user.email ?? ""} theme={theme}>
+    <AppShell
+      displayName={displayName}
+      email={user.email ?? ""}
+      theme={theme}
+      isAdmin={profile?.is_admin ?? false}
+    >
       {children}
     </AppShell>
   );
