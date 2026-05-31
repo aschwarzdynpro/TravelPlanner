@@ -214,6 +214,8 @@ export async function saveFlight(formData: FormData) {
     arrival_time: str(formData, "arrival_time"),
     cost: num(formData, "cost"),
     currency: String(formData.get("currency") ?? "EUR"),
+    is_paid: formData.get("is_paid") === "on",
+    payment_due_date: str(formData, "payment_due_date"),
     cancellation_policy: str(formData, "cancellation_policy"),
     booking_reference: str(formData, "booking_reference"),
     booking_url: str(formData, "booking_url"),

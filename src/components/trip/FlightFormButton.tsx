@@ -8,6 +8,7 @@ import { saveFlight } from "@/app/(app)/trips/[id]/actions";
 import { CURRENCIES } from "@/lib/constants";
 import SelectMenu from "@/components/ui/SelectMenu";
 import AirlineSelect from "@/components/ui/AirlineSelect";
+import DatePicker from "@/components/ui/DatePicker";
 import { useFlightAutocomplete, useFlightStatus } from "@/hooks/useFlights";
 import type {
   FlightSuggestion,
@@ -350,6 +351,25 @@ function FlightForm({
             name="currency"
             defaultValue={f?.currency ?? "EUR"}
             options={CURRENCY_OPTIONS}
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 items-end gap-3">
+        <label className="flex cursor-pointer items-center gap-2 text-sm font-medium">
+          <input
+            type="checkbox"
+            name="is_paid"
+            defaultChecked={f?.is_paid ?? false}
+            className="h-4 w-4 rounded border"
+          />
+          Bereits bezahlt
+        </label>
+        <div>
+          <label className="label">Zahlziel (optional)</label>
+          <DatePicker
+            name="payment_due_date"
+            defaultValue={f?.payment_due_date ?? ""}
           />
         </div>
       </div>
