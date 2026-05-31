@@ -7,6 +7,7 @@ import type { Flight } from "./types";
 import { saveFlight } from "@/app/(app)/trips/[id]/actions";
 import { CURRENCIES } from "@/lib/constants";
 import SelectMenu from "@/components/ui/SelectMenu";
+import AirlineSelect from "@/components/ui/AirlineSelect";
 import { useFlightAutocomplete, useFlightStatus } from "@/hooks/useFlights";
 import type {
   FlightSuggestion,
@@ -118,6 +119,10 @@ function FlightForm({
   const [depTime, setDepTime] = useState(
     toLocalInput(f?.departure_time ?? null),
   );
+  // Optional return flight (only when creating, not editing). Posts as extra
+  // fields the server action turns into a second flight with swapped airports.
+  const [addReturn, setAddReturn] = useState(false);
+  const [returnTime, setReturnTime] = useState("");
 
   // The chosen flight (compact IATA) drives the live-status lookup; only set on
   // an explicit suggestion pick so typing doesn't spam the status endpoint.
@@ -168,12 +173,15 @@ function FlightForm({
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className="label">Fluggesellschaft</label>
-          <input
+          <AirlineSelect
             name="airline"
-            className="input"
             value={airline}
-            onChange={(e) => setAirline(e.target.value)}
+            onChange={setAirline}
             placeholder="z. B. Lufthansa"
+            onPickCode={(iata) => {
+              // Prefill the flight-number prefix if the field is still empty.
+              if (!flightNumber.trim()) setFlightNumber(`${iata} `);
+            }}
           />
         </div>
         <div ref={fieldRef} className="relative">
@@ -289,6 +297,39 @@ function FlightForm({
           />
         </div>
       </div>
+
+      {/* Return flight — only offered when creating a new flight. */}
+      {!f && (
+        <div className="rounded-lg border border-dashed p-3">
+          <label className="flex cursor-pointer items-center gap-2 text-sm font-medium">
+            <input
+              type="checkbox"
+              name="add_return"
+              checked={addReturn}
+              onChange={(e) => setAddReturn(e.target.checked)}
+              className="h-4 w-4 rounded border"
+            />
+            Rückflug hinzufügen
+          </label>
+          {addReturn && (
+            <div className="mt-3">
+              <label className="label">Rückflug: Abflug</label>
+              <input
+                name="return_time"
+                type="datetime-local"
+                className="input"
+                value={returnTime}
+                onChange={(e) => setReturnTime(e.target.value)}
+              />
+              <p className="mt-1 text-xs text-[var(--muted)]">
+                Legt einen zweiten Flug mit getauschten Flughäfen
+                ({arrAirport || "Ziel"} → {depAirport || "Start"}) an. Gleiche
+                Airline; Kosten/Buchung kannst du danach am Rückflug ergänzen.
+              </p>
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="grid grid-cols-3 gap-3">
         <div className="col-span-2">
