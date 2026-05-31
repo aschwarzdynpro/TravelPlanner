@@ -57,9 +57,9 @@ export default function BottomNav() {
   return (
     <nav
       className="fixed inset-x-0 bottom-0 z-40 border-t bg-[var(--surface)]/95 backdrop-blur lg:hidden"
-      // Add a little breathing room on top of the iOS safe-area inset so the
-      // tappable row sits clear of the home indicator / Siri gesture zone.
-      style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 0.5rem)" }}
+      // Generous breathing room on top of the iOS safe-area inset so labels sit
+      // well clear of the home indicator / Siri gesture zone (Komoot-style).
+      style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 1.25rem)" }}
       aria-label="Hauptnavigation"
     >
       <div className="mx-auto flex max-w-md items-stretch">
