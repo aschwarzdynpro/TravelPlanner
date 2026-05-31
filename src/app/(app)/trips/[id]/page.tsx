@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import TripWorkspace from "@/components/trip/TripWorkspace";
+import { isPro as isProPlan } from "@/lib/entitlements";
 
 export const dynamic = "force-dynamic";
 
@@ -33,6 +34,7 @@ export default async function TripPage({
     { data: activity },
     { data: notes },
     { data: todos },
+    { data: profile },
   ] = await Promise.all([
     supabase
       .from("areas")
@@ -74,6 +76,13 @@ export default async function TripPage({
       .order("done")
       .order("due_date", { nullsFirst: false })
       .order("created_at"),
+    user
+      ? supabase
+          .from("profiles")
+          .select("plan, plan_until")
+          .eq("id", user.id)
+          .maybeSingle()
+      : Promise.resolve({ data: null }),
   ]);
 
   const myMembership = (members ?? []).find((m) => m.user_id === user?.id);
@@ -97,6 +106,7 @@ export default async function TripPage({
       canEdit={canEdit}
       isOwner={isOwner}
       currentUserId={user?.id ?? ""}
+      isPro={isProPlan(profile)}
     />
   );
 }
