@@ -43,6 +43,7 @@ const NAV: NavEntry[] = [
     base: "/account",
     children: [
       { href: "/account/general", label: "Allgemein" },
+      { href: "/account/settings", label: "Einstellungen" },
       { href: "/account/plan", label: "Abo" },
       { href: "/account/security", label: "Sicherheit" },
     ],

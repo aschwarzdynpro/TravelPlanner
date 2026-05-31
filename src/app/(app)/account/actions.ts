@@ -36,3 +36,17 @@ export async function updateTheme(theme: string) {
   if (!user) return;
   await supabase.from("profiles").update({ theme }).eq("id", user.id);
 }
+
+// Toggle whether embedded area-map previews are shown on the trip workspace.
+export async function setShowAreaMaps(value: boolean) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return;
+  await supabase
+    .from("profiles")
+    .update({ show_area_maps: value })
+    .eq("id", user.id);
+  revalidatePath("/account/settings");
+}

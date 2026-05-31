@@ -79,7 +79,7 @@ export default async function TripPage({
     user
       ? supabase
           .from("profiles")
-          .select("plan, plan_until")
+          .select("plan, plan_until, show_area_maps")
           .eq("id", user.id)
           .maybeSingle()
       : Promise.resolve({ data: null }),
@@ -107,6 +107,7 @@ export default async function TripPage({
       isOwner={isOwner}
       currentUserId={user?.id ?? ""}
       isPro={isProPlan(profile)}
+      showAreaMaps={profile?.show_area_maps ?? true}
     />
   );
 }

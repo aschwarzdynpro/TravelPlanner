@@ -238,6 +238,7 @@ export default function AccommodationsSection({
   travelers,
   canEdit,
   isPro,
+  showAreaMaps,
 }: WorkspaceData) {
   const byArea = (areaId: string | null) =>
     accommodations.filter((a) => a.area_id === areaId);
@@ -351,7 +352,7 @@ export default function AccommodationsSection({
                 </div>
               )}
             </div>
-            {areaEmbedUrl && (
+            {showAreaMaps && areaEmbedUrl && (
               <iframe
                 src={areaEmbedUrl}
                 title={`Karte: ${area.name}`}
