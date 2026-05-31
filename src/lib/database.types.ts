@@ -231,6 +231,7 @@ export type Database = {
           id: string
           plan: string
           plan_until: string | null
+          show_area_maps: boolean
           theme: string
         }
         Insert: {
@@ -241,6 +242,7 @@ export type Database = {
           id: string
           plan?: string
           plan_until?: string | null
+          show_area_maps?: boolean
           theme?: string
         }
         Update: {
@@ -251,6 +253,7 @@ export type Database = {
           id?: string
           plan?: string
           plan_until?: string | null
+          show_area_maps?: boolean
           theme?: string
         }
         Relationships: []

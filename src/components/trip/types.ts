@@ -39,4 +39,6 @@ export interface WorkspaceData {
   currentUserId: string;
   // Whether the current user has an active Pro plan (gates premium UI).
   isPro: boolean;
+  // Display preference: show embedded area-map previews.
+  showAreaMaps: boolean;
 }
