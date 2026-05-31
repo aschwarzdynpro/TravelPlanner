@@ -51,7 +51,7 @@ export default function DatePicker({
   const todayISO = toISO(new Date());
 
   return (
-    <div className="relative">
+    <div className="relative min-w-0">
       <input type="hidden" name={name} value={value} />
       <button
         ref={anchorRef}

@@ -36,10 +36,10 @@ export default function Modal({
       onClick={onClose}
     >
       <div
-        className="card w-full max-w-lg max-h-[92vh] overflow-y-auto rounded-b-none sm:rounded-xl"
+        className="card flex max-h-[90dvh] w-full max-w-lg flex-col overflow-hidden rounded-b-none sm:max-h-[85dvh] sm:rounded-xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="sticky top-0 flex items-center justify-between border-b bg-[var(--surface)] px-5 py-3">
+        <div className="flex shrink-0 items-center justify-between border-b bg-[var(--surface)] px-5 py-3">
           <h2 className="font-semibold">{title}</h2>
           <button
             onClick={onClose}
@@ -49,7 +49,11 @@ export default function Modal({
             <X className="h-4 w-4" strokeWidth={2} />
           </button>
         </div>
-        <div className="p-5">{children}</div>
+        {/* Only the body scrolls; overflow-x-hidden stops any wide child from
+            spilling past the edge on narrow screens. */}
+        <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden p-5">
+          {children}
+        </div>
       </div>
     </div>
   );
