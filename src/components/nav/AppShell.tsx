@@ -4,6 +4,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { initials } from "@/lib/format";
 import Sidebar from "./Sidebar";
+import BottomNav from "./BottomNav";
 import { BreadcrumbProvider, Breadcrumb } from "./breadcrumb";
 import { X, Menu, Power } from "@/components/icons";
 
@@ -133,10 +134,14 @@ export default function AppShell({
             </div>
           </header>
 
-          <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6">
+          {/* Extra bottom padding on mobile so content clears the bottom nav. */}
+          <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 pb-24 lg:pb-6">
             {children}
           </main>
         </div>
+
+        {/* Mobile bottom tab bar */}
+        <BottomNav />
       </div>
     </BreadcrumbProvider>
   );
