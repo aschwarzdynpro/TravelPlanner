@@ -53,11 +53,11 @@ export default function OverviewSection({
   const perPerson = travelers.length ? total / travelers.length : 0;
   const byCountry = costByCountry(accommodations, areas);
 
-  // Paid vs. open. Only accommodations carry a paid flag today; everything not
-  // marked paid (incl. all flights) counts as open.
-  const paid = accommodations
-    .filter((a) => a.is_paid)
-    .reduce((s, a) => s + (a.cost ?? 0), 0);
+  // Paid vs. open across accommodations and flights; everything not marked
+  // paid counts as open.
+  const paid =
+    accommodations.filter((a) => a.is_paid).reduce((s, a) => s + (a.cost ?? 0), 0) +
+    flights.filter((f) => f.is_paid).reduce((s, f) => s + (f.cost ?? 0), 0);
   const open = total - paid;
 
   const budget = trip.budget;
@@ -65,14 +65,22 @@ export default function OverviewSection({
     budget && budget > 0 ? Math.round((total / budget) * 100) : 0;
   const overBudget = budget != null && total > budget;
 
-  // Upcoming/overdue payment due dates on unpaid accommodations, nearest first.
-  const dues = accommodations
-    .filter((a) => !a.is_paid && a.payment_due_date)
-    .map((a) => ({
-      name: a.name,
-      date: a.payment_due_date!,
-      left: daysUntil(a.payment_due_date),
-    }))
+  // Upcoming/overdue payment due dates on unpaid accommodations + flights.
+  const dues = [
+    ...accommodations
+      .filter((a) => !a.is_paid && a.payment_due_date)
+      .map((a) => ({ name: a.name, date: a.payment_due_date! })),
+    ...flights
+      .filter((f) => !f.is_paid && f.payment_due_date)
+      .map((f) => ({
+        name:
+          [f.airline, f.flight_number].filter(Boolean).join(" ") ||
+          [f.departure_airport, f.arrival_airport].filter(Boolean).join(" → ") ||
+          "Flug",
+        date: f.payment_due_date!,
+      })),
+  ]
+    .map((d) => ({ ...d, left: daysUntil(d.date) }))
     .sort((a, b) => (a.left ?? 0) - (b.left ?? 0));
 
   // Upcoming cancellation deadlines (accommodations), nearest first.

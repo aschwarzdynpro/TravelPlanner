@@ -178,7 +178,9 @@ export type Database = {
           departure_time: string | null
           flight_number: string | null
           id: string
+          is_paid: boolean
           notes: string | null
+          payment_due_date: string | null
           trip_id: string
           updated_at: string
         }
@@ -196,7 +198,9 @@ export type Database = {
           departure_time?: string | null
           flight_number?: string | null
           id?: string
+          is_paid?: boolean
           notes?: string | null
+          payment_due_date?: string | null
           trip_id: string
           updated_at?: string
         }
@@ -214,7 +218,9 @@ export type Database = {
           departure_time?: string | null
           flight_number?: string | null
           id?: string
+          is_paid?: boolean
           notes?: string | null
+          payment_due_date?: string | null
           trip_id?: string
           updated_at?: string
         }

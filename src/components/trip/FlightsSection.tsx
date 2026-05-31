@@ -1,7 +1,7 @@
 "use client";
 
-import type { WorkspaceData } from "./types";
-import { formatCurrency, formatDateTime } from "@/lib/format";
+import type { WorkspaceData, Flight } from "./types";
+import { formatCurrency, formatDate, formatDateTime, daysUntil } from "@/lib/format";
 import FlightFormButton from "./FlightFormButton";
 import DeleteButton from "@/components/DeleteButton";
 import { deleteFlight } from "@/app/(app)/trips/[id]/actions";
@@ -14,7 +14,42 @@ import {
   StickyNote,
   Pencil,
   Trash2,
+  Check,
+  Wallet,
 } from "@/components/icons";
+
+// Paid / open payment indicator with optional due-date hint (mirrors the
+// accommodation card).
+function PaymentChip({ flight }: { flight: Flight }) {
+  if (flight.is_paid) {
+    return (
+      <span className="chip bg-green-50 text-green-700 dark:bg-green-950/40 dark:text-green-300">
+        <Check className="h-3 w-3" strokeWidth={2} />
+        Bezahlt
+      </span>
+    );
+  }
+  const due = daysUntil(flight.payment_due_date);
+  let label = "Offen";
+  let cls = "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300";
+  if (due !== null) {
+    if (due < 0) {
+      label = "Zahlung überfällig";
+      cls = "bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-300";
+    } else if (due <= 7) {
+      label = `Fällig in ${due} ${due === 1 ? "Tag" : "Tagen"}`;
+      cls = "bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-300";
+    } else {
+      label = `Offen bis ${formatDate(flight.payment_due_date)}`;
+    }
+  }
+  return (
+    <span className={`chip ${cls}`}>
+      <Wallet className="h-3 w-3" strokeWidth={2} />
+      {label}
+    </span>
+  );
+}
 
 export default function FlightsSection({
   trip,
@@ -52,8 +87,11 @@ export default function FlightsSection({
                     <span>{f.arrival_airport || "—"}</span>
                   </div>
                 </div>
-                <div className="text-right font-semibold">
-                  {formatCurrency(f.cost, f.currency)}
+                <div className="flex flex-col items-end gap-1">
+                  <span className="font-semibold">
+                    {formatCurrency(f.cost, f.currency)}
+                  </span>
+                  {f.cost != null && <PaymentChip flight={f} />}
                 </div>
               </div>
 
