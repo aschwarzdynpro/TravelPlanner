@@ -41,4 +41,6 @@ export interface WorkspaceData {
   isPro: boolean;
   // Display preference: show embedded area-map previews.
   showAreaMaps: boolean;
+  // Admin feature flag: show the "Drucken / PDF" button.
+  showPrintPdf: boolean;
 }

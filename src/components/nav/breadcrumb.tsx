@@ -65,6 +65,10 @@ const STATIC: { match: (p: string) => boolean; crumbs: Crumb[] }[] = [
     crumbs: [{ label: "Account" }, { label: "Allgemein" }],
   },
   {
+    match: (p) => p === "/account/admin",
+    crumbs: [{ label: "Account" }, { label: "Admin" }],
+  },
+  {
     match: (p) => p === "/account/settings",
     crumbs: [{ label: "Account" }, { label: "Einstellungen" }],
   },

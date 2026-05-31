@@ -64,8 +64,29 @@ function isChildActive(href: string, pathname: string): boolean {
   return pathname === href;
 }
 
-export default function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
+export default function Sidebar({
+  onNavigate,
+  isAdmin = false,
+}: {
+  onNavigate?: () => void;
+  isAdmin?: boolean;
+}) {
   const pathname = usePathname();
+
+  // Admins get an extra entry in the Account group.
+  const nav: NavEntry[] = isAdmin
+    ? NAV.map((e) =>
+        e.type === "group" && e.base === "/account"
+          ? {
+              ...e,
+              children: [
+                ...e.children,
+                { href: "/account/admin", label: "Admin" },
+              ],
+            }
+          : e,
+      )
+    : NAV;
 
   return (
     <div className="flex h-full flex-col">
@@ -79,7 +100,7 @@ export default function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
       </Link>
 
       <nav className="flex-1 space-y-1 overflow-y-auto px-2 pb-4">
-        {NAV.map((entry) => {
+        {nav.map((entry) => {
           if (entry.type === "link") {
             const active = pathname === entry.href;
             const Icon = entry.icon;

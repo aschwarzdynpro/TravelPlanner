@@ -12,11 +12,13 @@ export default function AppShell({
   displayName,
   email,
   theme = "system",
+  isAdmin = false,
   children,
 }: {
   displayName: string;
   email: string;
   theme?: "system" | "light" | "dark";
+  isAdmin?: boolean;
   children: ReactNode;
 }) {
   const [open, setOpen] = useState(false);
@@ -54,7 +56,7 @@ export default function AppShell({
         {/* Desktop sidebar */}
         <aside className="hidden w-60 shrink-0 border-r bg-[var(--surface)] lg:block">
           <div className="sticky top-0 h-screen">
-            <Sidebar />
+            <Sidebar isAdmin={isAdmin} />
           </div>
         </aside>
 
@@ -84,7 +86,7 @@ export default function AppShell({
             >
               <X className="h-4 w-4" strokeWidth={2} />
             </button>
-            <Sidebar onNavigate={() => setOpen(false)} />
+            <Sidebar isAdmin={isAdmin} onNavigate={() => setOpen(false)} />
           </aside>
         </div>
 
