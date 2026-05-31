@@ -37,6 +37,8 @@ import {
   Trash2,
   Star,
   Sparkles,
+  Check,
+  Wallet,
 } from "@/components/icons";
 
 function AccommodationCard({
@@ -102,6 +104,7 @@ function AccommodationCard({
           <span className="chip bg-black/5 text-[var(--muted)] dark:bg-white/10">
             {BOARD_LEVELS[acc.board_level] ?? acc.board_level}
           </span>
+          {acc.cost != null && <PaymentChip acc={acc} />}
         </div>
       </div>
 
@@ -409,6 +412,38 @@ export default function AccommodationsSection({
 }
 
 // Pro feature: hotel category & rating. The live data source (Google Places)
+// Paid / open payment indicator with optional due-date hint.
+function PaymentChip({ acc }: { acc: Accommodation }) {
+  if (acc.is_paid) {
+    return (
+      <span className="chip bg-green-50 text-green-700 dark:bg-green-950/40 dark:text-green-300">
+        <Check className="h-3 w-3" strokeWidth={2} />
+        Bezahlt
+      </span>
+    );
+  }
+  const due = daysUntil(acc.payment_due_date);
+  let label = "Offen";
+  let cls = "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300";
+  if (due !== null) {
+    if (due < 0) {
+      label = "Zahlung überfällig";
+      cls = "bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-300";
+    } else if (due <= 7) {
+      label = `Fällig in ${due} ${due === 1 ? "Tag" : "Tagen"}`;
+      cls = "bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-300";
+    } else {
+      label = `Offen bis ${formatDate(acc.payment_due_date)}`;
+    }
+  }
+  return (
+    <span className={`chip ${cls}`}>
+      <Wallet className="h-3 w-3" strokeWidth={2} />
+      {label}
+    </span>
+  );
+}
+
 // isn't wired yet, so this only gates + previews. Free users get an upgrade
 // hint; Pro users see a "coming soon" placeholder. Enforcement that actually
 // matters will live server-side once a data source is added.
