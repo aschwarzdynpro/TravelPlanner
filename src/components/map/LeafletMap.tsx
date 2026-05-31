@@ -12,20 +12,31 @@ export type MapMarker = {
   subtitle?: string;
   // Distinguishes the pin style/colour. Defaults to "area".
   kind?: "area" | "hotel";
+  // Optional sequence number drawn on the pin (e.g. hotel order along the trip).
+  index?: number;
   // Optional extra line shown in the popup (e.g. price · dates).
   detail?: string;
 };
 
 // Colour-coded teardrop pin built as a div icon, so we don't depend on bundled
-// image assets and can tint area vs. hotel pins differently.
-function pinIcon(color: string) {
+// image assets and can tint area vs. hotel pins differently. An optional number
+// is drawn upright in the centre.
+function pinIcon(color: string, index?: number) {
+  const label =
+    index != null
+      ? `<span style="
+          position:absolute;inset:0;display:flex;align-items:center;
+          justify-content:center;transform:rotate(45deg);
+          color:#fff;font:700 11px/1 system-ui,sans-serif;
+        ">${index}</span>`
+      : "";
   return L.divIcon({
     className: "",
     html: `<div style="
-      width:22px;height:22px;border-radius:50% 50% 50% 0;
+      position:relative;width:22px;height:22px;border-radius:50% 50% 50% 0;
       background:${color};transform:rotate(-45deg);
       border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.4);
-    "></div>`,
+    ">${label}</div>`,
     iconSize: [22, 22],
     iconAnchor: [11, 22],
     popupAnchor: [0, -20],
@@ -34,6 +45,17 @@ function pinIcon(color: string) {
 
 const AREA_ICON = pinIcon("#2563eb"); // blue
 const HOTEL_ICON = pinIcon("#e11d48"); // rose
+// Numbered hotel icons are built on demand and cached per number.
+const numberedHotelIcons = new Map<number, L.DivIcon>();
+function hotelIcon(index?: number): L.DivIcon {
+  if (index == null) return HOTEL_ICON;
+  let icon = numberedHotelIcons.get(index);
+  if (!icon) {
+    icon = pinIcon("#e11d48", index);
+    numberedHotelIcons.set(index, icon);
+  }
+  return icon;
+}
 
 export default function LeafletMap({
   markers,
@@ -83,7 +105,7 @@ export default function LeafletMap({
         <Marker
           key={m.id}
           position={[m.latitude, m.longitude]}
-          icon={m.kind === "hotel" ? HOTEL_ICON : AREA_ICON}
+          icon={m.kind === "hotel" ? hotelIcon(m.index) : AREA_ICON}
         >
           <Popup>
             <strong>{m.title}</strong>

@@ -20,8 +20,12 @@ export default function MapSection({ areas, accommodations }: WorkspaceData) {
     }
   }
 
+  // Number hotel pins in itinerary order (accommodations are sorted by
+  // check-in date upstream), so the map reads 1 → 2 → 3 along the trip.
+  let hotelNo = 0;
   for (const acc of accommodations) {
     if (acc.latitude != null && acc.longitude != null) {
+      hotelNo++;
       // Compact "price · check-in–check-out" line for the popup.
       const price =
         acc.cost != null ? formatCurrency(acc.cost, acc.currency) : null;
@@ -34,9 +38,10 @@ export default function MapSection({ areas, accommodations }: WorkspaceData) {
         id: `acc-${acc.id}`,
         latitude: acc.latitude,
         longitude: acc.longitude,
-        title: acc.name,
+        title: `${hotelNo}. ${acc.name}`,
         subtitle: acc.address ?? undefined,
         kind: "hotel",
+        index: hotelNo,
         detail,
       });
     }
