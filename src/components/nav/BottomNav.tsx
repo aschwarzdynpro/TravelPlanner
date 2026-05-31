@@ -57,7 +57,9 @@ export default function BottomNav() {
   return (
     <nav
       className="fixed inset-x-0 bottom-0 z-40 border-t bg-[var(--surface)]/95 backdrop-blur lg:hidden"
-      style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+      // Add a little breathing room on top of the iOS safe-area inset so the
+      // tappable row sits clear of the home indicator / Siri gesture zone.
+      style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 0.5rem)" }}
       aria-label="Hauptnavigation"
     >
       <div className="mx-auto flex max-w-md items-stretch">
@@ -69,13 +71,13 @@ export default function BottomNav() {
               key={item.href}
               href={item.href}
               aria-current={active ? "page" : undefined}
-              className={`flex flex-1 flex-col items-center gap-0.5 py-2 text-[11px] font-medium transition ${
+              className={`flex flex-1 flex-col items-center gap-1 pt-2.5 pb-2 text-xs font-medium transition ${
                 active
                   ? "text-[var(--primary)]"
                   : "text-[var(--muted)] hover:text-[var(--foreground)]"
               }`}
             >
-              <Icon className="h-5 w-5" strokeWidth={2} />
+              <Icon className="h-6 w-6" strokeWidth={2} />
               {item.label}
             </Link>
           );

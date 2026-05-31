@@ -135,7 +135,7 @@ export default function AppShell({
           </header>
 
           {/* Extra bottom padding on mobile so content clears the bottom nav. */}
-          <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-7 pb-24 sm:px-6 sm:py-8 lg:pb-8">
+          <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-7 pb-28 sm:px-6 sm:py-8 lg:pb-8">
             {children}
           </main>
         </div>
