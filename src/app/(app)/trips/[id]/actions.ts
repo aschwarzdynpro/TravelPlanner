@@ -217,8 +217,32 @@ export async function saveFlight(formData: FormData) {
     booking_url: str(formData, "booking_url"),
     notes: str(formData, "notes"),
   };
-  if (id) await supabase.from("flights").update(payload).eq("id", id);
-  else await supabase.from("flights").insert(payload);
+  if (id) {
+    await supabase.from("flights").update(payload).eq("id", id);
+  } else {
+    await supabase.from("flights").insert(payload);
+    // Optional return flight: a second leg with swapped airports, same airline.
+    // Only the return departure time is taken from the form; the rest is left
+    // for the user to fill in afterwards.
+    if (formData.get("add_return") === "on") {
+      const returnTime = str(formData, "return_time");
+      await supabase.from("flights").insert({
+        trip_id: tripId,
+        airline: payload.airline,
+        flight_number: null,
+        departure_airport: payload.arrival_airport,
+        arrival_airport: payload.departure_airport,
+        departure_time: returnTime,
+        arrival_time: null,
+        cost: null,
+        currency: payload.currency,
+        cancellation_policy: null,
+        booking_reference: null,
+        booking_url: null,
+        notes: null,
+      });
+    }
+  }
   const flightLabel =
     [payload.airline, payload.flight_number].filter(Boolean).join(" ") ||
     [payload.departure_airport, payload.arrival_airport]
