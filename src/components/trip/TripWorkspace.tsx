@@ -186,10 +186,15 @@ export default function TripWorkspace(data: WorkspaceData) {
             {activeSecondary ? activeSecondary.label : "Mehr"}
           </span>
         </button>
-        <Popover anchorRef={moreRef} open={moreOpen} onClose={() => setMoreOpen(false)}>
+        <Popover
+          anchorRef={moreRef}
+          open={moreOpen}
+          onClose={() => setMoreOpen(false)}
+          width={184}
+        >
           <div
             role="menu"
-            className="min-w-44 rounded-lg border bg-[var(--surface)] p-1 shadow-lg"
+            className="rounded-lg border bg-[var(--surface)] p-1 shadow-lg"
           >
             {secondaryTabs.map((t) => {
               const Icon = t.icon;
